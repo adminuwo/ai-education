@@ -55,3 +55,31 @@ if (fs.existsSync(cppPath)) {
     console.log('[patch-rnsvg] RNSVGImageShadowNode.cpp already patched or pattern not found.');
   }
 }
+
+const layoutCppPath = path.join(
+  __dirname,
+  '..',
+  'node_modules',
+  'react-native-svg',
+  'common',
+  'cpp',
+  'react',
+  'renderer',
+  'components',
+  'rnsvg',
+  'RNSVGLayoutableShadowNode.cpp'
+);
+
+if (fs.existsSync(layoutCppPath)) {
+  let content = fs.readFileSync(layoutCppPath, 'utf8');
+  if (content.includes('yoga::StyleSizeLength::')) {
+    content = content.replace(/yoga::StyleSizeLength::/g, 'yoga::StyleLength::');
+    fs.writeFileSync(layoutCppPath, content, 'utf8');
+    console.log('[patch-rnsvg] Successfully patched RNSVGLayoutableShadowNode.cpp (StyleSizeLength -> StyleLength for Yoga 3 / RN 0.77)');
+  } else {
+    console.log('[patch-rnsvg] RNSVGLayoutableShadowNode.cpp already patched or pattern not found.');
+  }
+} else {
+  console.log('[patch-rnsvg] RNSVGLayoutableShadowNode.cpp not found at:', layoutCppPath);
+}
+
