@@ -19,3 +19,23 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+subprojects { subproject ->
+    afterEvaluate {
+        if (subproject.hasProperty("android")) {
+            try {
+                subproject.android {
+                    defaultConfig {
+                        externalNativeBuild {
+                            cmake {
+                                arguments "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,max-page-size=16384"
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+}
+

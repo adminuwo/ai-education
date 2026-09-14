@@ -90,10 +90,10 @@ jobs:
           if [ -n "$APK_FILE" ]; then
             mkdir -p /tmp/apk_inspect
             unzip -q "$APK_FILE" -d /tmp/apk_inspect
-            echo "Inspecting ELF alignment on bundled native libraries:"
-            find /tmp/apk_inspect/lib -name "*.so" | head -n 10 | while read so_file; do
-              echo "Checking $so_file:"
-              objdump -p "$so_file" | grep -i "align" | head -n 2 || true
+            echo "Inspecting ELF alignment on all bundled native libraries in arm64-v8a:"
+            find /tmp/apk_inspect/lib/arm64-v8a -name "*.so" 2>/dev/null | while read -r so_file; do
+              ALIGN=$(objdump -p "$so_file" 2>/dev/null | grep -E "LOAD" -A 1 | grep -o "align 2\*\*[0-9]*" | head -n 1)
+              echo "  $(basename "$so_file"): $ALIGN"
             done
             rm -rf /tmp/apk_inspect
           fi
