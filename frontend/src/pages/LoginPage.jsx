@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Sparkles, ShieldCheck, Zap, Users, Mail, ArrowLeft, RefreshCw, GraduationCap, UserCheck, Info, KeyRound, Building2, IndianRupee } from 'lucide-react';
+import { Sparkles, ShieldCheck, Zap, Users, Mail, ArrowLeft, RefreshCw, GraduationCap, UserCheck, Info, KeyRound, Building2, IndianRupee, CalendarCheck, Award, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { authApi } from '@/lib/api';
 
@@ -153,92 +153,86 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
           Unified operating environment for campus faculties, verified student admissions, synchronized class timetables, and department ledgers.
         </p>
 
-        {/* Live Academic Operations Telemetry Window */}
-        <div className="mt-4 xl:mt-5 rounded-xl tactile-card overflow-hidden border border-white/[0.08] bg-[#0B0F19]/90 backdrop-blur-xl shadow-2xl">
-          {/* Window Header */}
-          <div className="terminal-header px-3.5 py-2 flex items-center justify-between border-b border-white/[0.06]">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-              </div>
-              <span className="text-[11px] font-mono text-slate-400 ml-2">convee / academic-ops / telemetry</span>
+        {/* Education-Focused Capability Cards */}
+        <div className="mt-4 xl:mt-5 space-y-2 xl:space-y-2.5">
+          {/* Card 1: Academic Classrooms & Live Timetables */}
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-blue-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 mt-0.5 group-hover:bg-blue-500/20 transition-colors">
+              <CalendarCheck className="h-4 w-4" />
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>99.98% SYNC</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-blue-300 transition-colors truncate">
+                  Classrooms & Live Timetables
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+                  Daily Sync
+                </span>
+              </div>
+              <p className="text-[11px] xl:text-xs text-slate-400 mt-0.5 leading-snug">
+                Synchronized class schedules, subject allocations, and wing management across all school grades.
+              </p>
             </div>
           </div>
 
-          {/* Quick KPI Strip */}
-          <div className="grid grid-cols-3 divide-x divide-white/[0.06] border-b border-white/[0.06] bg-slate-950/40">
-            <div className="p-2.5 text-center">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Attendance</div>
-              <div className="text-sm xl:text-base font-bold text-white font-mono mt-0.5">96.4%</div>
-              <div className="w-full bg-slate-800/80 h-1 rounded-full mt-1.5 overflow-hidden">
-                <div className="bg-emerald-400 h-full rounded-full" style={{ width: '96.4%' }} />
-              </div>
+          {/* Card 2: Examination & Marks Ledger */}
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-emerald-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 group-hover:bg-emerald-500/20 transition-colors">
+              <Award className="h-4 w-4" />
             </div>
-            <div className="p-2.5 text-center">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Active Staff</div>
-              <div className="text-sm xl:text-base font-bold text-blue-400 font-mono mt-0.5">142 Live</div>
-              <div className="w-full bg-slate-800/80 h-1 rounded-full mt-1.5 overflow-hidden">
-                <div className="bg-blue-500 h-full rounded-full" style={{ width: '88%' }} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors truncate">
+                  Examination & Marks Ledger
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                  Gradebook
+                </span>
               </div>
-            </div>
-            <div className="p-2.5 text-center">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">School Wings</div>
-              <div className="text-sm xl:text-base font-bold text-indigo-300 font-mono mt-0.5">18 Active</div>
-              <div className="w-full bg-slate-800/80 h-1 rounded-full mt-1.5 overflow-hidden">
-                <div className="bg-indigo-400 h-full rounded-full" style={{ width: '100%' }} />
-              </div>
+              <p className="text-[11px] xl:text-xs text-slate-400 mt-0.5 leading-snug">
+                Automated term assessments, question paper management, and student performance scorecards.
+              </p>
             </div>
           </div>
 
-          {/* Live Campus Telemetry Stream */}
-          <div className="p-2.5 xl:p-3 space-y-1.5 text-xs">
-            <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900/60 border border-white/[0.04]">
-              <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0" />
-                <span className="font-mono text-[10px] text-slate-400 shrink-0">09:42</span>
-                <span className="text-slate-200 truncate">Dr. Sanjay Deshmukh approved Midterm Evaluation</span>
-              </div>
-              <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 shrink-0">
-                Avg 84.6%
-              </span>
+          {/* Card 3: Verified Student & Staff Records */}
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-sky-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0 mt-0.5 group-hover:bg-sky-500/20 transition-colors">
+              <Users className="h-4 w-4" />
             </div>
-
-            <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900/60 border border-white/[0.04]">
-              <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shrink-0" />
-                <span className="font-mono text-[10px] text-slate-400 shrink-0">09:15</span>
-                <span className="text-slate-200 truncate">Science Wing (Sec A) Timetable moved to Lab 3</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-sky-300 transition-colors truncate">
+                  Student & Faculty Records
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
+                  Verified ID
+                </span>
               </div>
-              <span className="font-mono text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0">
-                Updated
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-slate-900/60 border border-white/[0.04]">
-              <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                <span className="font-mono text-[10px] text-slate-400 shrink-0">08:50</span>
-                <span className="text-slate-200 truncate">Automated Student Attendance Ledger synced</span>
-              </div>
-              <span className="font-mono text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shrink-0">
-                482 Logged
-              </span>
+              <p className="text-[11px] xl:text-xs text-slate-400 mt-0.5 leading-snug">
+                Official admission IDs, teacher subject permissions, and automated attendance registers.
+              </p>
             </div>
           </div>
 
-          {/* Command Bar Preview */}
-          <div className="px-3 py-2 bg-slate-950/80 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[10px] border border-white/[0.08]">⌘K</span>
-              <span>Quick jump to student admission, faculty roster, or marks...</span>
-            </span>
-            <span className="font-mono text-[10px] text-slate-500">ESC</span>
+          {/* Card 4: Parent-Teacher Engagement */}
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-purple-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 mt-0.5 group-hover:bg-purple-500/20 transition-colors">
+              <MessageSquare className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-purple-300 transition-colors truncate">
+                  Parent-Teacher Engagement
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 shrink-0">
+                  Direct Notice
+                </span>
+              </div>
+              <p className="text-[11px] xl:text-xs text-slate-400 mt-0.5 leading-snug">
+                Real-time absence notifications, homework submissions, and institutional circulars.
+              </p>
+            </div>
           </div>
         </div>
       </div>
