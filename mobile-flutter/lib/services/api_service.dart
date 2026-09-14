@@ -178,7 +178,7 @@ class ApiService {
 
   static Future<List<dynamic>> getHomeworkSubmissions(String taskId) async {
     try {
-      final res = await dio.get('/tasks/$taskId/submissions');
+      final res = await dio.get('/homework/$taskId/submissions');
       if (res.data is List) {
         return res.data as List<dynamic>;
       }
@@ -192,7 +192,7 @@ class ApiService {
     required String content,
     String? attachmentUrl,
   }) async {
-    final res = await dio.post('/tasks/$taskId/submit', data: {
+    final res = await dio.post('/homework/$taskId/submit', data: {
       'content': content,
       if (attachmentUrl != null && attachmentUrl.isNotEmpty) 'attachmentUrl': attachmentUrl,
     });
@@ -206,8 +206,7 @@ class ApiService {
     Map<String, dynamic>? rubricScores,
     String? feedbackNotes,
   }) async {
-    final res = await dio.post('/tasks/$taskId/grade', data: {
-      'submissionId': submissionId,
+    final res = await dio.post('/homework/$taskId/submissions/$submissionId/grade', data: {
       'gradeScore': gradeScore,
       'gradeMax': gradeMax,
       if (rubricScores != null) 'rubricScores': rubricScores,

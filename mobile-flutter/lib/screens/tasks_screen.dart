@@ -106,6 +106,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
   List<dynamic> get _filteredTasks {
     return _tasks.where((t) {
+      if (t is! Map) return false;
       if (_searchQuery.trim().isNotEmpty) {
         final q = _searchQuery.toLowerCase();
         final title = (t['title'] ?? '').toString().toLowerCase();

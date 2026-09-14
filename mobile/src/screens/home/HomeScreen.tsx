@@ -55,7 +55,7 @@ export default function HomeScreen({ navigation }: any) {
         tasksApi
           .list(currentOrg.id, { isHomework: 'false' })
           .then((res) => {
-            const pending = Array.isArray(res) ? res.filter((t) => t.status !== 'COMPLETED').length : 0;
+            const pending = Array.isArray(res) ? res.filter((t) => t && t.status !== 'COMPLETED').length : 0;
             setActiveTasksCount(pending);
             return pending;
           })
@@ -67,7 +67,7 @@ export default function HomeScreen({ navigation }: any) {
           .tasks(currentOrg.id, { isHomework: 'true' })
           .then((res) => {
             const pending = Array.isArray(res)
-              ? res.filter((t) => t.status !== 'COMPLETED' && (!t.submission || isStudent)).length
+              ? res.filter((t) => t && t.status !== 'COMPLETED' && (!t.submission || isStudent)).length
               : 0;
             setActiveHomeworkCount(pending);
             return pending;

@@ -67,8 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final tasksList = results[3] as List<dynamic>? ?? [];
           final homeworkList = results[4] as List<dynamic>? ?? [];
 
-          final activeTasks = tasksList.where((t) => t['status'] != 'COMPLETED').length;
-          final pendingHw = homeworkList.where((t) => t['status'] != 'COMPLETED').length;
+          final activeTasks = tasksList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
+          final pendingHw = homeworkList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
 
           setState(() {
             _briefing = results[0] as String?;
@@ -120,12 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                orgName,
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                overflow: TextOverflow.ellipsis,
-              ),
+            Text(
+              orgName,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
           ],
         ),

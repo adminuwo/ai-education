@@ -181,6 +181,7 @@ export default function HomeworkScreen() {
   };
 
   const filteredTasks = tasks.filter((t) => {
+    if (!t) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchTitle = (t.title || '').toLowerCase().includes(q);

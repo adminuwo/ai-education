@@ -70,6 +70,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
 
   List<dynamic> get _filteredTasks {
     return _tasks.where((t) {
+      if (t is! Map) return false;
       if (_searchQuery.trim().isNotEmpty) {
         final q = _searchQuery.toLowerCase();
         final title = (t['title'] ?? '').toString().toLowerCase();
@@ -654,7 +655,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                                 width: double.infinity,
                                 height: 32,
                                 child: OutlinedButton.icon(
-                                  icon: const Icon(Icons.grade_outlined, size: 14, color: ConveeColors.emerald),
+                                  icon: const Icon(Icons.grade, size: 14, color: ConveeColors.emerald),
                                   label: Text(grade != null ? 'Update Grade' : 'Grade Submission', style: const TextStyle(color: ConveeColors.emerald, fontSize: 11)),
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(color: ConveeColors.emerald),
@@ -699,7 +700,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                           backgroundColor: ConveeColors.emerald,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.grade_outlined, size: 16, color: Colors.white),
+                        icon: const Icon(Icons.grade, size: 16, color: Colors.white),
                         label: const Text('Grade with Rubric', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                         onPressed: () {
                           Navigator.pop(ctx);
@@ -959,7 +960,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                                                 ),
                                                 child: const Row(
                                                   children: [
-                                                    Icon(Icons.grade_outlined, size: 11, color: Colors.white),
+                                                    Icon(Icons.grade, size: 11, color: Colors.white),
                                                     SizedBox(width: 4),
                                                     Text('Grade Rubric', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
                                                   ],
