@@ -119,12 +119,16 @@ mock_students.csv
 *.jpeg
 *.docx
 
-# Whitelist UI Assets in frontend and mobile
+# Whitelist UI Assets and Android Native Configs
 !frontend/public/**
 !frontend/src/assets/**
 !mobile/assets/**
 !mobile-react/assets/**
 !mobile-flutter/assets/**
+!mobile-react/android/**
+!mobile-flutter/android/**
+!**/AndroidManifest.xml
+!**/res/**
 
 # Scratch, Test & Seed Scripts
 backend/scripts/*.ts
