@@ -57,6 +57,7 @@ jobs:
         working-directory: mobile-react
         run: |
           npm install --legacy-peer-deps
+          node scripts/patch-rnsvg.js
 
       - name: Build Android Package
         working-directory: mobile-react/android
@@ -65,11 +66,21 @@ jobs:
           TARGET="${{ inputs.profile }}"
           if [ "$TARGET" = "bundle" ]; then
             echo ">>> Building Production Release AAB (RN 0.77 - 16 KB Aligned)..."
-            ./gradlew bundleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew bundleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           else
             echo ">>> Building Release APK (RN 0.77 - 16 KB Aligned)..."
-            ./gradlew assembleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew assembleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
           fi
+
+      - name: Dump C++ Ninja Diagnostics On Failure
+        if: failure()
+        run: |
+          echo "=== Searching for Ninja / CMake / Clang compilation logs ==="
+          find mobile-react/android/app/.cxx -name "*.log" 2>/dev/null | while read -r logfile; do
+            echo "=== Log: $logfile ==="
+            tail -n 120 "$logfile"
+            echo "=== End Log ==="
+          done
 
       - name: Verify 16 KB Page Alignment
         working-directory: mobile-react
