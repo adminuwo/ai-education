@@ -14,6 +14,7 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import MeetingsScreen from '../screens/meetings/MeetingsScreen';
 import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import ParentStudentPortalScreen from '../screens/portal/ParentStudentPortalScreen';
+import TasksScreen from '../screens/tasks/TasksScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -96,6 +97,16 @@ export default function RootNavigator() {
               options={{
                 headerShown: true,
                 title: 'Academic Analytics',
+                headerStyle: { backgroundColor: colors.card },
+                headerTintColor: colors.text,
+              }}
+            />
+            <Stack.Screen
+              name="Tasks"
+              component={TasksScreen}
+              options={{
+                headerShown: true,
+                title: 'Campus Tasks & Operations',
                 headerStyle: { backgroundColor: colors.card },
                 headerTintColor: colors.text,
               }}

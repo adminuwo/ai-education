@@ -285,10 +285,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.35,
                 children: [
-                  _buildModuleItem('Class Channels', 'Messaging & Chat', Icons.chat_bubble_outline, ConveeColors.primary),
-                  _buildModuleItem('AI Campus Tutor', 'Interactive Q&A', Icons.smart_toy_outlined, ConveeColors.purple),
+                  _buildModuleItem('Campus Tasks', 'Operations & Duties', Icons.task_alt_outlined, ConveeColors.primary),
+                  _buildModuleItem('Homework', 'Assignments & Rubrics', Icons.menu_book_outlined, ConveeColors.amber),
                   _buildModuleItem('Daily Attendance', 'Roster & Records', Icons.fact_check_outlined, ConveeColors.emerald),
-                  _buildModuleItem('Homework', 'Assignments & Tests', Icons.assignment_outlined, ConveeColors.amber),
+                  _buildModuleItem('Class Channels', 'Messaging & Chat', Icons.chat_bubble_outline, ConveeColors.purple),
                   _buildModuleItem('Live Meetings', 'Classroom Video', Icons.videocam_outlined, ConveeColors.destructive),
                   _buildModuleItem('Campus Portal', 'Parent & Student', Icons.badge_outlined, ConveeColors.textSecondary),
                 ],

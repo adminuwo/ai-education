@@ -27,30 +27,71 @@ router.get('/', async (req, res, next) => {
     const orgId = req.query.orgId as string;
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId, isActive: true } });
-    if (!m) return res.status(403).json({ error: 'Not a member' });
+    if (!m && req.user?.systemRole !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Not a member' });
+
     const status = req.query.status as string | undefined;
+    const priority = req.query.priority as string | undefined;
     const assignee = req.query.assignee as string | undefined;
     const createdById = req.query.createdById as string | undefined;
     const projectId = req.query.projectId as string | undefined;
     const isHomework = req.query.isHomework as string | undefined;
+    const search = req.query.search as string | undefined;
+
     const where: any = { orgId, deletedAt: null };
-    if (status) where.status = status;
+    if (status && status !== 'all') where.status = status;
+    if (priority && priority !== 'all') where.priority = priority;
     if (projectId) where.projectId = projectId;
     if (createdById) where.createdById = createdById;
 
-    const roleUpper = (m.role || '').toUpperCase();
-    const titleUpper = (m.title || '').toUpperCase();
+    const roleUpper = (m?.role || '').toUpperCase();
+    const titleUpper = (m?.title || '').toUpperCase();
     const isHigherAuthority = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER'].some(
       (r) => roleUpper.includes(r) || titleUpper.includes(r)
-    );
+    ) || req.user?.systemRole === 'SUPER_ADMIN';
 
-    // Standard teachers only see homework tasks they personally created
-    if (isHomework === 'true' && roleUpper === 'TEACHER' && !isHigherAuthority && !assignee && !createdById) {
-      where.createdById = req.user!.id;
+    // 1. Role-based scoping for Administrative Tasks (isHomework !== 'true')
+    if (isHomework === 'false' || isHomework === undefined) {
+      if (!isHigherAuthority) {
+        // Teachers, Students, Staff, Parents only see tasks assigned to them or created by them
+        where.OR = [
+          { assignees: { some: { userId: req.user!.id } } },
+          { createdById: req.user!.id },
+        ];
+      }
+    }
+
+    // 2. Role-based scoping for Academic Homework (isHomework === 'true')
+    if (isHomework === 'true') {
+      if (roleUpper === 'STUDENT') {
+        where.assignees = { some: { userId: req.user!.id } };
+      } else if (roleUpper === 'PARENT') {
+        const links = await prisma.parentStudentLink.findMany({
+          where: { orgId, parentUserId: req.user!.id },
+        });
+        const childIds = links.map((l) => l.studentUserId);
+        where.assignees = { some: { userId: { in: childIds } } };
+      } else if (roleUpper === 'TEACHER' && !isHigherAuthority && !assignee && !createdById) {
+        // Standard teachers only see homework tasks they personally created
+        where.createdById = req.user!.id;
+      }
     }
 
     if (assignee === 'me') where.assignees = { some: { userId: req.user!.id } };
     else if (assignee) where.assignees = { some: { userId: assignee } };
+
+    if (search && search.trim()) {
+      const searchClause = [
+        { title: { contains: search.trim(), mode: 'insensitive' } },
+        { description: { contains: search.trim(), mode: 'insensitive' } },
+      ];
+      if (where.OR) {
+        where.AND = [{ OR: where.OR }, { OR: searchClause }];
+        delete where.OR;
+      } else {
+        where.OR = searchClause;
+      }
+    }
+
     const tasks = await prisma.task.findMany({
       where,
       include: {
@@ -62,7 +103,16 @@ router.get('/', async (req, res, next) => {
       },
       orderBy: [{ dueDate: 'asc' }, { createdAt: 'desc' }],
     });
-    const homeworkTaskIds = tasks.filter((t) => (t.metadata as any)?.isHomework).map((t) => t.id);
+
+    // Enforce strict separation based on metadata.isHomework
+    let filteredTasks = tasks;
+    if (isHomework === 'true') {
+      filteredTasks = tasks.filter((t) => (t.metadata as any)?.isHomework === true);
+    } else if (isHomework === 'false') {
+      filteredTasks = tasks.filter((t) => (t.metadata as any)?.isHomework !== true);
+    }
+
+    const homeworkTaskIds = filteredTasks.filter((t) => (t.metadata as any)?.isHomework).map((t) => t.id);
     const submissionsMap = new Map();
     if (homeworkTaskIds.length > 0) {
       const submissions = await prisma.homeworkSubmission.findMany({
@@ -71,7 +121,7 @@ router.get('/', async (req, res, next) => {
       submissions.forEach((s) => submissionsMap.set(s.taskId, s));
     }
 
-    const tasksWithSubmissions = tasks.map((t) => ({
+    const tasksWithSubmissions = filteredTasks.map((t) => ({
       ...t,
       submission: submissionsMap.get(t.id) || null,
     }));

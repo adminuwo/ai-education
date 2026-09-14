@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { aiApi, dashboardApi, attendanceApi, parentApi } from '../../lib/api';
+import { aiApi, dashboardApi, attendanceApi, parentApi, tasksApi, homeworkApi } from '../../lib/api';
 import {
   Sparkles,
   BookOpen,
@@ -22,6 +22,7 @@ import {
   GraduationCap,
   Video,
   TrendingUp,
+  CheckSquare,
 } from 'lucide-react-native';
 
 export default function HomeScreen({ navigation }: any) {
@@ -33,10 +34,16 @@ export default function HomeScreen({ navigation }: any) {
   const [attendanceStats, setAttendanceStats] = useState<any>(null);
   const [personalAttendancePct, setPersonalAttendancePct] = useState<number | null>(null);
   const [dashboardData, setDashboardData] = useState<any>(null);
+  const [activeTasksCount, setActiveTasksCount] = useState<number | null>(null);
+  const [activeHomeworkCount, setActiveHomeworkCount] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const isStudent = currentOrg?.role === 'STUDENT';
   const isParent = currentOrg?.role === 'PARENT';
+  const roleUpper = (currentOrg?.role || '').toUpperCase();
+  const isHigherAuthority = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER'].some(
+    (r) => roleUpper.includes(r)
+  ) || user?.systemRole === 'SUPER_ADMIN';
 
   const loadData = useCallback(async () => {
     if (!currentOrg?.id) return;
@@ -45,6 +52,30 @@ export default function HomeScreen({ navigation }: any) {
       const promises: Promise<any>[] = [
         aiApi.dailyBriefing(currentOrg.id).catch(() => null),
         dashboardApi.employee(currentOrg.id).catch(() => null),
+        tasksApi
+          .list(currentOrg.id, { isHomework: 'false' })
+          .then((res) => {
+            const pending = Array.isArray(res) ? res.filter((t) => t.status !== 'COMPLETED').length : 0;
+            setActiveTasksCount(pending);
+            return pending;
+          })
+          .catch(() => {
+            setActiveTasksCount(0);
+            return 0;
+          }),
+        homeworkApi
+          .tasks(currentOrg.id, { isHomework: 'true' })
+          .then((res) => {
+            const pending = Array.isArray(res)
+              ? res.filter((t) => t.status !== 'COMPLETED' && (!t.submission || isStudent)).length
+              : 0;
+            setActiveHomeworkCount(pending);
+            return pending;
+          })
+          .catch(() => {
+            setActiveHomeworkCount(0);
+            return 0;
+          }),
       ];
 
       if (isStudent && user?.id) {
@@ -66,7 +97,7 @@ export default function HomeScreen({ navigation }: any) {
         promises.push(attendanceApi.getStats(currentOrg.id).catch(() => null));
       }
 
-      const [bRes, dRes, attRes] = await Promise.all(promises);
+      const [bRes, dRes, _tCount, _hwCount, attRes] = await Promise.all(promises);
 
       if (bRes?.briefing) setBriefing(bRes.briefing);
       if (dRes) setDashboardData(dRes);
@@ -154,7 +185,7 @@ export default function HomeScreen({ navigation }: any) {
           style={[styles.kpiCard, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
           <View style={[styles.kpiIcon, { backgroundColor: colors.emeraldLight }]}>
-            <CalendarCheck size={20} color={colors.emerald} />
+            <CalendarCheck size={18} color={colors.emerald} />
           </View>
           <Text style={[styles.kpiValue, { color: colors.text }]}>
             {isStudent || isParent
@@ -170,18 +201,36 @@ export default function HomeScreen({ navigation }: any) {
           </Text>
         </TouchableOpacity>
 
-        {/* Homework / Tasks KPI */}
+        {/* Administrative / Campus Tasks KPI */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Tasks')}
+          style={[styles.kpiCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
+          <View style={[styles.kpiIcon, { backgroundColor: colors.primaryLight }]}>
+            <CheckSquare size={18} color={colors.primary} />
+          </View>
+          <Text style={[styles.kpiValue, { color: colors.text }]}>
+            {activeTasksCount !== null ? activeTasksCount : (dashboardData?.myTasks?.length ?? 0)}
+          </Text>
+          <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>
+            {isHigherAuthority ? 'Campus Tasks' : 'My Tasks'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Academic Homework KPI */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Homework')}
           style={[styles.kpiCard, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
-          <View style={[styles.kpiIcon, { backgroundColor: colors.primaryLight }]}>
-            <BookOpen size={20} color={colors.primary} />
+          <View style={[styles.kpiIcon, { backgroundColor: '#F59E0B20' }]}>
+            <BookOpen size={18} color="#F59E0B" />
           </View>
           <Text style={[styles.kpiValue, { color: colors.text }]}>
-            {dashboardData?.myTasks?.length ?? 0}
+            {activeHomeworkCount !== null ? activeHomeworkCount : 0}
           </Text>
-          <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>Active Tasks</Text>
+          <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>
+            {isStudent ? 'Homework Due' : isParent ? "Child's Homework" : 'Homework Given'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -189,12 +238,32 @@ export default function HomeScreen({ navigation }: any) {
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
       <View style={styles.actionsList}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Homework')}
+          onPress={() => navigation.navigate('Tasks')}
           style={[styles.actionItem, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
           <View style={styles.actionLeft}>
             <View style={[styles.actionIcon, { backgroundColor: colors.primaryLight }]}>
-              <BookOpen size={18} color={colors.primary} />
+              <CheckSquare size={18} color={colors.primary} />
+            </View>
+            <View>
+              <Text style={[styles.actionName, { color: colors.text }]}>Campus Tasks & Operations</Text>
+              <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
+                {isHigherAuthority
+                  ? 'Assign, track & oversee departmental duties'
+                  : 'View & update assigned administrative duties'}
+              </Text>
+            </View>
+          </View>
+          <ArrowRight size={18} color={colors.textMuted} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Homework')}
+          style={[styles.actionItem, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
+          <View style={styles.actionLeft}>
+            <View style={[styles.actionIcon, { backgroundColor: '#F59E0B20' }]}>
+              <BookOpen size={18} color="#F59E0B" />
             </View>
             <View>
               <Text style={[styles.actionName, { color: colors.text }]}>Homework & Rubrics</Text>
