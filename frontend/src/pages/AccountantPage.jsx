@@ -1020,7 +1020,7 @@ export default function AccountantPage() {
       {/* Top Bar Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border p-6 rounded-2xl shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30">
+          <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-xl border border-emerald-500/30">
             <IndianRupee className="w-8 h-8" />
           </div>
           <div>
@@ -1064,7 +1064,7 @@ export default function AccountantPage() {
           <button
             onClick={handleRunTallySync}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-500 hover:to-teal-500 text-white text-xs font-semibold rounded-xl shadow-lg transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold rounded-xl shadow-lg transition-all disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
             {syncing ? 'Syncing...' : 'Sync Tally / Busy'}
@@ -1199,7 +1199,7 @@ export default function AccountantPage() {
           onClick={() => setActiveTab('overview')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
             activeTab === 'overview'
-              ? 'bg-blue-600 text-white shadow-md'
+              ? 'bg-emerald-600 text-white shadow-md'
               : 'text-muted-foreground hover:text-foreground hover:bg-card'
           }`}
         >
@@ -1209,7 +1209,7 @@ export default function AccountantPage() {
           onClick={() => setActiveTab('fees')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
             activeTab === 'fees'
-              ? 'bg-blue-600 text-white shadow-md'
+              ? 'bg-emerald-600 text-white shadow-md'
               : 'text-muted-foreground hover:text-foreground hover:bg-card'
           }`}
         >
@@ -1219,7 +1219,7 @@ export default function AccountantPage() {
           onClick={() => setActiveTab('payroll')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
             activeTab === 'payroll'
-              ? 'bg-blue-600 text-white shadow-md'
+              ? 'bg-emerald-600 text-white shadow-md'
               : 'text-muted-foreground hover:text-foreground hover:bg-card'
           }`}
         >
@@ -1279,7 +1279,7 @@ export default function AccountantPage() {
           onClick={() => setActiveTab('connector')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap flex items-center gap-2 ${
             activeTab === 'connector'
-              ? 'bg-blue-600 text-white shadow-md'
+              ? 'bg-emerald-600 text-white shadow-md'
               : 'text-muted-foreground hover:text-foreground hover:bg-card'
           }`}
         >
@@ -1316,7 +1316,7 @@ export default function AccountantPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-card border border-border p-6 rounded-2xl space-y-4">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-blue-400" /> Fee Collection Breakdown
+              <Building2 className="w-5 h-5 text-emerald-400" /> Fee Collection Breakdown
             </h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-muted/40 p-4 rounded-xl border border-border text-center">
@@ -1365,7 +1365,7 @@ export default function AccountantPage() {
             <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Database className="w-5 h-5 text-blue-400" /> Tally Prime Status
+                  <Database className="w-5 h-5 text-emerald-400" /> Tally Prime Status
                 </h3>
                 <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${
                   tallyConnectedStatus
@@ -1400,7 +1400,7 @@ export default function AccountantPage() {
                 <button
                   onClick={handleRunTallySync}
                   disabled={syncing}
-                  className="flex-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-500 hover:to-teal-500 text-white text-xs font-semibold rounded-xl shadow transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="flex-1 px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold rounded-xl shadow transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
                   {syncing ? 'Syncing...' : 'Sync Tally Now'}
@@ -1425,7 +1425,7 @@ export default function AccountantPage() {
                   className="w-full flex items-center justify-between p-3 bg-background hover:bg-muted/80 border border-border rounded-xl text-xs font-medium transition-all"
                 >
                   <div className="flex items-center gap-2">
-                    <Plus className="w-3.5 h-3.5 text-blue-400" />
+                    <Plus className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Record New Student Fee</span>
                   </div>
                   <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
@@ -1457,7 +1457,7 @@ export default function AccountantPage() {
                 placeholder="Search by student name, roll number, or receipt..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-background border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:border-blue-500"
+                className="w-full bg-background border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -1474,7 +1474,7 @@ export default function AccountantPage() {
               </select>
               <button
                 onClick={handleOpenAddFeeModal}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl flex items-center gap-1.5"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" /> Add Record
               </button>
@@ -1520,7 +1520,7 @@ export default function AccountantPage() {
                             f.status === 'PAID'
                               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                               : f.status === 'PARTIAL'
-                              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                               : f.status === 'OVERDUE'
                               ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30'
                               : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
@@ -1746,7 +1746,7 @@ export default function AccountantPage() {
                                 : e.category === 'MAINTENANCE'
                                 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
                                 : e.category === 'UTILITIES'
-                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                                 : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30'
                             }`}
                           >
@@ -1949,7 +1949,7 @@ export default function AccountantPage() {
                       <td className="p-3.5 whitespace-nowrap">
                         <span className={`px-2.5 py-1 text-[11px] font-bold rounded-md inline-block ${
                           fund.fundType === 'CORPUS' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' :
-                          fund.fundType === 'INFRASTRUCTURE' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                          fund.fundType === 'INFRASTRUCTURE' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
                           fund.fundType === 'SCHOLARSHIP' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
                           'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                         }`}>
@@ -2372,7 +2372,7 @@ export default function AccountantPage() {
           <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-blue-600/20 text-blue-400 rounded-xl border border-blue-500/30">
+                <div className="p-3 bg-emerald-600/20 text-emerald-400 rounded-xl border border-emerald-500/30">
                   <Database className="w-6 h-6" />
                 </div>
                 <div>
@@ -2408,15 +2408,15 @@ export default function AccountantPage() {
               )}
 
               {/* Target Tally Company Selector Card */}
-              <div className="bg-muted/40 p-4 rounded-xl border border-blue-500/30 space-y-3">
+              <div className="bg-muted/40 p-4 rounded-xl border border-emerald-500/30 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <label className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Building2 className="w-4 h-4" /> Target Tally Company
                   </label>
                   <button
                     onClick={fetchTallyCompanies}
                     disabled={loadingTallyCompanies}
-                    className="text-[11px] text-muted-foreground hover:text-blue-500 font-medium flex items-center gap-1 transition-all"
+                    className="text-[11px] text-muted-foreground hover:text-emerald-500 font-medium flex items-center gap-1 transition-all"
                   >
                     <RefreshCw className={`w-3 h-3 ${loadingTallyCompanies ? 'animate-spin' : ''}`} />
                     Fetch Open Companies
@@ -2434,7 +2434,7 @@ export default function AccountantPage() {
                         handleSelectTallyCompany(e.target.value);
                       }
                     }}
-                    className="w-full bg-card border border-border rounded-xl p-2.5 text-sm text-foreground font-medium focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-card border border-border rounded-xl p-2.5 text-sm text-foreground font-medium focus:border-emerald-500 focus:outline-none"
                   >
                     {tallyCompanyOptions.length > 0 ? (
                       <optgroup label="Connected Tally Companies">
@@ -2460,7 +2460,7 @@ export default function AccountantPage() {
                       placeholder="Type exact Tally company name..."
                       value={selectedTallyCompany}
                       onChange={(e) => handleSelectTallyCompany(e.target.value)}
-                      className="w-full bg-card border border-blue-500/50 rounded-xl p-2.5 text-sm text-foreground focus:outline-none"
+                      className="w-full bg-card border border-emerald-500/50 rounded-xl p-2.5 text-sm text-foreground focus:outline-none"
                     />
                   </div>
                 )}
@@ -2498,7 +2498,7 @@ export default function AccountantPage() {
                   </div>
                   <div className="bg-card p-2.5 rounded-lg border border-border">
                     <div className="text-[10px] text-muted-foreground uppercase font-semibold">Maintenance & Ops</div>
-                    <div className="font-mono text-blue-600 dark:text-blue-400 font-medium text-[11px] mt-0.5">Campus Maintenance [YYYY-YY]</div>
+                    <div className="font-mono text-emerald-600 dark:text-emerald-400 font-medium text-[11px] mt-0.5">Campus Maintenance [YYYY-YY]</div>
                   </div>
                 </div>
               </div>
@@ -2527,7 +2527,7 @@ export default function AccountantPage() {
                 <button
                   onClick={handleRunTallySync}
                   disabled={syncing}
-                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl text-sm transition-all"
+                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-sm transition-all"
                 >
                   {syncing ? 'Running Sync...' : `Sync with ${selectedTallyCompany || 'Tally'}`}
                 </button>
@@ -2596,7 +2596,7 @@ export default function AccountantPage() {
                   <button
                     onClick={() => handleBatchReconcile('PUSH_TO_TALLY', reconcileDiff.onlyInConvee)}
                     disabled={loadingDiff}
-                    className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all disabled:opacity-50"
                   >
                     <UploadCloud className="w-3.5 h-3.5" />
                     Push All to Tally ({reconcileDiff.onlyInConvee.length})
@@ -2648,9 +2648,9 @@ export default function AccountantPage() {
                   {reconcileDiff?.matchedCount || 0} Records
                 </div>
               </div>
-              <div className="bg-blue-950/20 border border-blue-500/30 p-3.5 rounded-xl">
-                <div className="text-[11px] font-semibold text-blue-400 uppercase">Only in Convee (Pending Push)</div>
-                <div className="text-xl font-bold text-blue-300 mt-0.5">
+              <div className="bg-emerald-950/20 border border-emerald-500/30 p-3.5 rounded-xl">
+                <div className="text-[11px] font-semibold text-emerald-400 uppercase">Only in Convee (Pending Push)</div>
+                <div className="text-xl font-bold text-emerald-300 mt-0.5">
                   {reconcileDiff?.onlyInConveeCount || 0} Records
                 </div>
               </div>
@@ -2683,7 +2683,7 @@ export default function AccountantPage() {
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-400" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                     Only in Convee Database ({reconcileDiff?.onlyInConvee?.length || 0})
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -2694,7 +2694,7 @@ export default function AccountantPage() {
                   <button
                     onClick={() => handleBatchReconcile('PUSH_TO_TALLY', reconcileDiff.onlyInConvee)}
                     disabled={loadingDiff}
-                    className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-semibold rounded-lg transition-all"
+                    className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold rounded-lg transition-all"
                   >
                     Push All
                   </button>
@@ -2713,13 +2713,13 @@ export default function AccountantPage() {
                     return (
                       <div
                         key={item.id}
-                        className="bg-background border border-border/80 hover:border-blue-500/40 p-4 rounded-xl space-y-3 transition-all"
+                        className="bg-background border border-border/80 hover:border-emerald-500/40 p-4 rounded-xl space-y-3 transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <div className="flex items-center gap-2">
                               <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md uppercase ${
-                                item.type === 'FEE' ? 'bg-blue-500/20 text-blue-300' :
+                                item.type === 'FEE' ? 'bg-emerald-500/20 text-emerald-300' :
                                 item.type === 'PAYROLL' ? 'bg-emerald-500/20 text-emerald-300' :
                                 'bg-purple-500/20 text-purple-300'
                               }`}>
@@ -2758,7 +2758,7 @@ export default function AccountantPage() {
                           <button
                             onClick={() => handleReconcileAction('PUSH_TO_TALLY', item)}
                             disabled={isBusy || loadingDiff}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
                           >
                             {isBusy ? (
                               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -2925,7 +2925,7 @@ export default function AccountantPage() {
                       setIsRollNoDropdownOpen(true);
                       setIsStudentDropdownOpen(false);
                     }}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 pl-9 text-sm text-foreground focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 pl-9 text-sm text-foreground focus:border-emerald-500 focus:outline-none"
                   />
                   <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-3" />
                 </div>
@@ -2956,7 +2956,7 @@ export default function AccountantPage() {
                             }}
                             className="p-2.5 hover:bg-muted/80 cursor-pointer flex items-center justify-between transition-colors text-xs"
                           >
-                            <div className="font-mono font-bold text-blue-400">
+                            <div className="font-mono font-bold text-emerald-400">
                               {s.rollNo}
                             </div>
                             <div className="text-right">
@@ -2992,7 +2992,7 @@ export default function AccountantPage() {
                       setIsStudentDropdownOpen(true);
                       setIsRollNoDropdownOpen(false);
                     }}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 pl-9 text-sm text-foreground focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 pl-9 text-sm text-foreground focus:border-emerald-500 focus:outline-none"
                   />
                   <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-3" />
                 </div>
@@ -3023,7 +3023,7 @@ export default function AccountantPage() {
                               <div className="font-semibold text-foreground">{s.name}</div>
                               {s.email && <div className="text-[10px] text-muted-foreground">{s.email}</div>}
                             </div>
-                            <div className="font-mono text-[11px] text-blue-400 font-bold bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                            <div className="font-mono text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                               {s.rollNo}
                             </div>
                           </div>
@@ -3043,7 +3043,7 @@ export default function AccountantPage() {
                   <select
                     value={newFee.academicYear}
                     onChange={(e) => setNewFee({ ...newFee, academicYear: e.target.value })}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
                   >
                     <option value="2026-27">2026-27 (Current Year)</option>
                     <option value="2025-26">2025-26 (Previous Year Dues)</option>
@@ -3057,7 +3057,7 @@ export default function AccountantPage() {
                   <select
                     value={newFee.feeHeader}
                     onChange={(e) => setNewFee({ ...newFee, feeHeader: e.target.value })}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-emerald-500 focus:outline-none"
                   >
                     <option value="Tuition Fee - Term 1">Tuition Fee - Term 1</option>
                     <option value="Tuition Fee - Term 2">Tuition Fee - Term 2</option>
@@ -3078,7 +3078,7 @@ export default function AccountantPage() {
                     placeholder="85000"
                     value={newFee.totalAmount}
                     onChange={(e) => setNewFee({ ...newFee, totalAmount: e.target.value })}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 text-sm text-foreground focus:border-blue-500 focus:outline-none font-bold"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 text-sm text-foreground focus:border-emerald-500 focus:outline-none font-bold"
                   />
                 </div>
                 <div>
@@ -3088,16 +3088,16 @@ export default function AccountantPage() {
                     placeholder="0"
                     value={newFee.paidAmount}
                     onChange={(e) => setNewFee({ ...newFee, paidAmount: e.target.value })}
-                    className="w-full bg-background border border-border rounded-xl p-2.5 text-sm text-foreground focus:border-blue-500 focus:outline-none"
+                    className="w-full bg-background border border-border rounded-xl p-2.5 text-sm text-foreground focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Conditional Bank / Cash Account Selection when Paid Amount > 0 */}
               {parseFloat(newFee.paidAmount || 0) > 0 && (
-                <div className="bg-muted/40 p-3 rounded-xl border border-blue-500/30 space-y-2.5">
+                <div className="bg-muted/40 p-3 rounded-xl border border-emerald-500/30 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-blue-400 block">
+                    <label className="text-xs font-semibold text-emerald-400 block">
                       Receiving Account / Drawer *
                     </label>
                     <div className="flex items-center gap-2">
@@ -3106,7 +3106,7 @@ export default function AccountantPage() {
                         onClick={() => setNewFee({ ...newFee, paymentMode: 'BANK' })}
                         className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all ${
                           newFee.paymentMode === 'BANK'
-                            ? 'bg-blue-600 text-white shadow-sm'
+                            ? 'bg-emerald-600 text-white shadow-sm'
                             : 'bg-muted text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -3135,7 +3135,7 @@ export default function AccountantPage() {
                           const b = bankAccounts.find((acc) => acc.id === e.target.value);
                           setNewFee({ ...newFee, bankAccountId: e.target.value, bankAccountName: b?.accountName || '' });
                         }}
-                        className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-white focus:border-blue-500 focus:outline-none font-medium"
+                        className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-white focus:border-emerald-500 focus:outline-none font-medium"
                       >
                         {bankAccounts.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -3202,7 +3202,7 @@ export default function AccountantPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl shadow-lg transition-all"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-xl shadow-lg transition-all"
                 >
                   Save Record
                 </button>
@@ -3348,7 +3348,7 @@ export default function AccountantPage() {
                         onClick={() => setUpdatePaymentMode('BANK')}
                         className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all ${
                           updatePaymentMode === 'BANK'
-                            ? 'bg-blue-600 text-white shadow-sm'
+                            ? 'bg-emerald-600 text-white shadow-sm'
                             : 'bg-muted text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -3374,7 +3374,7 @@ export default function AccountantPage() {
                         required
                         value={updateBankAccountId || bankAccounts[0]?.id || ''}
                         onChange={(e) => setUpdateBankAccountId(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-blue-500 focus:outline-none font-medium"
+                        className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-emerald-500 focus:outline-none font-medium"
                       >
                         {bankAccounts.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -3677,7 +3677,7 @@ export default function AccountantPage() {
                           onClick={() => setNewPayroll({ ...newPayroll, paymentMode: 'BANK' })}
                           className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all ${
                             newPayroll.paymentMode === 'BANK'
-                              ? 'bg-blue-600 text-white shadow-sm'
+                              ? 'bg-emerald-600 text-white shadow-sm'
                               : 'bg-muted text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -3706,7 +3706,7 @@ export default function AccountantPage() {
                             const b = bankAccounts.find((acc) => acc.id === e.target.value);
                             setNewPayroll({ ...newPayroll, bankAccountId: e.target.value, bankAccountName: b?.accountName || '' });
                           }}
-                          className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-blue-500 focus:outline-none font-medium"
+                          className="w-full bg-card border border-border rounded-xl p-2.5 text-xs text-foreground focus:border-emerald-500 focus:outline-none font-medium"
                         >
                           {bankAccounts.map((b) => (
                             <option key={b.id} value={b.id}>

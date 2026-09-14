@@ -577,7 +577,7 @@ export function Sidebar({ onNavigate }) {
                         >
                           <div className="flex items-center gap-1.5 truncate">
                             {isDeptOpen ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-                            <Building2 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                            <Building2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                             <span className="truncate">{dept.name}</span>
                           </div>
                           <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-border text-muted-foreground font-medium">

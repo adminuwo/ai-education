@@ -115,7 +115,7 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
   const getFeatureIcon = (featureName = '') => {
     const lower = featureName.toLowerCase();
     if (lower.includes('precedent')) return <BookOpen className="h-4 w-4 text-indigo-500" />;
-    if (lower.includes('draft')) return <FileText className="h-4 w-4 text-blue-500" />;
+    if (lower.includes('draft')) return <FileText className="h-4 w-4 text-emerald-500" />;
     if (lower.includes('court') || lower.includes('argument')) return <Gavel className="h-4 w-4 text-purple-500" />;
     if (lower.includes('strategy')) return <Zap className="h-4 w-4 text-amber-500" />;
     if (lower.includes('chat')) return <MessageSquare className="h-4 w-4 text-emerald-500" />;
@@ -182,8 +182,8 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
         </div>
 
         {/* Privacy-Preserving Notice */}
-        <div className="mt-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-2.5 flex items-start gap-2.5 text-xs text-blue-700 dark:text-blue-300">
-          <ShieldCheck className="h-4 w-4 mt-0.5 text-blue-600 shrink-0" />
+        <div className="mt-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 flex items-start gap-2.5 text-xs text-emerald-700 dark:text-emerald-300">
+          <ShieldCheck className="h-4 w-4 mt-0.5 text-emerald-500 shrink-0" />
           <div>
             <strong>Privacy-Preserving Telemetry:</strong> Zero chat conversation transcripts, student research queries, or document drafts are inspected. Only feature module frequencies and numerical inquiry totals are tracked.
           </div>
@@ -219,7 +219,7 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
           <div className="bg-card/70 border border-border/80 rounded-xl p-3.5 space-y-1 shadow-xs">
             <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
               <span>Active Scholars</span>
-              <Users className="h-4 w-4 text-blue-500" />
+              <Users className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-bold font-display text-foreground">
               {overview.activeScholars} <span className="text-sm font-normal text-muted-foreground">/ {overview.totalStudents}</span>

@@ -17,16 +17,43 @@ function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2)
 
 const STATUS_COLORS = { TODO: 'hsl(var(--muted-foreground))', IN_PROGRESS: 'hsl(var(--chart-1))', REVIEW: 'hsl(var(--chart-3))', COMPLETED: 'hsl(var(--chart-4))', BLOCKED: 'hsl(var(--destructive))', CANCELLED: 'hsl(var(--muted))' };
 
+const TONE_STYLES = {
+  primary: {
+    iconWrap: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+    topBorder: 'before:bg-emerald-500',
+    hoverBorder: 'hover:border-emerald-500/40',
+  },
+  accent: {
+    iconWrap: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+    topBorder: 'before:bg-amber-500',
+    hoverBorder: 'hover:border-amber-500/40',
+  },
+  warning: {
+    iconWrap: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+    topBorder: 'before:bg-amber-500',
+    hoverBorder: 'hover:border-amber-500/40',
+  },
+  info: {
+    iconWrap: 'bg-teal-500/15 text-teal-600 dark:text-teal-400 border border-teal-500/20',
+    topBorder: 'before:bg-teal-500',
+    hoverBorder: 'hover:border-teal-500/40',
+  },
+};
+
 function KpiCard({ icon: Icon, label, value, tone = 'primary', testid }) {
+  const styles = TONE_STYLES[tone] || TONE_STYLES.primary;
   return (
-    <Card className="overflow-hidden glass-card-highlight border-border/80 transition-all hover:border-primary/30" data-testid={testid}>
+    <Card
+      className={`relative overflow-hidden glass-card-highlight border-border/80 transition-all ${styles.hoverBorder} before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] ${styles.topBorder} before:opacity-80`}
+      data-testid={testid}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">{label}</div>
-            <div className="font-display text-2xl md:text-3xl font-semibold tabular-nums mt-1">{value ?? '-'}</div>
+            <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</div>
+            <div className="font-display text-2xl md:text-3xl font-bold tracking-tight tabular-nums mt-1 text-foreground">{value ?? '-'}</div>
           </div>
-          <div className={`h-10 w-10 rounded-lg flex items-center justify-center bg-${tone}/10 text-${tone}`}>
+          <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${styles.iconWrap} shadow-2xs`}>
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -161,17 +188,17 @@ export default function HomePage() {
         </Card>
       ) : (
         /* AI Executive Daily Briefing Widget */
-        <Card className="border-border bg-gradient-to-r from-purple-500/10 via-blue-500/5 to-transparent border-purple-500/20 shadow-sm overflow-hidden">
+        <Card className="border-border bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border-emerald-500/20 shadow-sm overflow-hidden">
           <CardContent className="p-4 sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-lg bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold">
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold border border-emerald-500/30">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                     AI Executive Daily Briefing
-                    <Badge variant="outline" className="text-[10px] bg-purple-500/10 text-purple-500 border-purple-500/30">
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold">
                       Live Campus Insights
                     </Badge>
                   </h3>
@@ -184,7 +211,7 @@ export default function HomePage() {
                 variant="ghost"
                 onClick={fetchBriefing}
                 disabled={briefingLoading}
-                className="h-7 text-xs text-purple-500 hover:bg-purple-500/10"
+                className="h-7 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
               >
                 <RefreshCw className={`h-3.5 w-3.5 mr-1 ${briefingLoading ? 'animate-spin' : ''}`} /> Refresh Briefing
               </Button>
@@ -193,7 +220,7 @@ export default function HomePage() {
             <div className="mt-3 text-xs leading-relaxed text-foreground/90 p-3 rounded-lg bg-card/80 border border-border/60">
               {briefingLoading ? (
                 <div className="flex items-center gap-2 text-muted-foreground animate-pulse py-1">
-                  <Sparkles className="h-3.5 w-3.5 text-purple-500" /> Synthesizing today's campus briefing...
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-500" /> Synthesizing today's campus briefing...
                 </div>
               ) : (
                 <FormattedMarkdown

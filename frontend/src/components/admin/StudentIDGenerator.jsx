@@ -541,16 +541,16 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
 
                 {/* Parent Credentials Block */}
                 <div className="space-y-2 pt-2 border-t border-amber-500/20">
-                  <div className="flex items-center justify-between text-xs font-semibold text-blue-300">
+                  <div className="flex items-center justify-between text-xs font-semibold text-emerald-300">
                     <div className="flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5 text-blue-400" /> Parent / Guardian Account Credentials (Auto-Linked)
+                      <Users className="h-3.5 w-3.5 text-emerald-400" /> Parent / Guardian Account Credentials (Auto-Linked)
                     </div>
                     {singleResult.emailVerificationSent ? (
                       <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
                         ✉️ Verification Email Sent
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-300 border-blue-500/30">
+                      <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-300 border-emerald-500/30">
                         ✓ Auto-Created Parent ID
                       </Badge>
                     )}
@@ -586,11 +586,11 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
         ) : mode === 'mass' ? (
           /* Mass File Mode */
           <div className="space-y-6">
-            <div className="flex items-center justify-between bg-blue-500/10 p-3.5 rounded-xl border border-blue-500/20 flex-wrap gap-2">
-              <div className="text-xs text-blue-300">
+            <div className="flex items-center justify-between bg-emerald-500/10 p-3.5 rounded-xl border border-emerald-500/20 flex-wrap gap-2">
+              <div className="text-xs text-emerald-300">
                 Upload raw Excel spreadsheets (<span className="font-mono font-semibold">.xlsx, .xls</span>) or <span className="font-mono font-semibold">.csv</span> files. The system auto-detects column names like <em>Student Name</em>, <em>Roll No</em>, <em>Class</em>, and <em>Parent Details</em>.
               </div>
-              <Button size="sm" variant="outline" onClick={downloadSampleTemplate} className="h-8 text-xs gap-1.5 border-blue-500/40 text-blue-300 hover:bg-blue-500/20">
+              <Button size="sm" variant="outline" onClick={downloadSampleTemplate} className="h-8 text-xs gap-1.5 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20">
                 <Download className="h-3.5 w-3.5" /> Sample CSV Template
               </Button>
             </div>
@@ -707,7 +707,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                               <td className="px-3 py-1.5 font-mono text-muted-foreground">{getVal('admissionNo') || <span className="italic text-muted-foreground/60">Auto</span>}</td>
                               <td className="px-3 py-1.5 text-muted-foreground">{getVal('departmentName') || <span className="italic text-muted-foreground/60">Default</span>}</td>
                               <td className="px-3 py-1.5 text-muted-foreground">{getVal('className') || <span className="italic text-muted-foreground/60">Default</span>}</td>
-                              <td className="px-3 py-1.5 font-mono text-blue-300">{getVal('studentEmail') || <span className="italic text-muted-foreground/60">None</span>}</td>
+                              <td className="px-3 py-1.5 font-mono text-emerald-300">{getVal('studentEmail') || <span className="italic text-muted-foreground/60">None</span>}</td>
                               <td className="px-3 py-1.5 text-muted-foreground">{getVal('parentFullName') || <span className="italic text-muted-foreground/60">Auto</span>}</td>
                               <td className="px-3 py-1.5 font-mono text-purple-300">{getVal('parentEmail') || <span className="italic text-muted-foreground/60">None</span>}</td>
                             </tr>
@@ -770,7 +770,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                           <td className="px-3 py-1.5 font-mono text-muted-foreground">{r.admissionNo || 'Auto'}</td>
                           <td className="px-3 py-1.5 text-muted-foreground">{r.departmentName || 'Default'}</td>
                           <td className="px-3 py-1.5 text-muted-foreground">{r.className || 'Default'}</td>
-                          <td className="px-3 py-1.5 font-mono text-blue-300">{r.studentEmail || 'None'}</td>
+                          <td className="px-3 py-1.5 font-mono text-emerald-300">{r.studentEmail || 'None'}</td>
                           <td className="px-3 py-1.5 text-muted-foreground">{r.parentFullName || 'Auto'}</td>
                           <td className="px-3 py-1.5 font-mono text-purple-300">{r.parentEmail || 'None'}</td>
                         </tr>

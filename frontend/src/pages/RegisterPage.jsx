@@ -67,7 +67,7 @@ export default function RegisterPage() {
       {/* Ambient glowing radial light orbs matching the logo */}
       <div className="absolute top-[-15%] left-[-15%] w-[550px] h-[550px] rounded-full bg-cyan-500/15 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-15%] right-[-15%] w-[550px] h-[550px] rounded-full bg-indigo-600/20 blur-[140px] pointer-events-none" />
-      <div className="absolute top-[45%] left-[25%] w-[350px] h-[350px] rounded-full bg-blue-500/10 blur-[90px] pointer-events-none" />
+      <div className="absolute top-[45%] left-[25%] w-[350px] h-[350px] rounded-full bg-emerald-500/10 blur-[90px] pointer-events-none" />
 
       {/* Subtle Neural Constellation Mesh Overlay */}
       <svg className="absolute inset-0 h-full w-full opacity-[0.06] pointer-events-none" xmlns="http://www.w3.org/2000/svg">

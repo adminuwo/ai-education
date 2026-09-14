@@ -368,13 +368,13 @@ export default function AdminPage() {
                   onClick={() => setMemberSubTab('faculty')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
                     memberSubTab === 'faculty'
-                      ? 'bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 shadow-sm'
+                      ? 'bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 shadow-sm'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   }`}
                 >
-                  <UserCheck className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                  <UserCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                   <span>Faculty & Staff</span>
-                  <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'faculty' ? 'bg-blue-500/20 text-blue-700 dark:text-blue-200' : 'bg-muted text-muted-foreground'}`}>
+                  <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'faculty' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-200' : 'bg-muted text-muted-foreground'}`}>
                     {facultyMembers.length}
                   </span>
                 </button>
@@ -473,7 +473,7 @@ export default function AdminPage() {
                     <Crown className="h-3.5 w-3.5 mr-1.5" /> Transfer Owner
                   </Button>
                 )}
-                <Button size="sm" className="h-8 px-3.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm" onClick={() => setInvite({ ...invite, open: true })} data-testid="invite-member-btn">
+                <Button size="sm" className="h-8 px-3.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm" onClick={() => setInvite({ ...invite, open: true })} data-testid="invite-member-btn">
                   <Mail className="h-3.5 w-3.5 mr-1.5" /> Invite Member
                 </Button>
               </div>
@@ -546,7 +546,7 @@ export default function AdminPage() {
                               ) : (
                                 <Badge
                                   variant="secondary"
-                                  className="text-[10px] uppercase font-bold tracking-wide bg-blue-500/10 text-blue-400 border border-blue-500/20 font-extrabold"
+                                  className="text-[10px] uppercase font-bold tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-extrabold"
                                 >
                                   {m.role}
                                 </Badge>
@@ -913,7 +913,7 @@ export default function AdminPage() {
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground">{renderEmailCell(m.user)}</td>
                             <td className="px-4 py-2.5">
-                              <Badge variant="outline" className="text-[11px] font-medium bg-blue-500/10 text-blue-500 border-blue-500/20">
+                              <Badge variant="outline" className="text-[11px] font-medium bg-amber-500/10 text-amber-500 border-amber-500/20">
                                 {wingName}
                               </Badge>
                             </td>

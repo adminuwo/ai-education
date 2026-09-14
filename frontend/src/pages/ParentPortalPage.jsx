@@ -248,7 +248,7 @@ export default function ParentPortalPage() {
 
             <Card className="border-border">
               <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold shrink-0">
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
@@ -308,7 +308,7 @@ export default function ParentPortalPage() {
                           fee.status === 'PAID'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                             : fee.status === 'PARTIAL'
-                            ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
                         }`}>
                           {fee.status}
@@ -360,7 +360,7 @@ export default function ParentPortalPage() {
           </Card>
 
           {/* Official Examination Performance & Term Report Cards */}
-          <Card className="border-border shadow-sm bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-transparent">
+          <Card className="border-border shadow-sm bg-gradient-to-r from-purple-500/5 via-teal-500/5 to-transparent">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -456,7 +456,7 @@ export default function ParentPortalPage() {
           <Card className="border-border shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-blue-500" /> Child's Homework & Rubric Progress
+                <BookOpen className="h-4 w-4 text-emerald-500" /> Child's Homework & Rubric Progress
               </CardTitle>
               <CardDescription className="text-xs">
                 View homework assignments, teacher feedback, and criterion-based rubric scores.

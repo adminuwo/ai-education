@@ -403,10 +403,10 @@ export default function AIPage() {
         {textOnly && <FormattedMarkdown content={textOnly} />}
 
         {proposal && (
-          <Card className="border border-blue-500/30 bg-blue-500/10 p-3.5 rounded-xl space-y-2 text-xs">
-            <div className="flex items-center justify-between font-bold text-blue-400">
+          <Card className="border border-emerald-500/30 bg-emerald-500/10 p-3.5 rounded-xl space-y-2 text-xs">
+            <div className="flex items-center justify-between font-bold text-emerald-400">
               <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4" /> AI Generated Homework Proposal</span>
-              {proposal.priority && <Badge variant="outline" className="text-[10px] bg-blue-500/20 text-blue-300">{proposal.priority}</Badge>}
+              {proposal.priority && <Badge variant="outline" className="text-[10px] bg-emerald-500/20 text-emerald-300">{proposal.priority}</Badge>}
             </div>
             <div className="font-semibold text-sm text-foreground">{proposal.title}</div>
             {proposal.targetClassNames && (
@@ -425,7 +425,7 @@ export default function AIPage() {
               className={`w-full h-8 font-bold text-xs shadow-md mt-1 transition-all ${
                 isAlreadyAssigned
                   ? 'bg-muted text-muted-foreground cursor-not-allowed border border-border opacity-70'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-emerald-600 hover:bg-emerald-700 text-white'
               }`}
             >
               {isAlreadyAssigned ? (
@@ -544,7 +544,7 @@ export default function AIPage() {
                 : isAlumni
                 ? 'bg-amber-500/15 text-amber-400'
                 : isAccountant
-                ? 'bg-blue-500/15 text-blue-500'
+                ? 'bg-emerald-500/15 text-emerald-500'
                 : isAdminOrDirector
                 ? 'bg-amber-500/15 text-amber-500'
                 : 'bg-accent/15 text-accent'
@@ -738,7 +738,7 @@ export default function AIPage() {
                       : isParent
                       ? 'bg-purple-500/10 text-purple-500'
                       : isAccountant
-                      ? 'bg-blue-500/10 text-blue-500'
+                      ? 'bg-emerald-500/10 text-emerald-500'
                       : isAdminOrDirector
                       ? 'bg-amber-500/10 text-amber-500'
                       : 'bg-accent/10 text-accent'
@@ -780,7 +780,7 @@ export default function AIPage() {
                             : isParent
                             ? 'text-purple-500'
                             : isAccountant
-                            ? 'text-blue-500'
+                            ? 'text-emerald-500'
                             : isAdminOrDirector
                             ? 'text-amber-500'
                             : 'text-accent'

@@ -114,13 +114,13 @@ export default function DepartmentAcademicAnalytics({ orgId, scopedDepartments, 
       {/* Top Header & Department Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card/60 border border-border p-4 rounded-xl backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
             <TrendingUp className="h-5 w-5" />
           </div>
           <div>
             <h2 className="text-lg font-bold flex items-center gap-2">
               Academic & Student Performance Analytics
-              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30">
+              <Badge variant="outline" className="text-xs bg-emerald-500/10 text-amber-400 border-emerald-500/30">
                 {activeDepartment?.name || 'Department'}
               </Badge>
             </h2>
@@ -176,12 +176,12 @@ export default function DepartmentAcademicAnalytics({ orgId, scopedDepartments, 
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Homework Rate</div>
-              <div className="text-2xl font-extrabold text-blue-400 mt-1 tabular-nums">{avgSubmission}%</div>
+              <div className="text-2xl font-extrabold text-amber-400 mt-1 tabular-nums">{avgSubmission}%</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">
                 {gradedRate}% evaluated & graded
               </div>
             </div>
-            <div className="h-10 w-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 text-amber-400 flex items-center justify-center">
               <BookOpen className="h-5 w-5" />
             </div>
           </CardContent>
@@ -285,7 +285,7 @@ export default function DepartmentAcademicAnalytics({ orgId, scopedDepartments, 
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-blue-500" />
+                <Calendar className="h-4 w-4 text-emerald-500" />
                 14-Day Department Attendance Fluctuation
               </CardTitle>
               <Badge variant="outline" className="text-[10px] text-muted-foreground">Daily Trend</Badge>
@@ -418,7 +418,7 @@ export default function DepartmentAcademicAnalytics({ orgId, scopedDepartments, 
                       className={`text-[10px] font-bold ${
                         proj.status === 'COMPLETED'
                           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                          : 'bg-emerald-500/10 text-amber-400 border-emerald-500/30'
                       }`}
                     >
                       {proj.status}
@@ -432,7 +432,7 @@ export default function DepartmentAcademicAnalytics({ orgId, scopedDepartments, 
                     </div>
                     <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full transition-all duration-500"
                         style={{ width: `${proj.completionPercentage}%` }}
                       />
                     </div>

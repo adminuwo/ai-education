@@ -241,7 +241,7 @@ export default function TeacherPage() {
             <span>Class Students</span>
           </TabsTrigger>
           <TabsTrigger value="analytics" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-analytics">
-            <BarChart3 className="h-3.5 w-3.5 text-blue-500" />
+            <BarChart3 className="h-3.5 w-3.5 text-emerald-500" />
             <span>Class Analytics</span>
           </TabsTrigger>
           <TabsTrigger value="structures" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-structures">
@@ -437,7 +437,7 @@ export default function TeacherPage() {
                                   { key: 'PRESENT', label: 'Present', color: 'bg-emerald-500 text-white' },
                                   { key: 'ABSENT', label: 'Absent', color: 'bg-red-500 text-white' },
                                   { key: 'LATE', label: 'Late', color: 'bg-amber-500 text-white' },
-                                  { key: 'EXCUSED', label: 'Excused', color: 'bg-blue-500 text-white' },
+                                  { key: 'EXCUSED', label: 'Excused', color: 'bg-emerald-500 text-white' },
                                 ].map((st) => {
                                   const isSelected = currentStatus === st.key;
                                   return (
@@ -497,7 +497,7 @@ export default function TeacherPage() {
           <Card className="border-border">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-blue-500" /> Assigned Classes & Sections
+                <Building2 className="h-4 w-4 text-emerald-500" /> Assigned Classes & Sections
               </CardTitle>
               <CardDescription className="text-xs">
                 Classes and academic sections you teach or lead.

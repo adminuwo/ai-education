@@ -199,7 +199,7 @@ export default function StudentFeeStatusPage() {
               <div className="text-2xl font-extrabold text-foreground mt-1 tabular-nums">{stats.total}</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">Tracked in view</div>
             </div>
-            <div className="h-10 w-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
               <GraduationCap className="h-5 w-5" />
             </div>
           </CardContent>

@@ -35,7 +35,7 @@ const STATUS_CFG = {
 };
 const PRIORITY_CFG = {
   LOW: { label: 'Low', color: 'bg-slate-500/15 text-slate-700 dark:text-slate-300' },
-  MEDIUM: { label: 'Medium', color: 'bg-blue-500/15 text-blue-700 dark:text-blue-300' },
+  MEDIUM: { label: 'Medium', color: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' },
   HIGH: { label: 'High', color: 'bg-orange-500/15 text-orange-700 dark:text-orange-300' },
   URGENT: { label: 'Urgent', color: 'bg-red-500/15 text-red-700 dark:text-red-300' },
 };
@@ -693,8 +693,8 @@ function TaskDetail({ task, onClose, onSaved }) {
 
             {/* Work Submitted Review Banner */}
             {submittedAssignees.length > 0 && (
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 space-y-2">
-                <div className="flex items-center gap-2 text-blue-400 font-semibold text-sm">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
                   <Send className="h-4 w-4" /> Work Submitted for Review ({submittedAssignees.length})
                 </div>
                 {submittedAssignees.map((a) => (
@@ -727,7 +727,7 @@ function TaskDetail({ task, onClose, onSaved }) {
                   <div key={a.id} className="flex items-center gap-2 rounded-full border border-border px-2 py-1">
                     <Avatar className="h-5 w-5"><AvatarImage src={a.user?.avatarUrl} /><AvatarFallback className="text-[10px] bg-primary/10 text-primary">{initials(a.user?.fullName)}</AvatarFallback></Avatar>
                     <span className="text-sm">{a.user?.fullName}</span>
-                    <Badge variant="outline" className={`text-[9px] ${a.status === 'EXTENSION_REQUESTED' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : a.status === 'SUBMITTED' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : ''}`}>
+                    <Badge variant="outline" className={`text-[9px] ${a.status === 'EXTENSION_REQUESTED' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : a.status === 'SUBMITTED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : ''}`}>
                       {(!isTaskCompleted && a.status === 'COMPLETED') ? 'ACCEPTED' : a.status}
                     </Badge>
                   </div>
@@ -760,7 +760,7 @@ function TaskDetail({ task, onClose, onSaved }) {
                   </Button>
                 )}
                 {myAssignee.status === 'SUBMITTED' || (isTaskInReview && !canManageExtension) ? (
-                  <Badge variant="secondary" className="px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium">
+                  <Badge variant="secondary" className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
                     <FileCheck className="h-3.5 w-3.5 mr-1" /> Work Submitted (Under Review)
                   </Badge>
                 ) : isTaskCompleted ? (

@@ -70,9 +70,9 @@ function formatMessageContent(content) {
     if (citationMatch) {
       const docName = citationMatch[1].trim();
       return (
-        <div key={lIdx} className="mt-2.5 flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/25 text-xs text-blue-400 font-medium shadow-xs">
-          <BookOpen className="h-4 w-4 text-blue-400 shrink-0" />
-          <span>Answered using Class Study Material: <strong className="font-semibold text-blue-300">{docName}</strong></span>
+        <div key={lIdx} className="mt-2.5 flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-400 font-medium shadow-xs">
+          <BookOpen className="h-4 w-4 text-emerald-400 shrink-0" />
+          <span>Answered using Class Study Material: <strong className="font-semibold text-emerald-300">{docName}</strong></span>
         </div>
       );
     }
@@ -775,14 +775,14 @@ export default function ChannelPage() {
             className={`gap-1.5 text-xs font-semibold ${
               isAlumniChannel
                 ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
-                : 'bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20'
+                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
             }`}
             title={isAlumniChannel ? 'Alumni Archives, Yearbooks & Batch Records' : 'Class Files & Study Knowledge Base'}
           >
             {isAlumniChannel ? <GraduationCap className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
             {isAlumniChannel ? 'Alumni & Batch Files' : 'Class Files'}
             {studyFiles.length > 0 && (
-              <Badge variant="secondary" className={`ml-1 text-[10px] px-1.5 py-0 ${isAlumniChannel ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
+              <Badge variant="secondary" className={`ml-1 text-[10px] px-1.5 py-0 ${isAlumniChannel ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
                 {studyFiles.length}
               </Badge>
             )}
@@ -1023,7 +1023,7 @@ export default function ChannelPage() {
                   </>
                 ) : (
                   <>
-                    <BookOpen className="h-4.5 w-4.5 text-blue-400" /> Class Study Materials
+                    <BookOpen className="h-4.5 w-4.5 text-emerald-400" /> Class Study Materials
                   </>
                 )}
               </SheetTitle>
@@ -1035,7 +1035,7 @@ export default function ChannelPage() {
                     onClick={() => materialInputRef.current?.click()}
                     disabled={uploadingMaterial}
                     className={`h-8 text-xs text-white font-semibold shadow-sm ${
-                      isAlumniChannel ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
+                      isAlumniChannel ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'
                     }`}
                   >
                     <UploadCloud className="h-3.5 w-3.5 mr-1" /> {uploadingMaterial ? 'Uploading…' : isAlumniChannel ? 'Upload Batch File' : 'Upload File'}
@@ -1054,7 +1054,7 @@ export default function ChannelPage() {
             {studyFiles.length === 0 && (
               <div className="text-center py-12 space-y-2">
                 <div className={`h-12 w-12 rounded-2xl flex items-center justify-center mx-auto border ${
-                  isAlumniChannel ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                  isAlumniChannel ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                 }`}>
                   {isAlumniChannel ? <GraduationCap className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
                 </div>
@@ -1074,7 +1074,7 @@ export default function ChannelPage() {
               return (
                 <div key={f.id} className="group flex items-center justify-between p-3 rounded-xl border border-border bg-card/60 hover:bg-muted/30 transition-all">
                   <div className="flex items-center gap-3 min-w-0 pr-2">
-                    <div className="h-9 w-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+                    <div className="h-9 w-9 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
                       <Ic className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
@@ -1316,13 +1316,13 @@ export default function ChannelPage() {
                   onClick={() => setAddMemberSubTab('faculty')}
                   className={`flex-1 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5 ${
                     addMemberSubTab === 'faculty'
-                      ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30 shadow-xs font-bold'
+                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-xs font-bold'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <UserCheck className="h-4 w-4 text-blue-400 shrink-0" />
+                  <UserCheck className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span>Faculty & Staff</span>
-                  <Badge variant="secondary" className="ml-1 text-[9px] px-1.5 py-0 bg-blue-500/10 text-blue-300 font-bold">
+                  <Badge variant="secondary" className="ml-1 text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-300 font-bold">
                     {facultyCandidatesCount}
                   </Badge>
                 </button>

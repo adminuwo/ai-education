@@ -106,7 +106,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
   const BrandLogo = ({ className = '', size = 'default' }) => (
     <div className={`flex items-center gap-3 font-display tracking-tight ${className}`}>
       <div className="relative flex items-center justify-center shrink-0">
-        <div className="absolute -inset-1 rounded-2xl bg-blue-600/20 blur-md pointer-events-none" />
+        <div className="absolute -inset-1 rounded-2xl bg-emerald-500/20 blur-md pointer-events-none" />
         <img
           src="/logo192.png"
           alt="Convee Education Logo"
@@ -115,7 +115,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       </div>
       <div className="flex items-center font-bold tracking-tight">
         <span className="text-white text-2xl">Convee</span>
-        <span className="ml-1.5 text-blue-400 text-2xl font-extrabold">Education</span>
+        <span className="ml-1.5 text-emerald-400 text-2xl font-extrabold">Education</span>
       </div>
     </div>
   );
@@ -123,8 +123,8 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
   const BrandPanel = () => (
     <div className="relative hidden lg:flex flex-col justify-between p-6 lg:p-8 xl:p-10 2xl:p-12 obsidian-bg text-white overflow-hidden border-r border-slate-800/80 h-full">
       {/* Subtle directional ambient illumination */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-blue-600/10 blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-indigo-600/10 blur-[100px] pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none" />
 
       {/* Modern micro-dot grid overlay */}
       <svg className="absolute inset-0 h-full w-full opacity-[0.04] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
@@ -156,16 +156,16 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
         {/* Education-Focused Capability Cards */}
         <div className="mt-4 xl:mt-5 space-y-2 xl:space-y-2.5">
           {/* Card 1: Academic Classrooms & Live Timetables */}
-          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-blue-500/30 transition-all flex items-start gap-3 group">
-            <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 mt-0.5 group-hover:bg-blue-500/20 transition-colors">
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-amber-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 mt-0.5 group-hover:bg-amber-500/20 transition-colors">
               <CalendarCheck className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-blue-300 transition-colors truncate">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-amber-300 transition-colors truncate">
                   Classrooms & Live Timetables
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
                   Daily Sync
                 </span>
               </div>
@@ -196,16 +196,16 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
           </div>
 
           {/* Card 3: Verified Student & Staff Records */}
-          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-sky-500/30 transition-all flex items-start gap-3 group">
-            <div className="h-8 w-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0 mt-0.5 group-hover:bg-sky-500/20 transition-colors">
+          <div className="p-2.5 xl:p-3 rounded-xl bg-slate-900/40 hover:bg-slate-900/70 border border-white/[0.06] hover:border-teal-500/30 transition-all flex items-start gap-3 group">
+            <div className="h-8 w-8 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shrink-0 mt-0.5 group-hover:bg-teal-500/20 transition-colors">
               <Users className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-sky-300 transition-colors truncate">
+                <span className="text-xs xl:text-sm font-semibold text-white group-hover:text-teal-300 transition-colors truncate">
                   Student & Faculty Records
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
                   Verified ID
                 </span>
               </div>
@@ -250,7 +250,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-2 obsidian-bg">
         <BrandPanel />
         <div className="relative flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#090D18] overflow-y-auto lg:overflow-hidden h-full">
-          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-600/5 blur-[100px] pointer-events-none" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/5 blur-[100px] pointer-events-none" />
 
           <div className="w-full max-w-md relative z-10 my-auto">
             <div className="lg:hidden flex flex-col items-center justify-center mb-6">
@@ -281,7 +281,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                 <button
                   type="button"
                   onClick={() => setView('login')}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-400 transition-colors w-full justify-center pt-1"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors w-full justify-center pt-1"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to login
                 </button>
@@ -299,7 +299,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-2 obsidian-bg">
         <BrandPanel />
         <div className="relative flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#090D18] overflow-y-auto lg:overflow-hidden h-full">
-          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-600/5 blur-[100px] pointer-events-none" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/5 blur-[100px] pointer-events-none" />
 
           <div className="w-full max-w-md relative z-10 my-auto">
             <div className="lg:hidden flex flex-col items-center justify-center mb-6">
@@ -324,12 +324,12 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       placeholder="you@school.edu"
-                      className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 text-white mt-1 h-9 text-sm"
+                      className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 text-white mt-1 h-9 text-sm"
                     />
                   </div>
                   <Button
                     type="submit"
-                    className="w-full font-semibold py-2 bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-950/40 border border-blue-400/20 transition-all h-9 text-sm"
+                    className="w-full font-semibold py-2 bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950/40 border border-emerald-400/20 transition-all h-9 text-sm"
                     disabled={forgotLoading}
                   >
                     {forgotLoading ? 'Sending…' : 'Send reset link'}
@@ -338,7 +338,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                 <button
                   type="button"
                   onClick={() => setView('login')}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-400 transition-colors w-full justify-center pt-2"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors w-full justify-center pt-2"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to login
                 </button>
@@ -356,7 +356,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden grid grid-cols-1 lg:grid-cols-2 obsidian-bg">
         <BrandPanel />
         <div className="relative flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#090D18] overflow-y-auto lg:overflow-hidden h-full">
-          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-600/5 blur-[100px] pointer-events-none" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/5 blur-[100px] pointer-events-none" />
 
           <div className="w-full max-w-md relative z-10 my-auto">
             <div className="lg:hidden flex flex-col items-center justify-center mb-6">
@@ -367,8 +367,8 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
             <Card className="w-full border-slate-800/90 bg-slate-900/90 backdrop-blur-xl shadow-2xl glass-card-highlight">
               <CardHeader className="pb-3 pt-5 px-6">
                 <div className="flex items-center gap-3 mb-1">
-                  <div className="h-10 w-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
-                    <Mail className="h-5 w-5 text-blue-400" />
+                  <div className="h-10 w-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-emerald-400" />
                   </div>
                   <div>
                     <CardTitle className="font-display text-xl text-white">Check your inbox</CardTitle>
@@ -378,12 +378,12 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
               </CardHeader>
               <CardContent className="space-y-3 px-6 pb-5 pt-0">
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  If <strong className="text-blue-300">{forgotEmail}</strong> is registered, you'll receive a password reset link within a few minutes.
+                  If <strong className="text-emerald-300">{forgotEmail}</strong> is registered, you'll receive a password reset link within a few minutes.
                 </p>
                 <button
                   type="button"
                   onClick={() => setView('login')}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-400 transition-colors w-full justify-center pt-2"
+                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors w-full justify-center pt-2"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to login
                 </button>
@@ -401,7 +401,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       <BrandPanel />
       <div className="relative flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#090D18] overflow-y-auto lg:overflow-hidden h-full">
         {/* Ambient subtle background glow */}
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-600/5 blur-[100px] pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/5 blur-[100px] pointer-events-none" />
 
         <div className="w-full max-w-md relative z-10 my-auto">
           {/* Mobile logo header */}
@@ -418,18 +418,18 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                   type="button"
                   onClick={() => setPortalMode('faculty')}
                   className={`relative py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors z-10 ${
-                    portalMode === 'faculty' ? 'text-blue-300' : 'text-slate-400 hover:text-slate-200'
+                    portalMode === 'faculty' ? 'text-emerald-300' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   data-testid="faculty-tab-btn"
                 >
                   {portalMode === 'faculty' && (
                     <motion.div
                       layoutId="activePortalGlider"
-                      className="absolute inset-0 rounded-lg bg-blue-600/20 border border-blue-500/40 shadow-[0_0_12px_rgba(59,130,246,0.25)]"
+                      className="absolute inset-0 rounded-lg bg-emerald-600/20 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
                       transition={{ type: 'spring', bounce: 0.18, duration: 0.35 }}
                     />
                   )}
-                  <UserCheck className="relative z-10 h-3.5 w-3.5 text-blue-400" />
+                  <UserCheck className="relative z-10 h-3.5 w-3.5 text-emerald-400" />
                   <span className="relative z-10">Faculty</span>
                 </button>
 
@@ -475,7 +475,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
               {portalMode === 'faculty' ? (
                 <div>
                   <CardTitle className="font-display text-xl xl:text-2xl flex items-center gap-2 text-white">
-                    <UserCheck className="h-5 w-5 text-blue-400" /> Faculty & Staff Sign In
+                    <UserCheck className="h-5 w-5 text-emerald-400" /> Faculty & Staff Sign In
                   </CardTitle>
                   <p className="text-xs xl:text-sm text-slate-400 mt-0.5">Sign in with your institutional credentials.</p>
                 </div>
@@ -517,14 +517,14 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                         ? 'e.g. PAR-2026-ALEX'
                         : 'e.g. director@demo.edu or PRN-2026-3674'
                     }
-                    className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 text-white placeholder:text-slate-500 mt-1 h-9 text-sm"
+                    className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 text-white placeholder:text-slate-500 mt-1 h-9 text-sm"
                     data-testid="login-email-input"
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-xs text-slate-300 font-medium">Password</Label>
-                    <button type="button" onClick={() => setShowPw((v) => !v)} className="text-xs text-slate-400 hover:text-blue-400 transition-colors">{showPw ? 'Hide' : 'Show'}</button>
+                    <button type="button" onClick={() => setShowPw((v) => !v)} className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">{showPw ? 'Hide' : 'Show'}</button>
                   </div>
                   <Input
                     id="password"
@@ -533,11 +533,11 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 text-white placeholder:text-slate-500 mt-1 h-9 text-sm"
+                    className="bg-slate-950/80 border-slate-800 focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 text-white placeholder:text-slate-500 mt-1 h-9 text-sm"
                     data-testid="login-password-input"
                   />
                   <div className="mt-1 text-right">
-                    <button type="button" onClick={() => { setForgotEmail(email); setView('forgot'); }} className="text-xs text-slate-400 hover:text-blue-400 transition-colors">
+                    <button type="button" onClick={() => { setForgotEmail(email); setView('forgot'); }} className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
                       Forgot password?
                     </button>
                   </div>
@@ -549,7 +549,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                       ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-950/40 border border-sky-400/20'
                       : portalMode === 'parent'
                       ? 'bg-purple-600 hover:bg-purple-500 shadow-purple-950/40 border border-purple-400/20'
-                      : 'bg-blue-600 hover:bg-blue-500 shadow-blue-950/40 border border-blue-400/20'
+                      : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-950/40 border border-emerald-400/20'
                   }`}
                   disabled={loading}
                   data-testid="login-submit-button"

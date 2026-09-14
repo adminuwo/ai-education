@@ -313,7 +313,7 @@ export default function DepartmentPage() {
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <UserCheck className="h-3.5 w-3.5 text-blue-500" />
+                  <UserCheck className="h-3.5 w-3.5 text-emerald-500" />
                   <span>Faculty & Staff</span>
                   <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{facultyMembers.length}</Badge>
                 </button>
@@ -489,7 +489,7 @@ export default function DepartmentPage() {
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground">{m.user?.email}</td>
                             <td className="px-4 py-2.5">
-                              <Badge variant="outline" className="text-[11px] font-medium bg-blue-500/10 text-blue-500 border-blue-500/20">
+                              <Badge variant="outline" className="text-[11px] font-medium bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                                 {wingName}
                               </Badge>
                             </td>

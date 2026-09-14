@@ -149,7 +149,7 @@ export default function TeamDetailPage() {
                 <Users className="h-5 w-5" />
               </div>
               <h1 className="font-display text-2xl font-bold">{team.name}</h1>
-              <Badge variant="outline" className="uppercase text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20">
+              <Badge variant="outline" className="uppercase text-[10px] bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                 {team.department?.name || 'Department'}
               </Badge>
             </div>
@@ -181,7 +181,7 @@ export default function TeamDetailPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-4 flex items-center gap-4">
-          <div className="h-10 w-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
             <Users className="h-5 w-5" />
           </div>
           <div>

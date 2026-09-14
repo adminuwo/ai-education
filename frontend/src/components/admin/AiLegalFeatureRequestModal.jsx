@@ -97,7 +97,7 @@ export default function AiLegalFeatureRequestModal({ open, onOpenChange, current
 
               <div>
                 <Label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
-                  <Mail className="h-3.5 w-3.5 text-blue-500" /> Requester Email
+                  <Mail className="h-3.5 w-3.5 text-emerald-500" /> Requester Email
                 </Label>
                 <div className="text-xs font-semibold text-foreground truncate" title={user?.email || 'Your Email'}>
                   {user?.email || 'Your Email'}

@@ -197,12 +197,12 @@ export default function ClassAcademicAnalytics({ orgId, classTeams, user }) {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Homework Turn-In</div>
-              <div className="text-2xl font-extrabold text-blue-400 mt-1 tabular-nums">{avgSubmission}%</div>
+              <div className="text-2xl font-extrabold text-amber-400 mt-1 tabular-nums">{avgSubmission}%</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">
                 {gradedRate}% evaluated & graded
               </div>
             </div>
-            <div className="h-10 w-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
               <BookOpen className="h-5 w-5" />
             </div>
           </CardContent>
@@ -309,7 +309,7 @@ export default function ClassAcademicAnalytics({ orgId, classTeams, user }) {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-blue-500" />
+                <BookOpen className="h-4 w-4 text-emerald-500" />
                 Homework Assignments Submission Rates
               </CardTitle>
               <Badge variant="outline" className="text-[10px] text-muted-foreground">Assignment Breakdown</Badge>
@@ -429,7 +429,7 @@ export default function ClassAcademicAnalytics({ orgId, classTeams, user }) {
                   <td className="py-2.5 px-3 text-center tabular-nums">
                     {st.hwSubmitted} submitted {st.hwPending > 0 && <span className="text-amber-400">({st.hwPending} pending)</span>}
                   </td>
-                  <td className="py-2.5 px-3 text-center tabular-nums font-semibold text-blue-400">
+                  <td className="py-2.5 px-3 text-center tabular-nums font-semibold text-amber-400">
                     {st.hwRatePct}%
                   </td>
                   <td className="py-2.5 px-3 text-right">

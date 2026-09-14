@@ -225,7 +225,7 @@ export default function ProjectDetailPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 flex items-center gap-4">
-          <div className="h-10 w-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
             <Users className="h-5 w-5" />
           </div>
           <div>
@@ -330,14 +330,14 @@ export default function ProjectDetailPage() {
                         <div className="flex flex-wrap items-center gap-1.5">
                           {m.teamNames && m.teamNames.length > 0 && (
                             <div className="flex items-center gap-1">
-                              <Badge variant="secondary" className="text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20 font-medium">
+                              <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-medium">
                                 {m.teamNames[0]}
                               </Badge>
                               {m.teamNames.length > 1 && (
                                 <div className="relative group/team font-medium">
                                   <Badge
                                     variant="outline"
-                                    className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 cursor-pointer"
+                                    className="text-[10px] bg-emerald-500/20 text-emerald-400 border-emerald-500/30 cursor-pointer"
                                     title={`Assigned Teams: ${m.teamNames.join(', ')}`}
                                   >
                                     +{m.teamNames.length - 1}
@@ -423,7 +423,7 @@ export default function ProjectDetailPage() {
                             t.status === 'DONE'
                               ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                               : t.status === 'IN_PROGRESS'
-                              ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
                               : 'bg-muted text-muted-foreground'
                           }`}
                         >

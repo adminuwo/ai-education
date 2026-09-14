@@ -572,7 +572,7 @@ export default function MeetingsPage() {
                             Overtime / Active
                           </Badge>
                         )}
-                        <Badge variant="outline" className={`text-[10px] uppercase font-semibold ${isJitsi ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-blue-500/10 text-blue-400 border-blue-500/30'}`}>
+                        <Badge variant="outline" className={`text-[10px] uppercase font-semibold ${isJitsi ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}>
                           {isJitsi ? 'In-Built Video' : 'External'}
                         </Badge>
                       </div>
@@ -718,11 +718,11 @@ export default function MeetingsPage() {
                   onClick={() => setForm({ ...form, meetingType: 'EXTERNAL' })}
                   className={`p-3 rounded-lg border text-left transition-all flex items-center gap-3 ${
                     form.meetingType === 'EXTERNAL'
-                      ? 'border-blue-500 bg-blue-500/10 text-blue-300 font-medium'
+                      ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-medium'
                       : 'border-border bg-muted/20 text-muted-foreground hover:bg-muted/50'
                   }`}
                 >
-                  <ExternalLink className="h-5 w-5 text-blue-400" />
+                  <ExternalLink className="h-5 w-5 text-emerald-400" />
                   <div>
                     <div className="text-sm font-semibold">External Link</div>
                     <div className="text-[11px] opacity-80">Google Meet, Zoom, Teams URL</div>
@@ -778,7 +778,7 @@ export default function MeetingsPage() {
                     inviteTab === 'departments' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <Building2 className="h-3.5 w-3.5 text-blue-400" />
+                  <Building2 className="h-3.5 w-3.5 text-emerald-400" />
                   <span>Depts & Classes ({form.departmentIds.length + form.teamIds.length})</span>
                 </button>
               </div>
@@ -842,7 +842,7 @@ export default function MeetingsPage() {
                                 }))
                               }
                             />
-                            <Building2 className="h-3.5 w-3.5 text-blue-400" />
+                            <Building2 className="h-3.5 w-3.5 text-emerald-400" />
                             <span>Entire Department: {dept.name}</span>
                           </label>
                           <Badge variant="outline" className="text-[10px]">
