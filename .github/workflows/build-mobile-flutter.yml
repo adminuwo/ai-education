@@ -60,6 +60,12 @@ jobs:
         run: |
           flutter create . --org com.convee.education --project-name convee_education --platforms android
           flutter pub get
+          echo ">>> Generating Convee branded launcher icons..."
+          dart run flutter_launcher_icons
+          echo ">>> Generating Convee dark splash screen..."
+          dart run flutter_native_splash:create
+          echo ">>> Setting official app name in AndroidManifest..."
+          sed -i 's/android:label="convee_education"/android:label="Convee Education"/g' android/app/src/main/AndroidManifest.xml
 
       - name: Build Android Package
         working-directory: mobile-flutter
