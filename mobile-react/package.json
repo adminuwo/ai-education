@@ -17,8 +17,8 @@
     "react": "18.3.1",
     "react-native": "0.77.3",
     "react-native-safe-area-context": "^5.2.0",
-    "react-native-screens": "4.4.0",
-    "react-native-svg": "^15.11.1",
+    "react-native-screens": "4.7.0",
+    "react-native-svg": "^15.15.5",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
