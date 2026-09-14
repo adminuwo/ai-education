@@ -293,10 +293,13 @@ export default function HomePage() {
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={mgrData.workload.map(w => ({ name: w.user?.fullName?.split(' ')[0] || 'Unknown', tasks: w.openTasks }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
+                  <BarChart
+                    data={mgrData.workload.map(w => ({ name: w.user?.fullName?.split(' ')[0] || 'Unknown', tasks: w.openTasks }))}
+                    margin={{ top: 10, right: 10, left: -15, bottom: 20 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} tickLine={false} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent) / 0.15)', rx: 4 }} />
                     <Bar dataKey="tasks" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
                   </BarChart>

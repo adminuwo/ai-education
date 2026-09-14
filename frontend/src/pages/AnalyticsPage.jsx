@@ -68,14 +68,26 @@ export default function AnalyticsPage() {
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader><CardTitle className="text-base">Faculty & Staff Workload distribution</CardTitle></CardHeader>
-          <CardContent className="h-64">
+          <CardContent className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.workload?.map(w => ({ name: w.user?.fullName || 'Unknown', tasks: w.count })) || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
+              <BarChart
+                data={data?.workload?.map(w => ({ name: w.user?.fullName || 'Unknown', tasks: w.count })) || []}
+                margin={{ top: 10, right: 10, left: -15, bottom: 35 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={11}
+                  interval={0}
+                  angle={-20}
+                  textAnchor="end"
+                  tickLine={false}
+                  tickFormatter={(val) => (val && val.length > 24 ? val.slice(0, 22) + '…' : val)}
+                />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent) / 0.15)', rx: 4 }} />
-                <Bar dataKey="tasks" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="tasks" name="Active Tasks" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
