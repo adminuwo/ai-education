@@ -66,10 +66,10 @@ jobs:
           TARGET="${{ inputs.profile }}"
           if [ "$TARGET" = "bundle" ]; then
             echo ">>> Building Production Release AAB (RN 0.77 - 16 KB Aligned)..."
-            ./gradlew bundleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew bundleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
           else
             echo ">>> Building Release APK (RN 0.77 - 16 KB Aligned)..."
-            ./gradlew assembleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew assembleRelease --no-daemon --stacktrace -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
           fi
 
       - name: Dump C++ Ninja Diagnostics On Failure
@@ -90,10 +90,14 @@ jobs:
           if [ -n "$APK_FILE" ]; then
             mkdir -p /tmp/apk_inspect
             unzip -q "$APK_FILE" -d /tmp/apk_inspect
-            echo "Inspecting ELF alignment on all bundled native libraries in arm64-v8a:"
-            find /tmp/apk_inspect/lib/arm64-v8a -name "*.so" 2>/dev/null | while read -r so_file; do
-              ALIGN=$(objdump -p "$so_file" 2>/dev/null | grep -E "LOAD" -A 1 | grep -o "align 2\*\*[0-9]*" | head -n 1)
-              echo "  $(basename "$so_file"): $ALIGN"
+            for arch in arm64-v8a x86_64; do
+              if [ -d "/tmp/apk_inspect/lib/$arch" ]; then
+                echo "Inspecting ELF alignment on bundled native libraries in $arch:"
+                find "/tmp/apk_inspect/lib/$arch" -name "*.so" 2>/dev/null | while read -r so_file; do
+                  ALIGN=$(objdump -p "$so_file" 2>/dev/null | grep -E "LOAD" -A 1 | grep -o "align 2\*\*[0-9]*" | head -n 1)
+                  echo "  $(basename "$so_file"): $ALIGN"
+                done
+              fi
             done
             rm -rf /tmp/apk_inspect
           fi
