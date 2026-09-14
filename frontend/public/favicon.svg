@@ -1,14 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 11 44 42" width="64" height="64">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0E1526" />
-      <stop offset="100%" stop-color="#070B14" />
-    </linearGradient>
-    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00F2FE" stop-opacity="0.6" />
-      <stop offset="50%" stop-color="#3B82F6" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.6" />
-    </linearGradient>
     <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="50%">
       <stop offset="0%" stop-color="#00F2FE" />
       <stop offset="50%" stop-color="#38BDF8" />
@@ -22,32 +13,24 @@
     </linearGradient>
   </defs>
 
-  <!-- Dark Squircle Canvas -->
-  <rect width="64" height="64" rx="15" fill="url(#bgGrad)" />
-  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="url(#borderGrad)" stroke-width="1.2" />
-
-  <!-- Ambient Glow Behind Emblem -->
-  <circle cx="26" cy="27" r="16" fill="#00F2FE" opacity="0.18" filter="blur(6px)" />
-  <circle cx="40" cy="42" r="15" fill="#8B5CF6" opacity="0.18" filter="blur(6px)" />
-
   <!-- 1. Graduation Cap (Mortarboard) -->
-  <path d="M 32 14 L 51 22.5 L 32 31 L 13 22.5 Z" 
+  <path d="M 32 13 L 52 22 L 32 31 L 12 22 Z" 
         fill="none" 
         stroke="url(#capGrad)" 
-        stroke-width="2.8" 
+        stroke-width="3" 
         stroke-linejoin="round" 
         stroke-linecap="round" />
 
   <!-- Left Hanging Tassel -->
-  <path d="M 17 24.5 L 17 31" 
+  <path d="M 16.5 24 L 16.5 31" 
         fill="none" 
         stroke="#00F2FE" 
-        stroke-width="1.8" 
+        stroke-width="2" 
         stroke-linecap="round" />
-  <circle cx="17" cy="32.5" r="1.4" fill="#00F2FE" />
+  <circle cx="16.5" cy="32.5" r="1.5" fill="#00F2FE" />
 
   <!-- 2. Neural Knowledge Lattice under Cap -->
-  <g stroke="#38BDF8" stroke-width="1" opacity="0.85" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#38BDF8" stroke-width="1.2" opacity="0.9" stroke-linecap="round" stroke-linejoin="round">
     <line x1="24" y1="27" x2="32" y2="23" />
     <line x1="32" y1="23" x2="40" y2="27" />
     <line x1="24" y1="27" x2="28" y2="33" />
@@ -58,26 +41,26 @@
     <line x1="32" y1="23" x2="32" y2="30" />
   </g>
   <!-- Node Vertices -->
-  <circle cx="32" cy="23" r="1.3" fill="#FFFFFF" />
-  <circle cx="24" cy="27" r="1.2" fill="#E0F2FE" />
-  <circle cx="40" cy="27" r="1.2" fill="#E0F2FE" />
-  <circle cx="28" cy="33" r="1.2" fill="#E0F2FE" />
-  <circle cx="36" cy="33" r="1.2" fill="#E0F2FE" />
-  <circle cx="32" cy="30" r="1.1" fill="#FFFFFF" />
+  <circle cx="32" cy="23" r="1.5" fill="#FFFFFF" />
+  <circle cx="24" cy="27" r="1.3" fill="#E0F2FE" />
+  <circle cx="40" cy="27" r="1.3" fill="#E0F2FE" />
+  <circle cx="28" cy="33" r="1.3" fill="#E0F2FE" />
+  <circle cx="36" cy="33" r="1.3" fill="#E0F2FE" />
+  <circle cx="32" cy="30" r="1.2" fill="#FFFFFF" />
 
   <!-- 3. Intertwined Infinity Loop with Chat Bubble Pointer -->
   <path d="M 32 39
-           C 25 32, 17 33, 17 39
-           C 17 41.5, 18 43.5, 16.5 45.5
-           L 15.5 49
-           L 19.5 47.5
-           C 21.5 48.5, 25 48.5, 32 39
-           C 39 32, 47 32, 47 39
-           C 47 44, 43 47.5, 39 47.5
-           C 35 47.5, 32 43, 32 39 Z"
+           C 25 31.5, 16 32.5, 16 39
+           C 16 42, 17 44, 15.5 46.5
+           L 14.5 50.5
+           L 19 48.5
+           C 21.5 49.5, 25 49.5, 32 39
+           C 39 31.5, 48 31.5, 48 39
+           C 48 44.5, 44 48.5, 39.5 48.5
+           C 35 48.5, 32 43.5, 32 39 Z"
         fill="none" 
         stroke="url(#infinityGrad)" 
-        stroke-width="3" 
+        stroke-width="3.4" 
         stroke-linecap="round" 
         stroke-linejoin="round" />
 </svg>
