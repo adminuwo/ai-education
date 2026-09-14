@@ -122,16 +122,26 @@ export const dashboardApi = {
   orgAdmin: (orgId: string) => api.get('/dashboard/org-admin', { params: { orgId } }).then((r) => r.data),
 };
 
-// 3. Homework API
+// 3. Tasks API (Administrative & Campus Operations)
+export const tasksApi = {
+  list: (orgId: string, params?: Record<string, any>) =>
+    api.get('/tasks', { params: { orgId, isHomework: 'false', ...params } }).then((r) => r.data),
+  updateStatus: (taskId: string, status: string) =>
+    api.patch(`/tasks/${taskId}`, { status }).then((r) => r.data),
+  create: (data: any) =>
+    api.post('/tasks', { ...data, isHomework: false }).then((r) => r.data),
+};
+
+// 4. Homework API (Academic Assignments & Rubrics)
 export const homeworkApi = {
   tasks: (orgId: string, params?: Record<string, any>) =>
-    api.get('/tasks', { params: { orgId, ...params } }).then((r) => r.data),
+    api.get('/tasks', { params: { orgId, isHomework: 'true', ...params } }).then((r) => r.data),
   submit: (taskId: string, data: { content?: string; attachmentUrl?: string }) =>
     api.post(`/homework/${taskId}/submit`, data).then((r) => r.data),
   getSubmissions: (taskId: string) => api.get(`/homework/${taskId}/submissions`).then((r) => r.data),
   gradeSubmission: (taskId: string, subId: string, data: any) =>
     api.post(`/homework/${taskId}/submissions/${subId}/grade`, data).then((r) => r.data),
-  createTask: (data: any) => api.post('/tasks', data).then((r) => r.data),
+  createTask: (data: any) => api.post('/tasks', { ...data, isHomework: true }).then((r) => r.data),
 };
 
 // 4. Attendance API

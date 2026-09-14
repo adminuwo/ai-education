@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../constants/theme.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
+import 'tasks_screen.dart';
+import 'homework_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -20,6 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _briefingLoading = false;
   Map<String, dynamic>? _attendanceStats;
   Map<String, dynamic>? _dashboardData;
+  int _activeTaskCount = 0;
+  int _pendingHomeworkCount = 0;
+  bool _statsLoaded = false;
   bool _refreshing = false;
 
   @override
@@ -54,13 +59,24 @@ class _HomeScreenState extends State<HomeScreen> {
           ApiService.getDailyBriefing(orgId),
           ApiService.getDashboard(orgId),
           ApiService.getAttendanceStats(orgId),
+          ApiService.getTasks(orgId: orgId, isHomework: false),
+          ApiService.getTasks(orgId: orgId, isHomework: true),
         ]);
 
         if (mounted) {
+          final tasksList = results[3] as List<dynamic>? ?? [];
+          final homeworkList = results[4] as List<dynamic>? ?? [];
+
+          final activeTasks = tasksList.where((t) => t['status'] != 'COMPLETED').length;
+          final pendingHw = homeworkList.where((t) => t['status'] != 'COMPLETED').length;
+
           setState(() {
             _briefing = results[0] as String?;
             _dashboardData = results[1] as Map<String, dynamic>?;
             _attendanceStats = results[2] as Map<String, dynamic>?;
+            _activeTaskCount = activeTasks;
+            _pendingHomeworkCount = pendingHw;
+            _statsLoaded = true;
           });
         }
       }
@@ -104,7 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(orgName, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+            Expanded(
+              child: Text(
+                orgName,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -189,8 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [const Color(0xFF1E1B4B), ConveeColors.card],
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1E1B4B), ConveeColors.card],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -239,36 +261,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Attendance Overview (if available from live API)
-              if (_attendanceStats != null) ...[
-                const Text(
-                  'Campus Attendance Stats',
-                  style: TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    _buildStatCard(
-                      label: 'Present',
-                      value: '${_attendanceStats?['present'] ?? _attendanceStats?['presentCount'] ?? '--'}',
-                      color: ConveeColors.emerald,
-                    ),
-                    const SizedBox(width: 10),
-                    _buildStatCard(
-                      label: 'Absent',
-                      value: '${_attendanceStats?['absent'] ?? _attendanceStats?['absentCount'] ?? '--'}',
-                      color: ConveeColors.destructive,
-                    ),
-                    const SizedBox(width: 10),
-                    _buildStatCard(
-                      label: 'Rate',
-                      value: _attendanceStats?['percentage'] != null ? '${_attendanceStats!['percentage']}%' : '--',
-                      color: ConveeColors.primary,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
+              // Live Status KPI Cards (Attendance, Tasks, Homework)
+              const Text(
+                'Live Campus Analytics',
+                style: TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  _buildStatCard(
+                    label: 'Attendance',
+                    value: _attendanceStats?['percentage'] != null
+                        ? '${_attendanceStats!['percentage']}%'
+                        : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : '--'),
+                    color: ConveeColors.emerald,
+                  ),
+                  const SizedBox(width: 10),
+                  _buildStatCard(
+                    label: 'Campus Tasks',
+                    value: _statsLoaded ? '$_activeTaskCount' : '--',
+                    color: ConveeColors.primary,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 10),
+                  _buildStatCard(
+                    label: 'Homework',
+                    value: _statsLoaded ? '$_pendingHomeworkCount' : '--',
+                    color: ConveeColors.amber,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => HomeworkScreen(orgData: _org, userData: _user)),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
 
               // Quick Actions Grid
               const Text(
@@ -285,12 +319,54 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.35,
                 children: [
-                  _buildModuleItem('Campus Tasks', 'Operations & Duties', Icons.task_alt_outlined, ConveeColors.primary),
-                  _buildModuleItem('Homework', 'Assignments & Rubrics', Icons.menu_book_outlined, ConveeColors.amber),
-                  _buildModuleItem('Daily Attendance', 'Roster & Records', Icons.fact_check_outlined, ConveeColors.emerald),
-                  _buildModuleItem('Class Channels', 'Messaging & Chat', Icons.chat_bubble_outline, ConveeColors.purple),
-                  _buildModuleItem('Live Meetings', 'Classroom Video', Icons.videocam_outlined, ConveeColors.destructive),
-                  _buildModuleItem('Campus Portal', 'Parent & Student', Icons.badge_outlined, ConveeColors.textSecondary),
+                  _buildModuleItem(
+                    'Campus Tasks',
+                    'Operations & Duties',
+                    Icons.task_alt_outlined,
+                    ConveeColors.primary,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
+                      );
+                    },
+                  ),
+                  _buildModuleItem(
+                    'Homework',
+                    'Assignments & Rubrics',
+                    Icons.menu_book_outlined,
+                    ConveeColors.amber,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => HomeworkScreen(orgData: _org, userData: _user)),
+                      );
+                    },
+                  ),
+                  _buildModuleItem(
+                    'Daily Attendance',
+                    'Roster & Records',
+                    Icons.fact_check_outlined,
+                    ConveeColors.emerald,
+                  ),
+                  _buildModuleItem(
+                    'Class Channels',
+                    'Messaging & Chat',
+                    Icons.chat_bubble_outline,
+                    ConveeColors.purple,
+                  ),
+                  _buildModuleItem(
+                    'Live Meetings',
+                    'Classroom Video',
+                    Icons.videocam_outlined,
+                    ConveeColors.destructive,
+                  ),
+                  _buildModuleItem(
+                    'Campus Portal',
+                    'Parent & Student',
+                    Icons.badge_outlined,
+                    ConveeColors.textSecondary,
+                  ),
                 ],
               ),
             ],
@@ -300,52 +376,71 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatCard({required String label, required String value, required Color color}) {
+  Widget _buildStatCard({
+    required String label,
+    required String value,
+    required Color color,
+    VoidCallback? onTap,
+  }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-        decoration: BoxDecoration(
-          color: ConveeColors.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ConveeColors.border),
-        ),
-        child: Column(
-          children: [
-            Text(value, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 11)),
-          ],
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+          decoration: BoxDecoration(
+            color: ConveeColors.card,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: ConveeColors.border),
+          ),
+          child: Column(
+            children: [
+              Text(value, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 2),
+              Text(label, style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildModuleItem(String title, String subtitle, IconData icon, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ConveeColors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ConveeColors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(7),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(8),
+  Widget _buildModuleItem(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: ConveeColors.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: ConveeColors.border),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 20),
               ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const Spacer(),
-            Text(title, style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 13)),
-            const SizedBox(height: 2),
-            Text(subtitle, style: const TextStyle(color: ConveeColors.textMuted, fontSize: 10)),
-          ],
+              const Spacer(),
+              Text(title, style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 13)),
+              const SizedBox(height: 2),
+              Text(subtitle, style: const TextStyle(color: ConveeColors.textMuted, fontSize: 10)),
+            ],
+          ),
         ),
       ),
     );

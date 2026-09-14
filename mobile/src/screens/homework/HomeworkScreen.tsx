@@ -27,6 +27,7 @@ import {
   ExternalLink,
   FileText,
   CheckCheck,
+  Search,
 } from 'lucide-react-native';
 
 export default function HomeworkScreen() {
@@ -36,6 +37,7 @@ export default function HomeworkScreen() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterTab, setFilterTab] = useState<'all' | 'todo' | 'review' | 'completed'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
   // Detail Modal
@@ -179,6 +181,12 @@ export default function HomeworkScreen() {
   };
 
   const filteredTasks = tasks.filter((t) => {
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchTitle = (t.title || '').toLowerCase().includes(q);
+      const matchDesc = (t.description || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchDesc) return false;
+    }
     if (filterTab === 'all') return true;
     if (filterTab === 'todo') return t.status === 'TODO';
     if (filterTab === 'review') return t.status === 'REVIEW';
@@ -188,6 +196,36 @@ export default function HomeworkScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Search Input Bar */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: colors.card,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: colors.border,
+            paddingHorizontal: 12,
+            paddingVertical: 7,
+          }}
+        >
+          <Search size={15} color={colors.textMuted} style={{ marginRight: 8 }} />
+          <TextInput
+            style={{ flex: 1, color: colors.text, fontSize: 13, padding: 0 }}
+            placeholder="Search homework by title or keyword..."
+            placeholderTextColor={colors.textMuted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <X size={15} color={colors.textMuted} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
       {/* Header Filter Tabs */}
       <View style={[styles.tabBar, { borderBottomColor: colors.border }]}>
         {(['all', 'todo', 'review', 'completed'] as const).map((tab) => (

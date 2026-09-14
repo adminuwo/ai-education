@@ -113,6 +113,109 @@ class ApiService {
     }
   }
 
+  static Future<List<dynamic>> getTasks({
+    required String orgId,
+    bool isHomework = false,
+    String? status,
+    String? priority,
+    String? search,
+    String? assignee,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{
+        'orgId': orgId,
+        'isHomework': isHomework ? 'true' : 'false',
+      };
+      if (status != null && status.isNotEmpty && status.toLowerCase() != 'all') {
+        queryParams['status'] = status;
+      }
+      if (priority != null && priority.isNotEmpty && priority.toLowerCase() != 'all') {
+        queryParams['priority'] = priority;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        queryParams['search'] = search.trim();
+      }
+      if (assignee != null && assignee.isNotEmpty) {
+        queryParams['assignee'] = assignee;
+      }
+
+      final res = await dio.get('/tasks', queryParameters: queryParams);
+      if (res.data is List) {
+        return res.data as List<dynamic>;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createTask({
+    required String orgId,
+    required String title,
+    String? description,
+    String priority = 'MEDIUM',
+    String? dueDate,
+    bool isHomework = false,
+    List<String>? assigneeIds,
+  }) async {
+    final body = <String, dynamic>{
+      'orgId': orgId,
+      'title': title,
+      'priority': priority,
+      'isHomework': isHomework,
+      if (description != null && description.isNotEmpty) 'description': description,
+      if (dueDate != null && dueDate.isNotEmpty) 'dueDate': dueDate,
+      if (assigneeIds != null && assigneeIds.isNotEmpty) 'assigneeIds': assigneeIds,
+    };
+    final res = await dio.post('/tasks', data: body);
+    return res.data as Map<String, dynamic>?;
+  }
+
+  static Future<Map<String, dynamic>?> updateTaskStatus(String taskId, String status) async {
+    final res = await dio.patch('/tasks/$taskId', data: {'status': status});
+    return res.data as Map<String, dynamic>?;
+  }
+
+  static Future<List<dynamic>> getHomeworkSubmissions(String taskId) async {
+    try {
+      final res = await dio.get('/tasks/$taskId/submissions');
+      if (res.data is List) {
+        return res.data as List<dynamic>;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> submitHomework(String taskId, {
+    required String content,
+    String? attachmentUrl,
+  }) async {
+    final res = await dio.post('/tasks/$taskId/submit', data: {
+      'content': content,
+      if (attachmentUrl != null && attachmentUrl.isNotEmpty) 'attachmentUrl': attachmentUrl,
+    });
+    return res.data as Map<String, dynamic>?;
+  }
+
+  static Future<Map<String, dynamic>?> gradeHomeworkSubmission(String taskId, {
+    required String submissionId,
+    required num gradeScore,
+    num gradeMax = 100,
+    Map<String, dynamic>? rubricScores,
+    String? feedbackNotes,
+  }) async {
+    final res = await dio.post('/tasks/$taskId/grade', data: {
+      'submissionId': submissionId,
+      'gradeScore': gradeScore,
+      'gradeMax': gradeMax,
+      if (rubricScores != null) 'rubricScores': rubricScores,
+      if (feedbackNotes != null && feedbackNotes.isNotEmpty) 'feedbackNotes': feedbackNotes,
+    });
+    return res.data as Map<String, dynamic>?;
+  }
+
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
