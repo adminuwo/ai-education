@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Sparkles, ShieldCheck, Zap, Users, Mail, ArrowLeft, RefreshCw, GraduationCap, UserCheck, Info, KeyRound, Building2, IndianRupee } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { authApi } from '@/lib/api';
 
 export default function LoginPage({ initialPortal = 'faculty' }) {
@@ -374,50 +375,65 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
             <span className="text-xs text-slate-400 mt-1.5">Digital Campus & Academic Intelligence</span>
           </div>
 
-          <Card className="w-full border-slate-800/90 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-cyan-950/30">
+          <Card className="w-full border-slate-800/90 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-cyan-950/30 glass-card-highlight">
             <CardHeader className="pb-3 pt-5 px-5 sm:px-6">
               {/* Mode Switcher Tabs */}
-              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 mb-3">
+              <div className="relative grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 mb-3">
                 <button
                   type="button"
                   onClick={() => setPortalMode('faculty')}
-                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    portalMode === 'faculty'
-                      ? 'bg-blue-600/20 text-blue-300 border border-blue-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-slate-200'
+                  className={`relative py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors z-10 ${
+                    portalMode === 'faculty' ? 'text-blue-300' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   data-testid="faculty-tab-btn"
                 >
-                  <UserCheck className="h-3.5 w-3.5 text-blue-400" />
-                  <span>Faculty</span>
+                  {portalMode === 'faculty' && (
+                    <motion.div
+                      layoutId="activePortalGlider"
+                      className="absolute inset-0 rounded-lg bg-blue-600/20 border border-blue-500/40 shadow-[0_0_12px_rgba(59,130,246,0.25)]"
+                      transition={{ type: 'spring', bounce: 0.18, duration: 0.35 }}
+                    />
+                  )}
+                  <UserCheck className="relative z-10 h-3.5 w-3.5 text-blue-400" />
+                  <span className="relative z-10">Faculty</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPortalMode('student')}
-                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    portalMode === 'student'
-                      ? 'bg-cyan-600/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-slate-200'
+                  className={`relative py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors z-10 ${
+                    portalMode === 'student' ? 'text-cyan-300' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   data-testid="student-tab-btn"
                 >
-                  <GraduationCap className="h-3.5 w-3.5 text-cyan-400" />
-                  <span>Student</span>
+                  {portalMode === 'student' && (
+                    <motion.div
+                      layoutId="activePortalGlider"
+                      className="absolute inset-0 rounded-lg bg-cyan-600/20 border border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+                      transition={{ type: 'spring', bounce: 0.18, duration: 0.35 }}
+                    />
+                  )}
+                  <GraduationCap className="relative z-10 h-3.5 w-3.5 text-cyan-400" />
+                  <span className="relative z-10">Student</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPortalMode('parent')}
-                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                    portalMode === 'parent'
-                      ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-slate-200'
+                  className={`relative py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors z-10 ${
+                    portalMode === 'parent' ? 'text-purple-300' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   data-testid="parent-tab-btn"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
-                  <span>Parent</span>
+                  {portalMode === 'parent' && (
+                    <motion.div
+                      layoutId="activePortalGlider"
+                      className="absolute inset-0 rounded-lg bg-purple-600/20 border border-purple-500/40 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
+                      transition={{ type: 'spring', bounce: 0.18, duration: 0.35 }}
+                    />
+                  )}
+                  <ShieldCheck className="relative z-10 h-3.5 w-3.5 text-purple-400" />
+                  <span className="relative z-10">Parent</span>
                 </button>
               </div>
 

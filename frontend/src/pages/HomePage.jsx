@@ -19,7 +19,7 @@ const STATUS_COLORS = { TODO: 'hsl(var(--muted-foreground))', IN_PROGRESS: 'hsl(
 
 function KpiCard({ icon: Icon, label, value, tone = 'primary', testid }) {
   return (
-    <Card className="overflow-hidden" data-testid={testid}>
+    <Card className="overflow-hidden glass-card-highlight border-border/80 transition-all hover:border-primary/30" data-testid={testid}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
@@ -288,26 +288,41 @@ export default function HomePage() {
       {/* Manager view */}
       {isManagerPlus && mgrData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader><CardTitle className="text-base font-semibold">Team workload</CardTitle></CardHeader>
+          <Card className="glass-card-highlight">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span>Team workload</span>
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={mgrData.workload.map(w => ({ name: w.user?.fullName?.split(' ')[0] || 'Unknown', tasks: w.openTasks }))}
+                    data={mgrData.workload.map(w => ({ 
+                      name: w.user?.fullName?.split(' ')[0] || 'Unknown', 
+                      fullName: w.user?.fullName || 'Unknown',
+                      tasks: w.openTasks 
+                    }))}
                     margin={{ top: 10, right: 10, left: -15, bottom: 20 }}
                   >
+                    <defs>
+                      <linearGradient id="mgrWorkloadGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.9} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                     <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} tickLine={false} />
                     <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent) / 0.15)', rx: 4 }} />
-                    <Bar dataKey="tasks" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="tasks" name="Active Tasks" fill="url(#mgrWorkloadGrad)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="glass-card-highlight">
             <CardHeader><CardTitle className="text-base font-semibold">Recent activity</CardTitle></CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
