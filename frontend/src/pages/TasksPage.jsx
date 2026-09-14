@@ -192,8 +192,17 @@ export default function TasksPage() {
         setRawMembers(m || []);
         setDepartments(d || []);
 
-        // Filter out STUDENT role for normal staff task assignees list
-        const staffOnly = (m || []).filter((mm) => mm.role !== 'STUDENT').map((mm) => ({ ...mm.user, role: mm.role }));
+        // Filter out non-staff roles (STUDENT, ALUMNI, PARENT) for normal staff task assignees list
+        const staffOnly = (m || [])
+          .filter(
+            (mm) =>
+              !['STUDENT', 'ALUMNI', 'PARENT'].includes(mm.role) &&
+              !mm.title?.toLowerCase().includes('alumni') &&
+              !mm.user?.email?.toLowerCase().includes('alumni') &&
+              !mm.title?.toLowerCase().includes('parent') &&
+              !mm.user?.email?.toLowerCase().includes('parent')
+          )
+          .map((mm) => ({ ...mm.user, role: mm.role }));
         setMembers(staffOnly);
       } catch { }
     })();

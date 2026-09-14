@@ -82,11 +82,31 @@ router.get('/manager', async (req, res, next) => {
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId } });
     if (!m || !['DIRECTOR', 'ADMIN', 'PRINCIPAL', 'DEAN', 'HOD', 'TEACHER'].includes(m.role)) return res.status(403).json({ error: 'Insufficient role' });
     
+    // Restrict team workload exclusively to faculty & staff (exclude students, parents, alumni)
+    const staffMemberships = await prisma.membership.findMany({
+      where: {
+        orgId,
+        isActive: true,
+        role: { in: ['DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'TEACHER', 'ADMIN', 'ACCOUNTANT'] },
+        NOT: [
+          { role: 'STUDENT' },
+          { role: 'PARENT' },
+          { role: 'ALUMNI' },
+          { title: { contains: 'Alumni', mode: 'insensitive' } },
+        ],
+      },
+      select: { userId: true },
+    });
+    const staffUserIds = staffMemberships.map((sm) => sm.userId);
+
     const [metrics, tasksByAssignee, recentActivity] = await Promise.all([
       orgMetrics(orgId, req.user!.id),
       prisma.taskAssignee.groupBy({
         by: ['userId'],
-        where: { task: { orgId, deletedAt: null, status: { in: ['TODO', 'IN_PROGRESS', 'REVIEW'] } } },
+        where: {
+          userId: { in: staffUserIds },
+          task: { orgId, deletedAt: null, status: { in: ['TODO', 'IN_PROGRESS', 'REVIEW'] } },
+        },
         _count: { _all: true },
       }),
       prisma.task.findMany({

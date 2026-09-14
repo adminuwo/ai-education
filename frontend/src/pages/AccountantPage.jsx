@@ -372,9 +372,10 @@ export default function AccountantPage() {
     const map = new Map();
     orgMembers.forEach((m) => {
       const uName = m.user?.fullName || '';
-      const isParentRole = m.role === 'PARENT' || (m.title && m.title.toLowerCase().includes('parent'));
-      const isStudentRole = m.role === 'STUDENT' || (m.title && m.title.toLowerCase().includes('student'));
-      if (uName && !isParentRole && !isStudentRole) {
+      const isParentRole = m.role === 'PARENT' || (m.title && m.title.toLowerCase().includes('parent')) || (m.user?.email && m.user.email.toLowerCase().includes('parent'));
+      const isStudentRole = m.role === 'STUDENT' || (m.title && m.title.toLowerCase().includes('student')) || (m.user?.email && m.user.email.toLowerCase().includes('student'));
+      const isAlumniRole = m.role === 'ALUMNI' || (m.title && m.title.toLowerCase().includes('alumni')) || (m.user?.email && m.user.email.toLowerCase().includes('alumni'));
+      if (uName && !isParentRole && !isStudentRole && !isAlumniRole) {
         map.set(uName.toLowerCase(), {
           name: uName,
           email: m.user?.email || '',

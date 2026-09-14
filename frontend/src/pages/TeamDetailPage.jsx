@@ -510,7 +510,14 @@ export default function TeamDetailPage() {
               <SelectContent>
                 <SelectItem value="unassigned">None (Unassigned)</SelectItem>
                 {orgMembers
-                  .filter((m) => !['DIRECTOR', 'OWNER', 'STUDENT'].includes(m.role))
+                  .filter(
+                    (m) =>
+                      !['DIRECTOR', 'OWNER', 'STUDENT', 'ALUMNI', 'PARENT'].includes(m.role) &&
+                      !m.title?.toLowerCase().includes('alumni') &&
+                      !m.user?.email?.toLowerCase().includes('alumni') &&
+                      !m.title?.toLowerCase().includes('parent') &&
+                      !m.user?.email?.toLowerCase().includes('parent')
+                  )
                   .map((m) => (
                     <SelectItem key={m.userId} value={m.userId}>
                       {m.user?.fullName || m.user?.email} ({m.user?.email}) - {m.role}

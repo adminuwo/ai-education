@@ -71,8 +71,9 @@ export default function HomeworkPage() {
 
   const isStudent = currentOrg?.role === 'STUDENT';
   const isParent = currentOrg?.role === 'PARENT';
-  const isStudentOrParent = isStudent || isParent;
-  const isTeacherOrAdmin = !isStudentOrParent;
+  const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.toLowerCase().includes('alumni') || currentOrg?.title?.toLowerCase().includes('alumni');
+  const isStudentOrParent = isStudent || isParent || isAlumni;
+  const isTeacherOrAdmin = !isStudentOrParent && ['TEACHER', 'HOD', 'DEAN', 'PRINCIPAL', 'ADMIN', 'DIRECTOR', 'OWNER'].includes(roleUpper);
 
   const isPrincipalOrDirector = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'OWNER'].some(
     (r) => roleUpper.includes(r) || titleUpper.includes(r)

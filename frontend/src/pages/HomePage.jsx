@@ -326,12 +326,27 @@ export default function HomePage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={mgrData.workload.map(w => ({ 
-                      name: w.user?.fullName?.split(' ')[0] || 'Unknown', 
-                      fullName: w.user?.fullName || 'Unknown',
-                      tasks: w.openTasks 
-                    }))}
-                    margin={{ top: 10, right: 10, left: -15, bottom: 20 }}
+                    data={(mgrData.workload || [])
+                      .filter((w) => {
+                        const r = (w.role || w.user?.role || '').toUpperCase();
+                        const email = (w.user?.email || '').toLowerCase();
+                        const name = (w.user?.fullName || '').toLowerCase();
+                        if (['STUDENT', 'ALUMNI', 'PARENT'].includes(r)) return false;
+                        if (email.includes('student') || email.includes('alumni') || email.includes('parent')) return false;
+                        if (name === 'student' || name === 'alumni' || name.includes('parent')) return false;
+                        return true;
+                      })
+                      .sort((a, b) => (b.openTasks || 0) - (a.openTasks || 0))
+                      .map((w) => {
+                        const rawFirstName = w.user?.fullName?.split(' ')[0] || 'Unknown';
+                        const displayName = rawFirstName.length > 10 ? `${rawFirstName.slice(0, 9)}…` : rawFirstName;
+                        return {
+                          name: displayName,
+                          fullName: w.user?.fullName || 'Unknown',
+                          tasks: w.openTasks || 0,
+                        };
+                      })}
+                    margin={{ top: 10, right: 10, left: -15, bottom: 35 }}
                   >
                     <defs>
                       <linearGradient id="mgrWorkloadGrad" x1="0" y1="0" x2="0" y2="1">
@@ -340,7 +355,16 @@ export default function HomePage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} tickLine={false} />
+                    <XAxis
+                      dataKey="name"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={11}
+                      interval={0}
+                      tickLine={false}
+                      angle={-35}
+                      textAnchor="end"
+                      height={45}
+                    />
                     <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent) / 0.15)', rx: 4 }} />
                     <Bar dataKey="tasks" name="Active Tasks" fill="url(#mgrWorkloadGrad)" radius={[6, 6, 0, 0]} />

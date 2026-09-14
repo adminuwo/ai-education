@@ -144,12 +144,27 @@ export default function DepartmentPage() {
   }, [members, scopedDeptIds, scopedTeamIds, user?.id]);
 
   const facultyMembers = useMemo(() => {
-    return displayMembers.filter((m) => m.role !== 'STUDENT');
+    return displayMembers.filter(
+      (m) =>
+        m.role !== 'STUDENT' &&
+        m.role !== 'ALUMNI' &&
+        !m.title?.toLowerCase().includes('alumni') &&
+        !m.user?.email?.toLowerCase().includes('alumni') &&
+        m.role !== 'PARENT' &&
+        !m.user?.email?.includes('parent') &&
+        !m.title?.toLowerCase().includes('parent')
+    );
   }, [displayMembers]);
 
   const studentMembers = useMemo(() => {
     return displayMembers.filter((m) => {
-      if (m.role !== 'STUDENT') return false;
+      if (
+        m.role !== 'STUDENT' ||
+        m.role === 'ALUMNI' ||
+        m.title?.toLowerCase().includes('alumni') ||
+        m.user?.email?.toLowerCase().includes('alumni')
+      )
+        return false;
       if (studentWingFilter !== 'ALL' && m.departmentId !== studentWingFilter && m.department?.id !== studentWingFilter) {
         return false;
       }

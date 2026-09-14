@@ -74,7 +74,14 @@ export default function AdminPage() {
 
   const facultyMembers = useMemo(() => {
     return members.filter(
-      (m) => m.role !== 'STUDENT' && m.role !== 'ALUMNI' && m.role !== 'PARENT' && !m.user?.email?.includes('parent') && !m.title?.toLowerCase().includes('parent')
+      (m) =>
+        m.role !== 'STUDENT' &&
+        m.role !== 'ALUMNI' &&
+        !m.title?.toLowerCase().includes('alumni') &&
+        !m.user?.email?.toLowerCase().includes('alumni') &&
+        m.role !== 'PARENT' &&
+        !m.user?.email?.includes('parent') &&
+        !m.title?.toLowerCase().includes('parent')
     );
   }, [members]);
 
@@ -86,13 +93,21 @@ export default function AdminPage() {
 
   const alumniMembers = useMemo(() => {
     return members.filter(
-      (m) => m.role === 'ALUMNI' || m.title?.includes('Alumni')
+      (m) =>
+        m.role === 'ALUMNI' ||
+        m.title?.toLowerCase().includes('alumni') ||
+        m.user?.email?.toLowerCase().includes('alumni')
     );
   }, [members]);
 
   const unassignedMembers = useMemo(() => {
     return members.filter(
-      (m) => m.role === 'STUDENT' && (!m.teamId && !m.team?.id) && m.role !== 'ALUMNI' && !m.title?.includes('Alumni')
+      (m) =>
+        m.role === 'STUDENT' &&
+        (!m.teamId && !m.team?.id) &&
+        m.role !== 'ALUMNI' &&
+        !m.title?.toLowerCase().includes('alumni') &&
+        !m.user?.email?.toLowerCase().includes('alumni')
     );
   }, [members]);
 
@@ -104,7 +119,7 @@ export default function AdminPage() {
 
   const studentMembers = useMemo(() => {
     return members.filter((m) => {
-      if (m.role !== 'STUDENT' || m.role === 'ALUMNI' || m.title?.includes('Alumni')) return false;
+      if (m.role !== 'STUDENT' || m.role === 'ALUMNI' || m.title?.toLowerCase().includes('alumni') || m.user?.email?.toLowerCase().includes('alumni')) return false;
       if (studentWingFilter !== 'ALL' && m.departmentId !== studentWingFilter && m.department?.id !== studentWingFilter) {
         return false;
       }

@@ -140,8 +140,8 @@ export default function TimetablePage() {
   const roleUpper = (role || '').toUpperCase();
   const isTopManagement = ['PRINCIPAL', 'DIRECTOR', 'ADMIN', 'OWNER'].some((r) => roleUpper.includes(r));
   const isDeptLeader = ['HOD', 'DEAN'].some((r) => roleUpper.includes(r)) && !isTopManagement;
-  const isManagement = isTopManagement || isDeptLeader;
-  const isTeacher = !isManagement && roleUpper !== 'STUDENT' && roleUpper !== 'PARENT';
+  const isAlumni = roleUpper === 'ALUMNI' || user?.email?.toLowerCase().includes('alumni') || currentOrg?.title?.toLowerCase().includes('alumni');
+  const isTeacher = !isManagement && !['STUDENT', 'PARENT', 'ALUMNI'].includes(roleUpper) && !isAlumni;
   const isStudent = roleUpper === 'STUDENT';
   const currentUserName = user?.fullName || user?.name || currentOrg?.memberName || '';
 

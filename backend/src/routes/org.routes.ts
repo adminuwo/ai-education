@@ -1507,8 +1507,9 @@ router.post('/:orgId/invite', inviteLimiter, async (req, res, next) => {
       ACCOUNTANT: 'ACC',
       STUDENT: 'STU',
       PARENT: 'PAR',
+      ALUMNI: 'ALM',
     };
-    const prefix = prefixMap[targetRole] || 'FAC';
+    const prefix = prefixMap[targetRole] || (targetRole === 'ALUMNI' ? 'ALM' : 'FAC');
     const uniqueSeq = Math.floor(1000 + Math.random() * 9000);
     const uniqueId = `${prefix}-2026-${uniqueSeq}`;
 
@@ -1971,8 +1972,9 @@ router.patch('/:orgId/members/:membershipId', async (req, res, next) => {
         ACCOUNTANT: 'ACC',
         STUDENT: 'STU',
         PARENT: 'PAR',
+        ALUMNI: 'ALM',
       };
-      const prefix = prefixMap[role] || 'FAC';
+      const prefix = prefixMap[role] || (role === 'ALUMNI' ? 'ALM' : 'FAC');
       const seqMatch = target.title?.match(/\d{4}/)?.[0] || Math.floor(1000 + Math.random() * 9000);
       updateData.role = role;
       updateData.title = `${role} [${prefix}-2026-${seqMatch}]`;

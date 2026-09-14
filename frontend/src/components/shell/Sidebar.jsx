@@ -209,6 +209,7 @@ export function Sidebar({ onNavigate }) {
 
   const isStudent = currentOrg?.role === 'STUDENT';
   const isParent = currentOrg?.role === 'PARENT';
+  const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.toLowerCase().includes('alumni') || currentOrg?.title?.toLowerCase().includes('alumni');
   const isAccountant = currentOrg?.role === 'ACCOUNTANT' || user?.systemRole === 'ACCOUNTANT' || user?.email?.toLowerCase().includes('accountant');
   const isLeadershipOrDept = ['DIRECTOR', 'OWNER', 'PRINCIPAL', 'ADMIN', 'DEAN', 'HOD'].includes(currentOrg?.role);
   const navItems = PRIMARY_NAV.filter((it) => {
@@ -217,6 +218,9 @@ export function Sidebar({ onNavigate }) {
     }
     if (isParent) {
       return ['parent', 'homework', 'ai', 'meetings'].includes(it.key);
+    }
+    if (isAlumni) {
+      return ['ai', 'meetings', 'files'].includes(it.key);
     }
     if (it.key === 'parent') return false;
     if (it.key === 'accountant') return false;
@@ -227,6 +231,9 @@ export function Sidebar({ onNavigate }) {
   }).map((it) => {
     if (isStudent && it.key === 'ai') {
       return { ...it, label: 'Study Buddy' };
+    }
+    if (isAlumni && it.key === 'ai') {
+      return { ...it, label: 'Career Mentor' };
     }
     return it;
   });
