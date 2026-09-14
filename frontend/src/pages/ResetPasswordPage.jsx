@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { authApi } from '@/lib/api';
-import { Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,21 +41,32 @@ export default function ResetPasswordPage() {
   };
 
   const BrandLogo = () => (
-    <div className="flex items-center justify-center gap-2.5 font-display text-2xl font-semibold mb-6">
-      <img src="/logo192.png" alt="Convee Education Logo" className="h-8 w-8 object-contain rounded-md" />
-      <span>Convee Education</span>
+    <div className="flex items-center justify-center gap-3 font-display tracking-tight mb-8">
+      <div className="relative flex items-center justify-center shrink-0">
+        <div className="absolute -inset-1 rounded-2xl bg-cyan-500/25 blur-md pointer-events-none" />
+        <img
+          src="/logo192.png"
+          alt="Convee Education Logo"
+          className="relative h-10 w-10 rounded-xl object-contain shadow-md"
+        />
+      </div>
+      <div className="flex items-center font-bold tracking-tight">
+        <span className="text-white text-2xl">Convee</span>
+        <span className="ml-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent text-2xl font-extrabold">Education</span>
+      </div>
     </div>
   );
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
+      <div className="min-h-screen bg-[#070B14] flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-cyan-500/10 blur-[130px] pointer-events-none" />
+        <div className="w-full max-w-md relative z-10">
           <BrandLogo />
-          <Card className="border-border shadow-md">
+          <Card className="border-slate-800/90 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-cyan-950/30">
             <CardContent className="pt-8 pb-8 text-center space-y-4">
               <p className="text-destructive font-medium">Invalid reset link. No token provided.</p>
-              <Button variant="outline" onClick={() => navigate('/login')}>
+              <Button className="font-semibold border-slate-700 bg-slate-800 hover:bg-slate-700 text-white" variant="outline" onClick={() => navigate('/login')}>
                 Back to login
               </Button>
             </CardContent>
@@ -66,22 +77,25 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#070B14] flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="absolute top-[15%] right-[-10%] w-[450px] h-[450px] rounded-full bg-cyan-500/10 blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-10%] w-[450px] h-[450px] rounded-full bg-indigo-600/10 blur-[130px] pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
         <BrandLogo />
-        <Card className="border-border shadow-md">
+        <Card className="border-slate-800/90 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-cyan-950/30">
           <CardHeader>
-            <CardTitle className="font-display text-2xl">Set new password</CardTitle>
-            <p className="text-sm text-muted-foreground">Choose a strong password for your account.</p>
+            <CardTitle className="font-display text-2xl text-white">Set new password</CardTitle>
+            <p className="text-sm text-slate-400">Choose a strong password for your account.</p>
           </CardHeader>
           <CardContent>
             {done ? (
               <div className="text-center space-y-4 py-4">
-                <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500" />
-                <h3 className="text-lg font-semibold">Password updated!</h3>
-                <p className="text-sm text-muted-foreground">Your password has been reset successfully.</p>
+                <CheckCircle2 className="h-12 w-12 mx-auto text-emerald-400" />
+                <h3 className="text-lg font-semibold text-white">Password updated!</h3>
+                <p className="text-sm text-slate-400">Your password has been reset successfully.</p>
                 <Button
-                  className="w-full"
+                  className="w-full font-semibold py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:via-sky-400 hover:to-indigo-500 text-white shadow-lg shadow-cyan-500/25 border-0"
                   onClick={() => navigate('/login')}
                 >
                   Continue to login
@@ -90,7 +104,7 @@ export default function ResetPasswordPage() {
             ) : (
               <form onSubmit={submit} className="space-y-4">
                 <div>
-                  <Label htmlFor="new-password">New password</Label>
+                  <Label htmlFor="new-password" className="text-slate-300">New password</Label>
                   <div className="relative mt-1.5">
                     <Input
                       id="new-password"
@@ -101,18 +115,19 @@ export default function ResetPasswordPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
+                      className="bg-slate-950/60 border-slate-800 focus-visible:ring-cyan-500/40 text-white"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPw((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
                     >
                       {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="confirm-password">Confirm password</Label>
+                  <Label htmlFor="confirm-password" className="text-slate-300">Confirm password</Label>
                   <Input
                     id="confirm-password"
                     type={showPw ? 'text' : 'password'}
@@ -121,12 +136,12 @@ export default function ResetPasswordPage() {
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="••••••••"
-                    className="mt-1.5"
+                    className="bg-slate-950/60 border-slate-800 focus-visible:ring-cyan-500/40 text-white mt-1.5"
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full font-semibold py-2.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:from-cyan-400 hover:via-sky-400 hover:to-indigo-500 text-white shadow-lg shadow-cyan-500/25 transition-all border-0"
                   disabled={loading}
                 >
                   {loading ? 'Updating…' : 'Update password'}
