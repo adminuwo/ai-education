@@ -3,7 +3,9 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const isProduction = (process.env.NODE_ENV || 'development') === 'production';
+const isCloudRun = Boolean(process.env.K_SERVICE);
+const resolvedNodeEnv = process.env.NODE_ENV || (isCloudRun ? 'production' : 'development');
+const isProduction = resolvedNodeEnv === 'production';
 
 if (isProduction) {
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change-me') {
@@ -15,7 +17,9 @@ if (isProduction) {
 }
 
 export const env = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  NODE_ENV: resolvedNodeEnv,
+  IS_PRODUCTION: isProduction,
+  IS_CLOUD_RUN: isCloudRun,
   PORT: parseInt(process.env.PORT || '8001', 10),
   DATABASE_URL: process.env.DATABASE_URL!,
   CORS_ORIGINS: process.env.CORS_ORIGINS || '*',

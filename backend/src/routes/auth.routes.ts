@@ -592,8 +592,29 @@ router.post('/google/callback', async (req, res, next) => {
     });
 
     if (!user) {
-      if (process.env.NODE_ENV !== 'production') {
-        // In local development, auto-provision user so any Google account can log in immediately
+      // Strict Security Guardrail:
+      // Auto-provisioning is strictly allowed ONLY in local development on localhost / 127.0.0.1.
+      // On any live or production domain (such as uwo24.com, Cloud Run, etc.), unknown accounts are rejected with 403.
+      const reqHost = (req.get('host') || '').toLowerCase();
+      const origin = (req.get('origin') || '').toLowerCase();
+      const isLocalhostRequest =
+        reqHost.includes('localhost') ||
+        reqHost.includes('127.0.0.1') ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1');
+
+      const isConfiguredLocalApp =
+        env.APP_URL.includes('localhost') &&
+        env.GOOGLE_REDIRECT_URI.includes('localhost');
+
+      const isLocalDev =
+        !env.IS_PRODUCTION &&
+        !env.IS_CLOUD_RUN &&
+        isLocalhostRequest &&
+        isConfiguredLocalApp;
+
+      if (isLocalDev) {
+        // In local development on localhost, auto-provision user so developers can test immediately
         user = await prisma.user.create({
           data: {
             email: cleanGoogleEmail,
@@ -605,7 +626,7 @@ router.post('/google/callback', async (req, res, next) => {
           },
         });
 
-        // Attach to the primary organization as DIRECTOR so user has full dashboard access
+        // Attach to the primary organization as DIRECTOR so local developer has full dashboard access
         const firstOrg = await prisma.organization.findFirst({
           orderBy: { createdAt: 'asc' },
         });
