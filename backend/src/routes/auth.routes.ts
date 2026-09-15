@@ -586,15 +586,53 @@ router.post('/google/callback', async (req, res, next) => {
       where: {
         OR: [
           { googleId: payload.sub },
-          { email: cleanGoogleEmail },
+          { email: { equals: cleanGoogleEmail, mode: 'insensitive' } },
         ],
       },
     });
 
     if (!user) {
-      return res.status(403).json({
-        error: 'No account found with this Google email. Only existing registered accounts can sign in with Google. Please contact your school administration for access.',
-      });
+      if (process.env.NODE_ENV !== 'production') {
+        // In local development, auto-provision user so any Google account can log in immediately
+        user = await prisma.user.create({
+          data: {
+            email: cleanGoogleEmail,
+            fullName: payload.name || cleanGoogleEmail.split('@')[0],
+            googleId: payload.sub,
+            avatarUrl: payload.picture,
+            isVerified: true,
+            status: 'online',
+          },
+        });
+
+        // Attach to the primary organization as DIRECTOR so user has full dashboard access
+        const firstOrg = await prisma.organization.findFirst({
+          orderBy: { createdAt: 'asc' },
+        });
+
+        if (firstOrg) {
+          await prisma.membership.create({
+            data: {
+              userId: user.id,
+              orgId: firstOrg.id,
+              role: 'DIRECTOR',
+              isActive: true,
+            },
+          });
+          const genChannel = await prisma.channel.findFirst({
+            where: { orgId: firstOrg.id, name: 'general', deletedAt: null },
+          });
+          if (genChannel) {
+            await prisma.channelMember.create({
+              data: { channelId: genChannel.id, userId: user.id, isAdmin: true },
+            }).catch(() => {});
+          }
+        }
+      } else {
+        return res.status(403).json({
+          error: 'No account found with this Google email. Only existing registered accounts can sign in with Google. Please contact your school administration for access.',
+        });
+      }
     }
 
     if (!user.googleId || !user.isVerified) {
