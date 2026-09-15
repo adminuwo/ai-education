@@ -103,9 +103,14 @@ Thumbs.db
 # --- Testing, Reports & Temporary Output ---
 /coverage
 **/coverage/
+tests/
+**/tests/
 tests/artifacts/
 test_reports/
 test_result.md
+test-results/
+**/test-results/
+playwright-report/
 scraped_output.json
 *.scraped_output.json
 agent_artifacts/
@@ -118,6 +123,23 @@ mock_students.csv
 *.jpg
 *.jpeg
 *.docx
+
+# Test Files & Suites
+*.test.js
+*.test.ts
+*.test.jsx
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.jsx
+*.spec.tsx
+
+# Security Audits & Diagnostic Reports
+security_audit_results/
+security_audit_result/
+*security_audit*
+**/security_audit_results/**
+**/security_audit_result/**
 
 # Whitelist UI Assets and Android Native Configs
 !frontend/public/**
@@ -132,5 +154,7 @@ mock_students.csv
 
 # Scratch, Test & Seed Scripts
 backend/scripts/*.ts
+backend/scripts/
 backend/src/scripts/
 frontend/scripts/
+
