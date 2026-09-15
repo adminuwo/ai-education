@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { userApi, fileApi, API_BASE } from '@/lib/api';
+import { userApi, fileApi, API_BASE, bugApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,9 +8,25 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Upload, Trash2, Loader2, Key, ShieldCheck, Lock } from 'lucide-react';
+import {
+  Upload,
+  Trash2,
+  Loader2,
+  Key,
+  ShieldCheck,
+  Lock,
+  Bug,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Image as ImageIcon,
+  ExternalLink,
+  Plus,
+} from 'lucide-react';
+import BugReportModal from '@/components/profile/BugReportModal';
 
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
@@ -33,6 +49,24 @@ export default function ProfilePage() {
   const [passForm, setPassForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passSaving, setPassSaving] = useState(false);
 
+  // Bug Reports state
+  const [isBugModalOpen, setIsBugModalOpen] = useState(false);
+  const [myBugReports, setMyBugReports] = useState([]);
+  const [loadingBugs, setLoadingBugs] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const fetchMyBugReports = async () => {
+    try {
+      setLoadingBugs(true);
+      const res = await bugApi.myReports();
+      setMyBugReports(res.reports || []);
+    } catch (e) {
+      console.error('Failed to load my bug reports', e);
+    } finally {
+      setLoadingBugs(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setForm({
@@ -44,6 +78,7 @@ export default function ProfilePage() {
       setOtpSent(false);
       setOtpCode('');
       setIsEditingEmail(false);
+      fetchMyBugReports();
     }
   }, [user, isInternalIdEmail]);
 
@@ -459,6 +494,171 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Bug & Crash Reporting Card */}
+      <Card className="border-border/80">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="h-9 w-9 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
+                <Bug className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-base">Report Bug or System Issue</CardTitle>
+                <CardDescription className="text-xs">
+                  Found a glitch, error, or system crash? Submit details and screenshots directly to the development team.
+                </CardDescription>
+              </div>
+            </div>
+            <Button
+              onClick={() => setIsBugModalOpen(true)}
+              className="gap-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-sm self-start sm:self-auto text-xs"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Report an Issue
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="border-t border-border/60 pt-3">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                My Reported Issues ({myBugReports.length})
+              </h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={fetchMyBugReports}
+                disabled={loadingBugs}
+                className="text-xs h-7 gap-1 text-muted-foreground hover:text-foreground"
+              >
+                {loadingBugs ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Refresh'}
+              </Button>
+            </div>
+
+            {loadingBugs && myBugReports.length === 0 ? (
+              <div className="p-4 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                Loading your submitted reports...
+              </div>
+            ) : myBugReports.length === 0 ? (
+              <div className="p-6 text-center rounded-xl border border-dashed border-border/60 bg-muted/20">
+                <CheckCircle2 className="h-8 w-8 text-muted-foreground/60 mx-auto mb-2" />
+                <p className="text-xs font-medium text-foreground">No bug reports submitted yet</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  If you run into any crash or unexpected behavior anywhere in Convee, click "Report an Issue" above.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myBugReports.map((report) => {
+                  const statusColors = {
+                    OPEN: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+                    IN_PROGRESS: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+                    RESOLVED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+                    CLOSED: 'bg-slate-500/10 text-slate-400 border-slate-500/30',
+                  };
+
+                  const severityColors = {
+                    CRITICAL: 'bg-red-500/15 text-red-400 border-red-500/30',
+                    HIGH: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+                    MEDIUM: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+                    LOW: 'bg-slate-500/15 text-slate-400 border-slate-500/30',
+                  };
+
+                  return (
+                    <div
+                      key={report.id}
+                      className="p-3.5 rounded-xl border border-border/70 bg-card hover:bg-muted/30 transition-colors space-y-2.5"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-sm text-foreground">{report.title}</span>
+                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 font-medium ${statusColors[report.status] || ''}`}>
+                              {report.status}
+                            </Badge>
+                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 font-medium ${severityColors[report.severity] || ''}`}>
+                              {report.severity}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground whitespace-pre-wrap line-clamp-3">
+                            {report.description}
+                          </p>
+                        </div>
+
+                        {report.imageUrl && (
+                          <div
+                            onClick={() => setPreviewImage(report.imageUrl)}
+                            className="relative group cursor-pointer shrink-0 border border-border rounded-lg overflow-hidden h-14 w-20 bg-black/40"
+                            title="Click to view full screenshot"
+                          >
+                            <img
+                              src={report.imageUrl}
+                              alt="Bug Attachment"
+                              className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                              <ExternalLink className="h-3.5 w-3.5 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Resolution note if available */}
+                      {report.adminNotes && (
+                        <div className="p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs">
+                          <span className="font-semibold text-emerald-400">Admin Response: </span>
+                          <span className="text-muted-foreground">{report.adminNotes}</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/40">
+                        <span className="font-mono text-[10px] text-muted-foreground/70">Category: {report.category}</span>
+                        <span>{new Date(report.createdAt).toLocaleDateString()} at {new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Bug Report Submission Modal */}
+      <BugReportModal
+        open={isBugModalOpen}
+        onOpenChange={setIsBugModalOpen}
+        onSuccess={fetchMyBugReports}
+        defaultOrgId={currentOrg?.id}
+        defaultOrgName={currentOrg?.name}
+      />
+
+      {/* Screenshot Preview Modal */}
+      <Dialog open={Boolean(previewImage)} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-border/80">
+          <div className="flex items-center justify-between px-2 py-1 text-xs text-slate-300">
+            <span>Screenshot Attachment</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-white"
+              onClick={() => window.open(previewImage, '_blank')}
+            >
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open in New Tab
+            </Button>
+          </div>
+          <div className="max-h-[75vh] overflow-auto flex items-center justify-center p-2">
+            <img
+              src={previewImage}
+              alt="Screenshot Preview"
+              className="max-w-full max-h-full object-contain rounded-md"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

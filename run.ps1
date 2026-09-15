@@ -119,8 +119,6 @@ switch ($Action.ToLower()) {
                     npm test
                     Read-Host "Tests complete. Press Enter to continue..."
                 }
-                    Read-Host "Tests complete. Press Enter to continue..."
-                }
                 "0" {
                     Write-Host "Exiting." -ForegroundColor Yellow
                     exit

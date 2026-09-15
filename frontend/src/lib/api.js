@@ -363,4 +363,14 @@ export const superAdminApi = {
   renewAiLegalOrg: (orgId) => api.post(`/orgs/${orgId}/ai-legal-renew`).then((r) => r.data),
 };
 
+export const bugApi = {
+  submit: (formData) => api.post('/bugs', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data),
+  myReports: () => api.get('/bugs/my').then((r) => r.data),
+  get: (id) => api.get(`/bugs/${id}`).then((r) => r.data),
+  list: (params) => api.get('/bugs', { params }).then((r) => r.data),
+  updateStatus: (id, data) => api.patch(`/bugs/${id}`, data).then((r) => r.data),
+  delete: (id) => api.delete(`/bugs/${id}`).then((r) => r.data),
+};
+
+
 

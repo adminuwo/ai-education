@@ -36,6 +36,7 @@ import financeRoutes from './routes/finance.routes';
 import timetableRoutes from './routes/timetable.routes';
 import promotionRoutes from './routes/promotion.routes';
 import examRoutes from './routes/exam.routes';
+import bugRoutes from './routes/bug.routes';
 import { startAiLegalMonthlyQuotaCron } from './services/aiLegalSync.service';
 
 const app: Application = express();
@@ -153,6 +154,7 @@ app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/timetable', timetableRoutes);
 app.use('/api/v1/orgs/:orgId/promotion', promotionRoutes);
 app.use('/api/v1/exams', examRoutes);
+app.use('/api/v1/bugs', bugRoutes);
 
 // Serve Frontend Static Build (Full-stack single container / Cloud Run production)
 const candidateStaticDirs = [

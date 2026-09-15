@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { superAdminApi } from '@/lib/api';
+import { superAdminApi, bugApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   LineChart,
   Line,
@@ -60,6 +68,12 @@ import {
   TrendingUp,
   Calendar,
   Clock,
+  Bug,
+  Trash2,
+  ExternalLink,
+  FileText,
+  CheckCircle2,
+  X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
@@ -87,7 +101,7 @@ function KpiCard({ icon: Icon, label, value, subtext, color = 'text-primary' }) 
 
 export default function SuperAdminPage() {
   const { user, switchOrg } = useAuth();
-  const [activeTab, setActiveTab] = useState('campuses'); // 'campuses' | 'ai-telemetry'
+  const [activeTab, setActiveTab] = useState('campuses'); // 'campuses' | 'ai-telemetry' | 'bug-reports'
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -97,6 +111,19 @@ export default function SuperAdminPage() {
   const [tokenLoading, setTokenLoading] = useState(false);
   const [tokenSearchQuery, setTokenSearchQuery] = useState('');
   const [telemetryViewMode, setTelemetryViewMode] = useState('daily'); // 'daily' | 'monthly' | 'hourly' | 'leaderboard'
+
+  // Bug & Crash Reports State
+  const [bugReports, setBugReports] = useState([]);
+  const [bugMetrics, setBugMetrics] = useState({ total: 0, open: 0, inProgress: 0, critical: 0, resolved: 0 });
+  const [bugLoading, setBugLoading] = useState(false);
+  const [bugFilterStatus, setBugFilterStatus] = useState('ALL');
+  const [bugFilterSeverity, setBugFilterSeverity] = useState('ALL');
+  const [bugSearchQuery, setBugSearchQuery] = useState('');
+  const [inspectingBug, setInspectingBug] = useState(null);
+  const [inspectStatus, setInspectStatus] = useState('OPEN');
+  const [inspectAdminNotes, setInspectAdminNotes] = useState('');
+  const [updatingBug, setUpdatingBug] = useState(false);
+  const [previewBugImage, setPreviewBugImage] = useState(null);
 
   // Provisioning Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,15 +143,72 @@ export default function SuperAdminPage() {
     directorPassword: '',
   });
 
+  const fetchBugReports = async (statusOverride, severityOverride, searchOverride) => {
+    try {
+      setBugLoading(true);
+      const params = {};
+      const s = statusOverride !== undefined ? statusOverride : bugFilterStatus;
+      const sev = severityOverride !== undefined ? severityOverride : bugFilterSeverity;
+      const q = searchOverride !== undefined ? searchOverride : bugSearchQuery;
+
+      if (s && s !== 'ALL') params.status = s;
+      if (sev && sev !== 'ALL') params.severity = sev;
+      if (q && q.trim()) params.search = q.trim();
+
+      const res = await bugApi.list(params);
+      setBugReports(res.reports || []);
+      if (res.metrics) setBugMetrics(res.metrics);
+    } catch (err) {
+      toast.error('Failed to load bug reports');
+    } finally {
+      setBugLoading(false);
+    }
+  };
+
+  const handleUpdateBugStatus = async (id, status, notes) => {
+    try {
+      setUpdatingBug(true);
+      const res = await bugApi.updateStatus(id, {
+        status,
+        adminNotes: notes,
+      });
+      toast.success(res.message || 'Bug report status updated');
+      setBugReports((prev) => prev.map((b) => (b.id === id ? res.report : b)));
+      if (inspectingBug?.id === id) {
+        setInspectingBug(res.report);
+      }
+      fetchBugReports();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to update bug status');
+    } finally {
+      setUpdatingBug(false);
+    }
+  };
+
+  const handleDeleteBug = async (id) => {
+    if (!window.confirm('Permanently delete this bug report and its Cloud Storage screenshot?')) return;
+    try {
+      await bugApi.delete(id);
+      toast.success('Bug report deleted');
+      setBugReports((prev) => prev.filter((b) => b.id !== id));
+      if (inspectingBug?.id === id) setInspectingBug(null);
+      fetchBugReports();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to delete bug report');
+    }
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [res, tRes] = await Promise.all([
+      const [res, tRes, bRes] = await Promise.all([
         superAdminApi.dashboard(),
         superAdminApi.tokenAnalytics().catch(() => null),
+        bugApi.list({ limit: 1 }).catch(() => null),
       ]);
       setData(res);
       if (tRes) setTokenData(tRes);
+      if (bRes?.metrics) setBugMetrics(bRes.metrics);
     } catch (err) {
       toast.error('Failed to load Super Admin dashboard metrics');
     } finally {
@@ -482,11 +566,17 @@ export default function SuperAdminPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={activeTab === 'ai-telemetry' ? fetchTokenDataOnly : fetchData}
-            disabled={loading || tokenLoading}
+            onClick={
+              activeTab === 'ai-telemetry'
+                ? fetchTokenDataOnly
+                : activeTab === 'bug-reports'
+                ? () => fetchBugReports()
+                : fetchData
+            }
+            disabled={loading || tokenLoading || bugLoading}
             className="gap-2 shadow-sm"
           >
-            <RefreshCw className={`h-4 w-4 ${loading || tokenLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading || tokenLoading || bugLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button
@@ -501,10 +591,10 @@ export default function SuperAdminPage() {
       </div>
 
       {/* Navigation Tabs Bar */}
-      <div className="flex items-center gap-2 border-b border-border/40 pb-2">
+      <div className="flex items-center gap-2 border-b border-border/40 pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab('campuses')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
             activeTab === 'campuses'
               ? 'bg-primary text-primary-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -522,7 +612,7 @@ export default function SuperAdminPage() {
             setActiveTab('ai-telemetry');
             if (!tokenData) fetchTokenDataOnly();
           }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
             activeTab === 'ai-telemetry'
               ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -534,6 +624,30 @@ export default function SuperAdminPage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('bug-reports');
+            fetchBugReports();
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
+            activeTab === 'bug-reports'
+              ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+          }`}
+        >
+          <Bug className="h-4 w-4" />
+          Bug & Crash Reports
+          {bugMetrics?.open > 0 ? (
+            <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-amber-950 animate-pulse">
+              {bugMetrics.open} OPEN
+            </span>
+          ) : (
+            <Badge variant="outline" className={`ml-1 text-[11px] ${activeTab === 'bug-reports' ? 'bg-white/20 text-white border-transparent' : ''}`}>
+              {bugMetrics?.total || 0}
+            </Badge>
+          )}
         </button>
       </div>
 
@@ -1444,6 +1558,498 @@ export default function SuperAdminPage() {
           </Card>
         </div>
       )}
+
+      {/* ================= TAB 3: BUG & CRASH REPORTS ================= */}
+      {activeTab === 'bug-reports' && (
+        <div className="space-y-6">
+          {/* Header Description */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20 border border-border/60 rounded-xl p-4 sm:p-5">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                <Bug className="h-5 w-5 text-red-500" />
+                Global Bug & Crash Incident Hub
+              </h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Centralized telemetry for bugs, crashes, and visual glitches reported by students, teachers, HODs, and administrators across all campuses.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchBugReports()}
+              disabled={bugLoading}
+              className="text-xs gap-1.5 self-start sm:self-auto shrink-0 shadow-xs"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${bugLoading ? 'animate-spin' : ''}`} />
+              Refresh Feed
+            </Button>
+          </div>
+
+          {/* Incident KPI Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <Card className="border-border/60 shadow-xs">
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                  Total Incidents
+                </div>
+                <div className="text-2xl font-bold font-display mt-1">
+                  {bugMetrics.total}
+                </div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">All-time reports</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-500/30 bg-amber-500/5 shadow-xs">
+              <CardContent className="p-4">
+                <div className="text-xs text-amber-500 uppercase tracking-wider font-semibold flex items-center justify-between">
+                  <span>Open Issues</span>
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-2xl font-bold font-display mt-1 text-amber-500">
+                  {bugMetrics.open}
+                </div>
+                <div className="text-[11px] text-amber-500/70 mt-0.5">Requires triage</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-500/30 bg-blue-500/5 shadow-xs">
+              <CardContent className="p-4">
+                <div className="text-xs text-blue-500 uppercase tracking-wider font-semibold flex items-center justify-between">
+                  <span>In Progress</span>
+                  <Clock className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-2xl font-bold font-display mt-1 text-blue-500">
+                  {bugMetrics.inProgress}
+                </div>
+                <div className="text-[11px] text-blue-500/70 mt-0.5">Under investigation</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-red-500/30 bg-red-500/5 shadow-xs">
+              <CardContent className="p-4">
+                <div className="text-xs text-red-500 uppercase tracking-wider font-semibold flex items-center justify-between">
+                  <span>Critical Blockers</span>
+                  <ShieldAlert className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-2xl font-bold font-display mt-1 text-red-500">
+                  {bugMetrics.critical}
+                </div>
+                <div className="text-[11px] text-red-500/70 mt-0.5">System or crash blockers</div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-emerald-500/30 bg-emerald-500/5 shadow-xs">
+              <CardContent className="p-4">
+                <div className="text-xs text-emerald-500 uppercase tracking-wider font-semibold flex items-center justify-between">
+                  <span>Resolved</span>
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-2xl font-bold font-display mt-1 text-emerald-500">
+                  {bugMetrics.resolved}
+                </div>
+                <div className="text-[11px] text-emerald-500/70 mt-0.5">Fixed or closed</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filter & Search Bar */}
+          <Card className="border-border/60 shadow-xs">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                {/* Search */}
+                <div className="relative flex-1 w-full sm:w-auto">
+                  <Search className="h-4 w-4 absolute left-3 top-2.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by title, description, user email, or campus..."
+                    value={bugSearchQuery}
+                    onChange={(e) => {
+                      setBugSearchQuery(e.target.value);
+                      fetchBugReports(bugFilterStatus, bugFilterSeverity, e.target.value);
+                    }}
+                    className="pl-9 text-xs h-9"
+                  />
+                </div>
+
+                {/* Status Filter */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Select
+                    value={bugFilterStatus}
+                    onValueChange={(val) => {
+                      setBugFilterStatus(val);
+                      fetchBugReports(val, bugFilterSeverity, bugSearchQuery);
+                    }}
+                  >
+                    <SelectTrigger className="text-xs h-9 w-full sm:w-36">
+                      <SelectValue placeholder="Status: All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL" className="text-xs">All Statuses</SelectItem>
+                      <SelectItem value="OPEN" className="text-xs">Open</SelectItem>
+                      <SelectItem value="IN_PROGRESS" className="text-xs">In Progress</SelectItem>
+                      <SelectItem value="RESOLVED" className="text-xs">Resolved</SelectItem>
+                      <SelectItem value="CLOSED" className="text-xs">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Severity Filter */}
+                  <Select
+                    value={bugFilterSeverity}
+                    onValueChange={(val) => {
+                      setBugFilterSeverity(val);
+                      fetchBugReports(bugFilterStatus, val, bugSearchQuery);
+                    }}
+                  >
+                    <SelectTrigger className="text-xs h-9 w-full sm:w-36">
+                      <SelectValue placeholder="Severity: All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL" className="text-xs">All Severities</SelectItem>
+                      <SelectItem value="CRITICAL" className="text-xs text-red-500 font-semibold">Critical</SelectItem>
+                      <SelectItem value="HIGH" className="text-xs text-orange-500 font-semibold">High</SelectItem>
+                      <SelectItem value="MEDIUM" className="text-xs text-amber-500">Medium</SelectItem>
+                      <SelectItem value="LOW" className="text-xs text-slate-400">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Incident Reports Table */}
+          <Card className="border-border/60 shadow-sm overflow-hidden">
+            <CardHeader className="p-4 sm:p-5 border-b border-border/40 bg-muted/10 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  Incident Queue ({bugReports.length})
+                </CardTitle>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              {bugLoading && bugReports.length === 0 ? (
+                <div className="p-12 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                  <RefreshCw className="h-4 w-4 animate-spin text-primary" />
+                  Loading bug reports...
+                </div>
+              ) : bugReports.length === 0 ? (
+                <div className="p-12 text-center">
+                  <CheckCircle2 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-foreground">No bug reports match your filter</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">All systems functioning normally or filters narrowed the list.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-border/60 bg-muted/30 text-muted-foreground uppercase text-[10px] tracking-wider font-semibold">
+                        <th className="px-4 py-3">Reported Issue</th>
+                        <th className="px-4 py-3">Severity</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3">Reporter & Campus</th>
+                        <th className="px-4 py-3">Screenshot</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                      {bugReports.map((bug) => {
+                        const statusColors = {
+                          OPEN: 'bg-amber-500/10 text-amber-500 border-amber-500/30',
+                          IN_PROGRESS: 'bg-blue-500/10 text-blue-500 border-blue-500/30',
+                          RESOLVED: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30',
+                          CLOSED: 'bg-slate-500/10 text-slate-400 border-slate-500/30',
+                        };
+
+                        const severityColors = {
+                          CRITICAL: 'bg-red-500/20 text-red-500 border-red-500/40',
+                          HIGH: 'bg-orange-500/20 text-orange-500 border-orange-500/40',
+                          MEDIUM: 'bg-amber-500/20 text-amber-500 border-amber-500/40',
+                          LOW: 'bg-slate-500/20 text-slate-400 border-slate-500/40',
+                        };
+
+                        return (
+                          <tr key={bug.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="px-4 py-3.5 max-w-xs sm:max-w-md">
+                              <div className="font-semibold text-foreground text-xs">{bug.title}</div>
+                              <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5 whitespace-pre-wrap">
+                                {bug.description}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-[10px] px-1 py-0 font-mono">
+                                  {bug.category}
+                                </Badge>
+                                <span className="text-[10px] text-muted-foreground">
+                                  {new Date(bug.createdAt).toLocaleDateString()} at {new Date(bug.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-3.5 whitespace-nowrap">
+                              <Badge variant="outline" className={`text-[10px] font-bold ${severityColors[bug.severity] || ''}`}>
+                                {bug.severity}
+                              </Badge>
+                            </td>
+
+                            <td className="px-4 py-3.5 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                <Badge variant="outline" className={`text-[10px] font-semibold ${statusColors[bug.status] || ''}`}>
+                                  {bug.status}
+                                </Badge>
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-3.5">
+                              <div className="font-medium text-foreground">{bug.userName || bug.userEmail}</div>
+                              <div className="text-[10px] text-muted-foreground font-mono">{bug.userEmail}</div>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <Badge variant="outline" className="text-[9px] px-1 py-0 bg-primary/10 text-primary border-primary/20">
+                                  {bug.userRole || 'USER'}
+                                </Badge>
+                                {bug.orgName && (
+                                  <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                                    {bug.orgName}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-3.5 whitespace-nowrap">
+                              {bug.imageUrl ? (
+                                <div
+                                  onClick={() => setPreviewBugImage(bug.imageUrl)}
+                                  className="relative group cursor-pointer border border-border rounded-lg overflow-hidden h-12 w-16 bg-black/30 flex items-center justify-center"
+                                  title="Click to zoom screenshot"
+                                >
+                                  <img
+                                    src={bug.imageUrl}
+                                    alt="Screenshot thumbnail"
+                                    className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                    <ExternalLink className="h-3 w-3 text-white" />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-[11px] text-muted-foreground/60 italic">No image</span>
+                              )}
+                            </td>
+
+                            <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setInspectingBug(bug);
+                                    setInspectStatus(bug.status);
+                                    setInspectAdminNotes(bug.adminNotes || '');
+                                  }}
+                                  className="text-xs h-7 gap-1"
+                                >
+                                  <Eye className="h-3 w-3" />
+                                  Triage
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleDeleteBug(bug.id)}
+                                  className="text-xs h-7 w-7 p-0 text-destructive hover:bg-destructive/10"
+                                  title="Delete Bug Report"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Bug Inspection & Triage Modal */}
+      <Dialog open={Boolean(inspectingBug)} onOpenChange={(open) => !open && setInspectingBug(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-5 sm:rounded-xl">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-destructive font-semibold">
+                <Bug className="h-5 w-5" />
+                <DialogTitle className="text-base sm:text-lg">Incident Details & Triage</DialogTitle>
+              </div>
+              {inspectingBug && (
+                <Badge variant="outline" className="text-xs">
+                  {inspectingBug.category}
+                </Badge>
+              )}
+            </div>
+          </DialogHeader>
+
+          {inspectingBug && (
+            <div className="space-y-4 pt-2">
+              <div className="p-3 bg-muted/40 rounded-xl border border-border/70 space-y-1.5">
+                <div className="font-semibold text-sm text-foreground">{inspectingBug.title}</div>
+                <p className="text-xs text-muted-foreground whitespace-pre-wrap">{inspectingBug.description}</p>
+              </div>
+
+              {/* Reporter Info Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-card border border-border/60 text-xs">
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Reporter</span>
+                  <span className="font-semibold text-foreground">{inspectingBug.userName}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Email</span>
+                  <span className="font-mono text-[11px] text-foreground">{inspectingBug.userEmail}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Role</span>
+                  <Badge variant="outline" className="text-[10px] px-1 py-0">{inspectingBug.userRole}</Badge>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Campus</span>
+                  <span className="font-medium text-foreground">{inspectingBug.orgName || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Reported At</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {new Date(inspectingBug.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-[10px] block uppercase">Current Status</span>
+                  <Badge variant="outline" className="text-[10px]">{inspectingBug.status}</Badge>
+                </div>
+              </div>
+
+              {/* Technical Diagnostics Metadata */}
+              {inspectingBug.metadata && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground">Diagnostics / Client Environment</Label>
+                  <pre className="p-2.5 rounded-lg bg-black/40 border border-border/60 text-[11px] font-mono text-emerald-400 overflow-x-auto max-h-32">
+                    {typeof inspectingBug.metadata === 'string'
+                      ? inspectingBug.metadata
+                      : JSON.stringify(inspectingBug.metadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              {/* Screenshot Preview */}
+              {inspectingBug.imageUrl && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground">Screenshot Attachment</Label>
+                  <div
+                    onClick={() => setPreviewBugImage(inspectingBug.imageUrl)}
+                    className="relative group cursor-pointer border border-border/80 rounded-xl overflow-hidden max-h-60 bg-black/30 flex items-center justify-center p-1"
+                  >
+                    <img
+                      src={inspectingBug.imageUrl}
+                      alt="Full Screenshot"
+                      className="max-h-56 w-auto object-contain rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <span className="text-xs text-white bg-black/60 px-2 py-1 rounded flex items-center gap-1">
+                        <ExternalLink className="h-3 w-3" /> Click to enlarge
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Admin Resolution & Status Form */}
+              <div className="space-y-3 pt-2 border-t border-border/60">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold">Update Status</Label>
+                    <Select value={inspectStatus} onValueChange={setInspectStatus}>
+                      <SelectTrigger className="text-xs h-9">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OPEN" className="text-xs">OPEN</SelectItem>
+                        <SelectItem value="IN_PROGRESS" className="text-xs">IN PROGRESS</SelectItem>
+                        <SelectItem value="RESOLVED" className="text-xs text-emerald-500 font-semibold">RESOLVED</SelectItem>
+                        <SelectItem value="CLOSED" className="text-xs text-slate-400">CLOSED</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Admin Resolution Notes (Visible to Reporter)</Label>
+                  <Textarea
+                    rows={3}
+                    placeholder="e.g., Identified issue in timetable conflict validator. Hotfix deployed in v1.2."
+                    value={inspectAdminNotes}
+                    onChange={(e) => setInspectAdminNotes(e.target.value)}
+                    className="text-xs"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInspectingBug(null)}
+                    disabled={updatingBug}
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => handleUpdateBugStatus(inspectingBug.id, inspectStatus, inspectAdminNotes)}
+                    disabled={updatingBug}
+                    className="text-xs gap-1.5 bg-primary text-primary-foreground"
+                  >
+                    {updatingBug ? (
+                      <>
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        Saving Updates...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-3.5 w-3.5" />
+                        Save Resolution
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Screenshot Zoom Dialog */}
+      <Dialog open={Boolean(previewBugImage)} onOpenChange={() => setPreviewBugImage(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-border/80">
+          <div className="flex items-center justify-between px-3 py-1.5 text-xs text-slate-300">
+            <span>Bug Screenshot Preview</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-white hover:text-white"
+              onClick={() => window.open(previewBugImage, '_blank')}
+            >
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Open in New Tab
+            </Button>
+          </div>
+          <div className="max-h-[78vh] overflow-auto flex items-center justify-center p-2">
+            <img
+              src={previewBugImage}
+              alt="Zoomed Screenshot"
+              className="max-w-full max-h-full object-contain rounded-md"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Provisioning Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
