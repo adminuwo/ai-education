@@ -68,6 +68,23 @@ jobs:
           dart run flutter_native_splash:create
           echo ">>> Setting official app name in AndroidManifest..."
           sed -i 's/android:label="convee_education"/android:label="Convee Education"/g' android/app/src/main/AndroidManifest.xml
+          echo ">>> Injecting INTERNET and ACCESS_NETWORK_STATE permissions into AndroidManifest..."
+          python3 -c '
+          path = "android/app/src/main/AndroidManifest.xml"
+          with open(path, "r") as f:
+              content = f.read()
+
+          perms = """    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n"""
+          if "android.permission.INTERNET" not in content:
+              content = content.replace("<application", perms + "    <application", 1)
+
+          if "android:usesCleartextTraffic" not in content:
+              content = content.replace("<application", "<application android:usesCleartextTraffic=\"true\"", 1)
+
+          with open(path, "w") as f:
+              f.write(content)
+          print(">>> Injected INTERNET and ACCESS_NETWORK_STATE permissions successfully into AndroidManifest.xml")
+          '
 
       - name: Build Android Package
         working-directory: mobile-flutter

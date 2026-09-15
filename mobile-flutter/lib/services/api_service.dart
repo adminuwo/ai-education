@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String baseUrl = 'https://convee-education-977864306871.asia-south1.run.app/api/v1';
+  static const String fallbackBaseUrl = 'https://education.uwo24.com/api/v1';
 
   static final Dio dio = Dio(
     BaseOptions(
@@ -53,11 +54,34 @@ class ApiService {
     required String password,
     String? portalMode,
   }) async {
-    final response = await dio.post('/auth/login', data: {
-      'email': email,
-      'password': password,
-      if (portalMode != null) 'portalMode': portalMode,
-    });
+    Response response;
+    try {
+      response = await dio.post('/auth/login', data: {
+        'email': email,
+        'password': password,
+        if (portalMode != null) 'portalMode': portalMode,
+      });
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
+        // Automatic failover retry on secondary live domain (education.uwo24.com)
+        final fallbackDio = Dio(
+          BaseOptions(
+            baseUrl: fallbackBaseUrl,
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 15),
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
+        response = await fallbackDio.post('/auth/login', data: {
+          'email': email,
+          'password': password,
+          if (portalMode != null) 'portalMode': portalMode,
+        });
+        dio.options.baseUrl = fallbackBaseUrl;
+      } else {
+        rethrow;
+      }
+    }
 
     final data = response.data as Map<String, dynamic>;
     final prefs = await SharedPreferences.getInstance();
