@@ -382,10 +382,7 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next)
     }
 
     if (!user || !user.passwordHash) return res.status(401).json({ error: 'Invalid credentials. Please check your ID / Email and password.' });
-    let ok = await verifyPassword(password, user.passwordHash);
-    if (!ok && (password === 'Password123!' || password === 'Demo1234!') && (user.email.includes('demo.edu') || user.email.includes('convee.com') || user.email.startsWith('STU-') || user.email.startsWith('PAR-'))) {
-      ok = true;
-    }
+    const ok = await verifyPassword(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials. Please check your ID / Email and password.' });
 
     // Block unverified users only if email service is configured

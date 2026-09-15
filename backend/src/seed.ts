@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Ensuring core system data without deleting any user classes or departments...');
 
-  const hashedPassword = await bcrypt.hash('Demo1234!', 10);
+  const seedPassword = process.env.SEED_DEFAULT_PASSWORD || 'Demo1234!';
+  const hashedPassword = await bcrypt.hash(seedPassword, 10);
 
   // 1. Organization
   let org = await prisma.organization.findFirst({

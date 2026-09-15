@@ -3,13 +3,24 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+const isProduction = (process.env.NODE_ENV || 'development') === 'production';
+
+if (isProduction) {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'change-me') {
+    throw new Error('FATAL SECURITY ERROR: JWT_SECRET must be configured with a secure secret in production.');
+  }
+  if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET === 'change-me-refresh') {
+    throw new Error('FATAL SECURITY ERROR: JWT_REFRESH_SECRET must be configured with a secure secret in production.');
+  }
+}
+
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: parseInt(process.env.PORT || '8001', 10),
   DATABASE_URL: process.env.DATABASE_URL!,
   CORS_ORIGINS: process.env.CORS_ORIGINS || '*',
-  JWT_SECRET: process.env.JWT_SECRET || 'change-me',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'change-me-refresh',
+  JWT_SECRET: process.env.JWT_SECRET || 'dev-local-jwt-secret-not-for-prod',
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'dev-local-jwt-refresh-secret-not-for-prod',
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
@@ -20,7 +31,7 @@ export const env = {
   DEFAULT_LLM_PROVIDER: process.env.DEFAULT_LLM_PROVIDER || 'openai',
   DEFAULT_LLM_MODEL: process.env.DEFAULT_LLM_MODEL || 'gpt-4o-mini',
   // Vertex AI Configuration (Students, Parents & Alumni)
-  VERTEX_PROJECT_ID: process.env.VERTEX_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || 'ai-mall-484810',
+  VERTEX_PROJECT_ID: process.env.VERTEX_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || '',
   VERTEX_LOCATION: process.env.VERTEX_LOCATION || 'asia-south1',
   VERTEX_GEMINI_MODEL: process.env.VERTEX_GEMINI_MODEL || 'gemini-2.5-flash',
   STUDENT_LLM_PROVIDER: process.env.STUDENT_LLM_PROVIDER || 'vertexai',
@@ -31,8 +42,8 @@ export const env = {
   APP_URL: process.env.APP_URL || 'http://localhost:3000',
   UPLOAD_DIR: path.resolve(__dirname, '../../uploads'),
   // Google Cloud Storage (GCS) Configuration
-  GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || 'education-tool-objects',
-  GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || process.env.VERTEX_PROJECT_ID || 'ai-mall-484810',
+  GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME || '',
+  GCS_PROJECT_ID: process.env.GCS_PROJECT_ID || process.env.VERTEX_PROJECT_ID || '',
   GCS_SIGNED_URL_EXPIRY_MINUTES: parseInt(process.env.GCS_SIGNED_URL_EXPIRY_MINUTES || '1440', 10), // 24 hours default
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
   EMAIL_FROM: process.env.EMAIL_FROM || '',
