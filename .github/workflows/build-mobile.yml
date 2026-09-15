@@ -76,9 +76,9 @@ jobs:
         working-directory: mobile
         run: |
           npx expo prebuild --platform android --clean
-          # Configure build memory, target architectures, and New Architecture for 16 KB native compilation
-          echo "newArchEnabled=true" >> android/gradle.properties
-          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a" >> android/gradle.properties
+          # Configure build memory and universal target architectures (ARM + x86_64)
+          echo "newArchEnabled=false" >> android/gradle.properties
+          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64" >> android/gradle.properties
           echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> android/gradle.properties
 
       - name: Compile Android Package (16 KB Page Aligned)
@@ -89,13 +89,13 @@ jobs:
 
           if [ "$PROFILE" = "preview" ]; then
             echo ">>> Building Standalone Release APK for Firebase / Testers (16 KB Page Aligned)..."
-            ./gradlew assembleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew assembleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
           elif [ "$PROFILE" = "production" ]; then
             echo ">>> Building Production Release AAB for Google Play Store (16 KB Page Aligned)..."
-            ./gradlew bundleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew bundleRelease --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
           elif [ "$PROFILE" = "development" ]; then
             echo ">>> Building Development Debug APK (16 KB Page Aligned)..."
-            ./gradlew assembleDebug --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+            ./gradlew assembleDebug --no-daemon -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
           fi
 
       - name: Verify 16 KB Page Alignment
