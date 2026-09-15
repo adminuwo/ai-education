@@ -48,6 +48,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
       - name: Setup Android NDK r27b (16 KB Page Support)
         uses: nttld/setup-ndk@v1
