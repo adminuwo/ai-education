@@ -349,7 +349,11 @@ export default function AdminPage() {
                 Institution Logo & Settings
               </Button>
             )}
-            {(currentOrg?.hasAiLegal || currentOrg?.addons?.includes('AI_LEGAL')) && (
+            {(Boolean(
+              currentOrg?.hasAiLegal ||
+              currentOrg?.addons?.includes('AI_LEGAL') ||
+              /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
+            )) && (
               <Button
                 variant="outline"
                 size="sm"

@@ -29,12 +29,15 @@ export function AuthProvider({ children }) {
 
       const cur = (me.memberships || []).find((m) => m.orgId === savedOrgId) || me.memberships?.[0];
       if (cur) {
+        const hasAiLegal = parseOrgHasAiLegal(cur.organization);
+        const addons = cur.organization.addons || (hasAiLegal ? ['AI_LEGAL'] : []);
         setCurrentOrg({
           id: cur.orgId,
           name: cur.organization.name,
           slug: cur.organization.slug,
           description: cur.organization.description,
-          hasAiLegal: parseOrgHasAiLegal(cur.organization),
+          hasAiLegal,
+          addons,
           role: cur.role,
           logoUrl: cur.organization.logoUrl,
           ownerId: cur.organization.ownerId,
@@ -136,12 +139,15 @@ export function AuthProvider({ children }) {
     }
     const m = memberships.find((mm) => mm.orgId === orgId);
     if (m) {
+      const hasAiLegal = parseOrgHasAiLegal(m.organization);
+      const addons = m.organization.addons || (hasAiLegal ? ['AI_LEGAL'] : []);
       setCurrentOrg({
         id: m.orgId,
         name: m.organization.name,
         slug: m.organization.slug,
         description: m.organization.description,
-        hasAiLegal: parseOrgHasAiLegal(m.organization),
+        hasAiLegal,
+        addons,
         role: m.role,
         logoUrl: m.organization.logoUrl,
         ownerId: m.organization.ownerId,

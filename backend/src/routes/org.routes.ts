@@ -133,6 +133,7 @@ router.get('/', async (req, res, next) => {
         name: m.organization.name,
         slug: m.organization.slug,
         logoUrl: m.organization.logoUrl,
+        description: m.organization.description,
         hasAiLegal: addons.includes('AI_LEGAL'),
         addons,
         role: m.role,

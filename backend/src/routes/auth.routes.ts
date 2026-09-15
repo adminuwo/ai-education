@@ -524,6 +524,8 @@ router.get('/me', authenticate, async (req, res, next) => {
         const rawCodeMatch = (m.title || '').match(/([A-Z]{3}-\d{4}-\d{3,4})/i);
         const uniqueId = bracketMatch ? bracketMatch[1] : (rawCodeMatch ? rawCodeMatch[1].toUpperCase() : null);
         const directorId = m.role === 'DIRECTOR' ? (uniqueId || 'DIR-2026-7186') : null;
+        const addons = parseOrgAddons(m.organization.description);
+        const hasAiLegal = addons.includes('AI_LEGAL');
         return {
           id: m.id,
           orgId: m.orgId,
@@ -531,7 +533,16 @@ router.get('/me', authenticate, async (req, res, next) => {
           directorId,
           userUniqueId: uniqueId || directorId,
           title: m.title,
-          organization: { id: m.organization.id, name: m.organization.name, slug: m.organization.slug, logoUrl: m.organization.logoUrl, ownerId: m.organization.ownerId },
+          organization: {
+            id: m.organization.id,
+            name: m.organization.name,
+            slug: m.organization.slug,
+            logoUrl: m.organization.logoUrl,
+            ownerId: m.organization.ownerId,
+            description: m.organization.description,
+            addons,
+            hasAiLegal,
+          },
         };
       }),
     });
