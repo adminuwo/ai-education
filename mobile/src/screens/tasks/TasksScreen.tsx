@@ -134,7 +134,7 @@ export default function TasksScreen() {
     switch (priority) {
       case 'URGENT': return '#EF4444';
       case 'HIGH': return '#F59E0B';
-      case 'MEDIUM': return '#3B82F6';
+      case 'MEDIUM': return colors.primary;
       default: return '#6B7280';
     }
   };

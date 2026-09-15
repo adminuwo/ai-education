@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ConveeColors {
-  static const Color background = Color(0xFF090D16);
-  static const Color card = Color(0xFF111827);
-  static const Color cardSecondary = Color(0xFF1A2234);
-  static const Color border = Color(0xFF1F293D);
+  static const Color background = Color(0xFF090B0E);
+  static const Color card = Color(0xFF0E1117);
+  static const Color cardSecondary = Color(0xFF151921);
+  static const Color border = Color(0xFF1B2230);
   static const Color text = Color(0xFFF9FAFB);
   static const Color textSecondary = Color(0xFF9CA3AF);
   static const Color textMuted = Color(0xFF6B7280);
   
-  static const Color primary = Color(0xFF3B82F6);
-  static const Color primaryLight = Color(0x263B82F6);
+  static const Color primary = Color(0xFF10B981);
+  static const Color primaryLight = Color(0x2610B981);
   
   static const Color emerald = Color(0xFF10B981);
   static const Color emeraldLight = Color(0x2610B981);
@@ -31,7 +31,7 @@ ThemeData get conVeeDarkTheme {
     primaryColor: ConveeColors.primary,
     colorScheme: const ColorScheme.dark(
       primary: ConveeColors.primary,
-      secondary: ConveeColors.purple,
+      secondary: ConveeColors.amber,
       surface: ConveeColors.card,
       error: ConveeColors.destructive,
     ),

@@ -156,19 +156,19 @@ export default function HomeScreen({ navigation }: any) {
       </Text>
 
       {/* AI Executive Daily Briefing Card */}
-      <View style={[styles.briefingCard, { backgroundColor: colors.card, borderColor: colors.purpleLight }]}>
+      <View style={[styles.briefingCard, { backgroundColor: colors.card, borderColor: colors.primaryLight }]}>
         <View style={styles.briefingHeader}>
           <View style={styles.briefingTitleRow}>
-            <View style={[styles.sparkleIcon, { backgroundColor: colors.purpleLight }]}>
-              <Sparkles size={16} color={colors.purple} />
+            <View style={[styles.sparkleIcon, { backgroundColor: colors.primaryLight }]}>
+              <Sparkles size={16} color={colors.primary} />
             </View>
             <Text style={[styles.briefingTitle, { color: colors.text }]}>AI Daily Campus Briefing</Text>
           </View>
           <TouchableOpacity onPress={loadData} disabled={briefingLoading} style={styles.refreshIconBtn}>
             {briefingLoading ? (
-              <ActivityIndicator size="small" color={colors.purple} />
+              <ActivityIndicator size="small" color={colors.primary} />
             ) : (
-              <RefreshCw size={15} color={colors.purple} />
+              <RefreshCw size={15} color={colors.primary} />
             )}
           </TouchableOpacity>
         </View>
@@ -222,8 +222,8 @@ export default function HomeScreen({ navigation }: any) {
           onPress={() => navigation.navigate('Homework')}
           style={[styles.kpiCard, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
-          <View style={[styles.kpiIcon, { backgroundColor: '#F59E0B20' }]}>
-            <BookOpen size={18} color="#F59E0B" />
+          <View style={[styles.kpiIcon, { backgroundColor: colors.amberLight }]}>
+            <BookOpen size={18} color={colors.amber} />
           </View>
           <Text style={[styles.kpiValue, { color: colors.text }]}>
             {activeHomeworkCount !== null ? activeHomeworkCount : 0}
@@ -262,8 +262,8 @@ export default function HomeScreen({ navigation }: any) {
           style={[styles.actionItem, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
           <View style={styles.actionLeft}>
-            <View style={[styles.actionIcon, { backgroundColor: '#F59E0B20' }]}>
-              <BookOpen size={18} color="#F59E0B" />
+            <View style={[styles.actionIcon, { backgroundColor: colors.amberLight }]}>
+              <BookOpen size={18} color={colors.amber} />
             </View>
             <View>
               <Text style={[styles.actionName, { color: colors.text }]}>Homework & Rubrics</Text>

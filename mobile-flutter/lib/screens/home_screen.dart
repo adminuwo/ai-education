@@ -209,12 +209,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF1E1B4B), ConveeColors.card],
+                    colors: [Color(0xFF062E22), ConveeColors.card],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: ConveeColors.purple.withOpacity(0.3)),
+                  border: Border.all(color: ConveeColors.primary.withOpacity(0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.auto_awesome, color: ConveeColors.purple, size: 18),
+                            Icon(Icons.auto_awesome, color: ConveeColors.primary, size: 18),
                             SizedBox(width: 6),
                             Text(
                               'AI Daily Academic Briefing',
@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(color: ConveeColors.purple, strokeWidth: 2),
+                            child: CircularProgressIndicator(color: ConveeColors.primary, strokeWidth: 2),
                           ),
                       ],
                     ),
