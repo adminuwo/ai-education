@@ -11,11 +11,43 @@ router.get('/', async (req, res, next) => {
   try {
     const q = (req.query.q as string) || '';
     const orgId = req.query.orgId as string | undefined;
+    const callerId = req.user!.id;
+    const isSuperAdmin = req.user!.systemRole === 'SUPER_ADMIN' || (req.user as any).systemRole === 'SUPERADMIN';
+
     let userIds: string[] | undefined;
-    if (orgId) {
-      const memberships = await prisma.membership.findMany({ where: { orgId, isActive: true }, select: { userId: true } });
-      userIds = memberships.map(m => m.userId);
+
+    if (!isSuperAdmin) {
+      // Non-superadmin callers must be restricted to their active organization(s)
+      const callerMemberships = await prisma.membership.findMany({
+        where: { userId: callerId, isActive: true },
+        select: { orgId: true },
+      });
+      const callerOrgIds = callerMemberships.map((m) => m.orgId);
+
+      if (orgId) {
+        if (!callerOrgIds.includes(orgId)) {
+          return res.status(403).json({ error: 'Access denied to organization members' });
+        }
+        const memberships = await prisma.membership.findMany({
+          where: { orgId, isActive: true },
+          select: { userId: true },
+        });
+        userIds = memberships.map((m) => m.userId);
+      } else {
+        const memberships = await prisma.membership.findMany({
+          where: { orgId: { in: callerOrgIds }, isActive: true },
+          select: { userId: true },
+        });
+        userIds = memberships.map((m) => m.userId);
+      }
+    } else if (orgId) {
+      const memberships = await prisma.membership.findMany({
+        where: { orgId, isActive: true },
+        select: { userId: true },
+      });
+      userIds = memberships.map((m) => m.userId);
     }
+
     const users = await prisma.user.findMany({
       where: {
         deletedAt: null,
@@ -31,8 +63,34 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:userId', async (req, res, next) => {
   try {
-    const u = await prisma.user.findUnique({
-      where: { id: req.params.userId },
+    const targetUserId = req.params.userId;
+    const callerId = req.user!.id;
+    const isSuperAdmin = req.user!.systemRole === 'SUPER_ADMIN' || (req.user as any).systemRole === 'SUPERADMIN';
+
+    // Allow self-lookup or superadmin
+    if (callerId !== targetUserId && !isSuperAdmin) {
+      const callerOrgs = await prisma.membership.findMany({
+        where: { userId: callerId, isActive: true },
+        select: { orgId: true },
+      });
+      const orgIds = callerOrgs.map((m) => m.orgId);
+
+      // Verify target user shares at least one active organization with caller
+      const sharedMembership = await prisma.membership.findFirst({
+        where: {
+          userId: targetUserId,
+          orgId: { in: orgIds },
+          isActive: true,
+        },
+      });
+
+      if (!sharedMembership) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+    }
+
+    const u = await prisma.user.findFirst({
+      where: { id: targetUserId, deletedAt: null },
       select: { id: true, email: true, fullName: true, avatarUrl: true, status: true, lastSeenAt: true, bio: true, timezone: true, createdAt: true },
     });
     if (!u) return res.status(404).json({ error: 'Not found' });

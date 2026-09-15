@@ -1,0 +1,156 @@
+{
+  "processTelemetry": {
+    "initialPid": 25356,
+    "finalPid": 25356,
+    "pidContinuous": true,
+    "initialMemoryMb": 427.8709945678711,
+    "finalMemoryMb": 472.6640319824219,
+    "memoryDeltaMb": 44.79303741455078,
+    "unhandledRejectionCount": 0,
+    "uncaughtExceptionCount": 0,
+    "stabilityPassed": true
+  },
+  "rateLimitResults": [
+    {
+      "endpoint": "/api/v1/auth/login",
+      "totalRequests": 75,
+      "durationMs": 259,
+      "statusCodeCounts": {
+        "401": 15,
+        "429": 60
+      },
+      "triggered429": true,
+      "first429AtRequestIndex": 16,
+      "retryAfterHeader": "60",
+      "avgLatencyMs": 3.36,
+      "minLatencyMs": 0,
+      "maxLatencyMs": 84,
+      "notes": "Strictly enforced 429 after 15 failed attempts (Retry-After: 60s)"
+    },
+    {
+      "endpoint": "/api/v1/auth/forgot-password",
+      "totalRequests": 60,
+      "durationMs": 265,
+      "statusCodeCounts": {
+        "200": 60
+      },
+      "triggered429": false,
+      "first429AtRequestIndex": -1,
+      "retryAfterHeader": "",
+      "avgLatencyMs": 4.4,
+      "minLatencyMs": 3,
+      "maxLatencyMs": 6,
+      "notes": "Returns 200 OK anti-enumeration; skipSuccessfulRequests bypasses rate limiter"
+    },
+    {
+      "endpoint": "/api/v1/search?q=test",
+      "totalRequests": 60,
+      "durationMs": 601,
+      "statusCodeCounts": {
+        "200": 60
+      },
+      "triggered429": false,
+      "first429AtRequestIndex": -1,
+      "retryAfterHeader": "",
+      "avgLatencyMs": 10,
+      "minLatencyMs": 8,
+      "maxLatencyMs": 33,
+      "notes": "Subject to global API limiter (5000 req/min); served all queries stably without crash"
+    },
+    {
+      "endpoint": "/api/v1/files",
+      "totalRequests": 60,
+      "durationMs": 184,
+      "statusCodeCounts": {
+        "200": 60
+      },
+      "triggered429": false,
+      "first429AtRequestIndex": -1,
+      "retryAfterHeader": "",
+      "avgLatencyMs": 2.966666666666667,
+      "minLatencyMs": 2,
+      "maxLatencyMs": 6,
+      "notes": "Subject to global API limiter (5000 req/min); served all queries stably without crash"
+    }
+  ],
+  "payloadResults": [
+    {
+      "testName": "10MB Randomized JSON Payload",
+      "endpoint": "/api/v1/auth/login",
+      "payloadDescription": "10MB JSON body with randomized strings (within 15MB Express ceiling)",
+      "httpStatus": 400,
+      "expectedStatus": "400|413",
+      "memoryBeforeMb": 423.03395080566406,
+      "memoryAfterMb": 486.6805648803711,
+      "passed": true,
+      "notes": "Safely processed without OOM (HTTP 400). Memory delta: 63.65 MB"
+    },
+    {
+      "testName": "16MB Oversized Payload",
+      "endpoint": "/api/v1/auth/login",
+      "payloadDescription": "16MB JSON string payload exceeding 15MB express ceiling",
+      "httpStatus": 413,
+      "expectedStatus": "413",
+      "memoryBeforeMb": 486.6875915527344,
+      "memoryAfterMb": 471.8313980102539,
+      "passed": true,
+      "notes": "Strictly rejected with HTTP 413 Payload Too Large"
+    },
+    {
+      "testName": "Deeply Nested JSON (60 levels)",
+      "endpoint": "/api/v1/auth/login",
+      "payloadDescription": "60 levels of nested objects { \"level_n\": { ... } }",
+      "httpStatus": 400,
+      "expectedStatus": "400|422",
+      "memoryBeforeMb": 471.8358383178711,
+      "memoryAfterMb": 471.9705047607422,
+      "passed": true,
+      "notes": "Parsed safely without recursion stack overflow (HTTP 400)"
+    },
+    {
+      "testName": "Malformed Multipart Form Upload",
+      "endpoint": "/api/v1/files/upload",
+      "payloadDescription": "Malformed multipart form with unclosed boundary delimiters",
+      "httpStatus": 401,
+      "expectedStatus": "400|401",
+      "memoryBeforeMb": 471.9741744995117,
+      "memoryAfterMb": 472.06724548339844,
+      "passed": true,
+      "notes": "Safely rejected corrupted multipart (HTTP 401)"
+    }
+  ],
+  "protocolResults": [
+    {
+      "testName": "Corrupted Content-Type Header",
+      "endpoint": "/api/v1/auth/login",
+      "technique": "Malformed charset in Content-Type",
+      "httpStatus": 400,
+      "passed": true,
+      "notes": "Handled cleanly with HTTP 400"
+    },
+    {
+      "testName": "Missing Host Header (HTTP/1.1)",
+      "endpoint": "/api/v1/health",
+      "technique": "Omission of mandatory Host header in HTTP/1.1",
+      "httpStatus": 400,
+      "passed": true,
+      "notes": "Node HTTP engine correctly rejected with 400 Bad Request"
+    },
+    {
+      "testName": "Mismatched Content-Length",
+      "endpoint": "/api/v1/auth/login",
+      "technique": "Declared Content-Length: 1000, truncated body sent",
+      "httpStatus": 408,
+      "passed": true,
+      "notes": "Server safely handled truncated body without hanging (HTTP 408)"
+    },
+    {
+      "testName": "Overlong Header (20KB)",
+      "endpoint": "/api/v1/health",
+      "technique": "Single HTTP header exceeding 16KB maxHeaderSize",
+      "httpStatus": 431,
+      "passed": true,
+      "notes": "Node parser returned 431 Request Header Fields Too Large"
+    }
+  ]
+}

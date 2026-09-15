@@ -1872,6 +1872,11 @@ router.post('/expenses', async (req: Request, res: Response) => {
 router.put('/expenses/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const existing = await db.expenseRecord.findUnique({ where: { id: String(id) } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Expense record not found' });
+    }
+
     const {
       title,
       category,
@@ -1883,6 +1888,10 @@ router.put('/expenses/:id', async (req: Request, res: Response) => {
       status,
       notes,
     } = req.body;
+
+    if (amount !== undefined && isNaN(parseFloat(amount))) {
+      return res.status(400).json({ error: 'Invalid amount value' });
+    }
 
     const updated = await db.expenseRecord.update({
       where: { id: String(id) },
@@ -1911,8 +1920,11 @@ router.put('/expenses/:id', async (req: Request, res: Response) => {
 
     res.json({ expense: updated, tallyLiveSynced: liveSynced });
   } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return res.status(404).json({ error: 'Expense record not found' });
+    }
     console.error('Error updating expense record:', error);
-    res.status(500).json({ error: error.message || 'Failed to update expense record' });
+    res.status(400).json({ error: error.message || 'Failed to update expense record' });
   }
 });
 
@@ -2033,6 +2045,11 @@ router.post('/society-funds', async (req: Request, res: Response) => {
 router.put('/society-funds/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const existing = await db.societyFund.findUnique({ where: { id: String(id) } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Society fund not found' });
+    }
+
     const {
       fundName,
       fundType,
@@ -2045,6 +2062,10 @@ router.put('/society-funds/:id', async (req: Request, res: Response) => {
       status,
       notes,
     } = req.body;
+
+    if (amount !== undefined && isNaN(parseFloat(amount))) {
+      return res.status(400).json({ error: 'Invalid amount value' });
+    }
 
     const updated = await db.societyFund.update({
       where: { id: String(id) },
@@ -2068,8 +2089,11 @@ router.put('/society-funds/:id', async (req: Request, res: Response) => {
 
     res.json({ societyFund: updated, tallyLiveSynced: liveSynced });
   } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return res.status(404).json({ error: 'Society fund not found' });
+    }
     console.error('Error updating society fund:', error);
-    res.status(500).json({ error: error.message || 'Failed to update society fund' });
+    res.status(400).json({ error: error.message || 'Failed to update society fund' });
   }
 });
 
@@ -2172,7 +2196,15 @@ router.post('/cash-registers', async (req: Request, res: Response) => {
 router.put('/cash-registers/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const existing = await db.cashRegister.findUnique({ where: { id: String(id) } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Cash register not found' });
+    }
+
     const { registerName, custodianName, currentBalance, isDefault } = req.body;
+    if (currentBalance !== undefined && isNaN(parseFloat(currentBalance))) {
+      return res.status(400).json({ error: 'Invalid currentBalance value' });
+    }
 
     const updated = await db.cashRegister.update({
       where: { id: String(id) },
@@ -2187,8 +2219,11 @@ router.put('/cash-registers/:id', async (req: Request, res: Response) => {
 
     res.json({ cashRegister: updated });
   } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return res.status(404).json({ error: 'Cash register not found' });
+    }
     console.error('Error updating cash register:', error);
-    res.status(500).json({ error: error.message || 'Failed to update cash register' });
+    res.status(400).json({ error: error.message || 'Failed to update cash register' });
   }
 });
 

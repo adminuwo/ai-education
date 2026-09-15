@@ -210,7 +210,17 @@ export const fileApi = {
   list: (orgId) => api.get('/files', { params: { orgId } }).then((r) => r.data),
   listByChannel: (orgId, channelId) => api.get('/files', { params: { orgId, channelId } }).then((r) => r.data),
   delete: (id) => api.delete(`/files/${id}`).then((r) => r.data),
-  download: (id) => `${API_BASE}/files/${id}/download?token=${encodeURIComponent(getAccessToken() || '')}`,
+  download: async (id, fileName = 'download') => {
+    const response = await api.get(`/files/${id}/download`, { responseType: 'blob' });
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+  },
 };
 
 export const searchApi = {

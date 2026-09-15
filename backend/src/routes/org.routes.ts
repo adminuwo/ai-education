@@ -2002,6 +2002,12 @@ router.delete('/:orgId/members/:membershipId', async (req, res, next) => {
     if (!currentMember) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
+
+    const callerRank = ROLE_RANKS[currentMember.role] ?? -2;
+    if (callerRank < 4 && req.user!.systemRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Insufficient permissions to remove members.' });
+    }
+
     const target = await prisma.membership.findUnique({ where: { id: req.params.membershipId } });
     if (!target) {
       return res.json({ ok: true, message: 'Member already removed' });
@@ -2013,7 +2019,6 @@ router.delete('/:orgId/members/:membershipId', async (req, res, next) => {
       return res.status(400).json({ error: 'Cannot remove the organization owner' });
     }
 
-    const callerRank = ROLE_RANKS[currentMember.role] ?? -2;
     const targetRank = ROLE_RANKS[target.role] ?? -2;
 
     if (targetRank >= callerRank) {

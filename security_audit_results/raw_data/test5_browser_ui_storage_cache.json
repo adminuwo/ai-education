@@ -1,0 +1,215 @@
+{
+  "timestamp": "2026-09-15T05:53:11.139Z",
+  "routesCrawledCount": 17,
+  "errorBoundariesTriggered": 0,
+  "routeResults": [
+    {
+      "route": "/login",
+      "status": "LOADED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/reset-password",
+      "status": "LOADED",
+      "finalUrl": "http://127.0.0.1:55940/reset-password",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/app/home",
+      "status": "LOADED",
+      "finalUrl": "http://127.0.0.1:55940/app/home",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "route": "/app/tasks",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/homework",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/timetable",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/my-payslips",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/fee-status",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/ai",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/meetings",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/files",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/analytics",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/classroom",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/admin",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/role-permissions",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/student-id-generator",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    },
+    {
+      "route": "/app/profile",
+      "status": "REDIRECTED",
+      "finalUrl": "http://127.0.0.1:55940/login",
+      "title": "Convee",
+      "errorBoundaryTriggered": false,
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      ]
+    }
+  ],
+  "storageAudit": {
+    "localStorageKeys": [
+      "theme",
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_posthog"
+    ],
+    "localStorageEntries": {
+      "theme": "light",
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_posthog": "{\"$device_id\":\"01a0a39f-f315-7...[TRUNCATED]"
+    },
+    "containsPlainPasswords": false,
+    "containsTokens": false,
+    "sessionStorageEntries": {
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_posthog": "{\"$sdk_debug_extensions_init_method\":\"synchronous\",\"$sdk_debug_extensions_init_time_ms\":1,\"$sdk_debug_replay_remote_trigger_matching_config\":\"v2_trigger_groups\",\"$sdk_debug_replay_trigger_groups_count\":2,\"$sdk_debug_replay_event_trigger_status\":\"trigger_disabled\",\"$sdk_debug_replay_url_trigger_status\":\"trigger_disabled\",\"$sdk_debug_replay_linked_flag_trigger_status\":\"trigger_pending\",\"$sdk_debug_replay_matched_recording_trigger_groups\":[]}",
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_session_registered_properties": "[\"$sdk_debug_extensions_init_method\",\"$sdk_debug_extensions_init_time_ms\",\"$sdk_debug_replay_remote_trigger_matching_config\",\"$sdk_debug_replay_trigger_groups_count\",\"$sdk_debug_replay_event_trigger_status\",\"$sdk_debug_replay_url_trigger_status\",\"$sdk_debug_replay_linked_flag_trigger_status\",\"$sdk_debug_replay_matched_recording_trigger_groups\"]",
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_primary_window_exists": "true",
+      "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_window_id": "\"01a0a39f-f8c4-7a55-af41-320a7a01ceac\""
+    },
+    "indexedDbDatabases": [],
+    "documentCookies": "ph_phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP_posthog=%7B%22%24device_id%22%3A%2201a0a39f-f315-7e48-ba7e-968ca2054cf9%22%2C%22distinct_id%22%3A%2201a0a39f-f315-7e48-ba7e-968ca2054cf9%22%2C%22%24sesid%22%3A%5B1789451589495%2C%2201a0a39f-f8c4-7a55-af41-32092aa5343e%22%2C1789451565252%5D%2C%22%24user_state%22%3A%22anonymous%22%7D",
+    "verdict": "PASS",
+    "findings": [
+      "PASS: Zero passwords, hashes, or encryption keys found in browser storage",
+      "PASS: Tokens stored in secure HttpOnly cookies",
+      "PASS: indexedDB is clean (no offline unencrypted local data stores)"
+    ]
+  },
+  "cacheHeaderResults": []
+}

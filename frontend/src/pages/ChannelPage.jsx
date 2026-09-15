@@ -1104,11 +1104,15 @@ export default function ChannelPage() {
                       <Sparkles className="h-3 w-3" /> Ask AI
                     </Button>
 
-                    <a href={fileApi.download(f.id)} download={f.originalName}>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" title="Download file">
-                        <Download className="h-3.5 w-3.5" />
-                      </Button>
-                    </a>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => fileApi.download(f.id, f.originalName)}
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      title="Download file"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                    </Button>
 
                     {(f.uploaderId === user?.id || ['DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'ADMIN'].includes(currentOrg?.role)) && (
                       <Button variant="ghost" size="icon" onClick={() => handleDeleteStudyMaterial(f.id)} className="h-7 w-7 text-muted-foreground hover:text-destructive" title="Remove material">

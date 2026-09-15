@@ -88,11 +88,14 @@ export default function FilesPage() {
                   <td className="px-4 py-2 text-muted-foreground">{format(new Date(f.createdAt), 'PP')}</td>
                   <td className="px-4 py-2 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <a href={fileApi.download(f.id)} download={f.originalName}>
-                        <Button variant="ghost" size="sm" title="Download file">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </a>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Download file"
+                        onClick={() => fileApi.download(f.id, f.originalName)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                       {(f.uploaderId === user?.id || ['DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'ADMIN', 'OWNER'].includes(currentOrg?.role)) && (
                         <Button
                           variant="ghost"

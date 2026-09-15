@@ -126,7 +126,9 @@ router.post('/:orgId/roles', async (req, res, next) => {
     if (!authCheck.allowed) return res.status(403).json({ error: authCheck.error });
 
     const { role, description, permissions } = req.body;
-    if (!role || !role.trim()) return res.status(400).json({ error: 'Role name is required' });
+    if (!role || typeof role !== 'string' || !role.trim()) {
+      return res.status(400).json({ error: 'Role name must be a non-empty string' });
+    }
 
     const cleanRoleName = role.trim().toUpperCase().replace(/\s+/g, '_');
 

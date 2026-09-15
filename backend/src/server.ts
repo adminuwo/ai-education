@@ -77,8 +77,26 @@ const authLimiter = rateLimit({
     return email ? `${ip}:${email}` : ip;
   },
 });
+
+// Dedicated Password Reset Limiter (OWASP Anti-Flooding & Notification Fatigue Protection)
+// skipSuccessfulRequests: false ensures that even anti-enumeration 200 responses are counted.
+const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15-minute window
+  max: 5, // Strict limit: 5 reset requests per 15 min per IP/email
+  skipSuccessfulRequests: false,
+  standardHeaders: true,
+  legacyHeaders: false,
+  statusCode: 429,
+  message: { error: 'Too many password reset requests. Please wait 15 minutes before trying again.' },
+  keyGenerator: (req) => {
+    const email = req.body?.email ? String(req.body.email).toLowerCase().trim() : '';
+    const ip = req.ip || req.socket.remoteAddress || '127.0.0.1';
+    return email ? `${ip}:${email}` : ip;
+  },
+});
+
 app.use('/api/v1/auth/login', authLimiter);
-app.use('/api/v1/auth/forgot-password', authLimiter);
+app.use('/api/v1/auth/forgot-password', passwordResetLimiter);
 app.use('/api/v1/auth/reset-password', authLimiter);
 
 // Anti-Caching Headers for Authenticated API Endpoints (CASA Tier-2 Data Minimization & Anti-Leak)
