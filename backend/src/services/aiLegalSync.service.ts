@@ -712,3 +712,113 @@ export async function submitAiLegalFeatureRequest(payload: FeatureRequestPayload
     };
   }
 }
+
+/**
+ * Retrieves feature requests from the AI-Legal 'organizations' collection.
+ * If orgSlug is provided, filters by that organization, otherwise returns all.
+ */
+export async function getAiLegalFeatureRequests(filter?: { orgSlug?: string; orgName?: string }) {
+  try {
+    const client = await getMongoClient();
+    if (!client) {
+      logger.warn('[AI-Legal Feature Requests] MongoDB unreachable.');
+      return [];
+    }
+
+    const db = client.db(env.AI_LEGAL_DB_NAME || 'AISA');
+    const orgsCol = db.collection('organizations');
+
+    const query: any = { type: 'FEATURE_ADDON_REQUEST' };
+    if (filter?.orgSlug) {
+      query.organizationSlug = filter.orgSlug;
+    }
+
+    const docs = await orgsCol.find(query).sort({ createdAt: -1 }).toArray();
+    return docs.map((d: any) => ({
+      id: d._id.toString(),
+      organizationName: d.organizationName,
+      organizationSlug: d.organizationSlug,
+      orgId: d.orgId || '',
+      userEmail: d.email,
+      userName: d.userName || '',
+      feature: d.feature,
+      status: d.status || 'pending',
+      adminNotes: d.adminNotes || '',
+      updatedBy: d.updatedBy || '',
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
+    }));
+  } catch (err: any) {
+    logger.error({ err: err?.message }, '[AI-Legal Feature Requests] Error fetching requests.');
+    return [];
+  }
+}
+
+/**
+ * Updates the status (approved/rejected/in_progress/pending) of an AI-Legal feature request.
+ * Strictly operates on the 'organizations' collection.
+ */
+export async function updateAiLegalFeatureRequestStatus(
+  requestId: string,
+  status: string,
+  adminNotes?: string,
+  updatedBy?: string
+) {
+  try {
+    const client = await getMongoClient();
+    if (!client) {
+      return { success: false, error: 'AI-Legal database is unreachable.' };
+    }
+
+    let objId: ObjectId;
+    try {
+      objId = new ObjectId(requestId);
+    } catch {
+      return { success: false, error: 'Invalid feature request ID.' };
+    }
+
+    const db = client.db(env.AI_LEGAL_DB_NAME || 'AISA');
+    const orgsCol = db.collection('organizations');
+
+    const now = new Date();
+    const updateFields: any = {
+      status: status.toLowerCase(),
+      updatedAt: now,
+    };
+
+    if (typeof adminNotes === 'string') {
+      updateFields.adminNotes = adminNotes.trim();
+    }
+    if (updatedBy) {
+      updateFields.updatedBy = updatedBy;
+    }
+
+    const res = await orgsCol.findOneAndUpdate(
+      { _id: objId, type: 'FEATURE_ADDON_REQUEST' },
+      { $set: updateFields },
+      { returnDocument: 'after' }
+    );
+
+    if (!res) {
+      return { success: false, error: 'Feature request not found.' };
+    }
+
+    logger.info(`[AI-Legal Feature Request] Updated request ${requestId} to status: "${status}"`);
+    return {
+      success: true,
+      updatedDoc: {
+        id: res._id.toString(),
+        organizationName: res.organizationName,
+        organizationSlug: res.organizationSlug,
+        feature: res.feature,
+        status: res.status,
+        adminNotes: res.adminNotes,
+        updatedBy: res.updatedBy,
+        updatedAt: res.updatedAt,
+      },
+    };
+  } catch (err: any) {
+    logger.error({ err: err?.message }, '[AI-Legal Feature Request] Error updating status.');
+    return { success: false, error: err?.message || 'Failed to update feature request.' };
+  }
+}

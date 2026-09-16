@@ -6,7 +6,7 @@ import { orgApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Scale, Send, Building2, Mail, Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function AiLegalFeatureRequestModal({ open, onOpenChange, currentOrg, user }) {
+export default function AiLegalFeatureRequestModal({ open, onOpenChange, currentOrg, user, onSuccess }) {
   const [feature, setFeature] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -33,6 +33,7 @@ export default function AiLegalFeatureRequestModal({ open, onOpenChange, current
         setFeature('');
         setSubmitted(false);
         onOpenChange(false);
+        onSuccess?.();
       }, 1500);
     } catch (err) {
       toast.error(err?.response?.data?.error || 'Failed to submit feature request. Please try again.');

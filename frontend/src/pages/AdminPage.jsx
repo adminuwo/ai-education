@@ -20,6 +20,7 @@ import StudentIDGenerator from '@/components/admin/StudentIDGenerator';
 import OrgRenameModal from '@/components/org/OrgRenameModal';
 import AcademicPromotionModal from '@/components/admin/AcademicPromotionModal';
 import AiLegalFeatureRequestModal from '@/components/admin/AiLegalFeatureRequestModal';
+import AiLegalFeatureRequestsTab from '@/components/admin/AiLegalFeatureRequestsTab';
 
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
@@ -71,6 +72,7 @@ export default function AdminPage() {
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [promotionModalOpen, setPromotionModalOpen] = useState(false);
   const [featureModalOpen, setFeatureModalOpen] = useState(false);
+  const [featureRefreshKey, setFeatureRefreshKey] = useState(0);
 
   const facultyMembers = useMemo(() => {
     return members.filter(
@@ -375,6 +377,15 @@ export default function AdminPage() {
           <TabsTrigger value="members"><Users className="h-3.5 w-3.5 mr-1" /> Members</TabsTrigger>
           <TabsTrigger value="structure"><Layers className="h-3.5 w-3.5 mr-1" /> Structure</TabsTrigger>
           <TabsTrigger value="projects"><Building2 className="h-3.5 w-3.5 mr-1" /> Projects</TabsTrigger>
+          {(Boolean(
+            currentOrg?.hasAiLegal ||
+            currentOrg?.addons?.includes('AI_LEGAL') ||
+            /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
+          )) && (
+            <TabsTrigger value="feature-requests">
+              <Scale className="h-3.5 w-3.5 mr-1 text-purple-500" /> AI-Legal Requests
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="members">
@@ -1123,6 +1134,21 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {(Boolean(
+          currentOrg?.hasAiLegal ||
+          currentOrg?.addons?.includes('AI_LEGAL') ||
+          /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
+        )) && (
+          <TabsContent value="feature-requests">
+            <AiLegalFeatureRequestsTab
+              currentOrg={currentOrg}
+              isSuperAdmin={false}
+              onRequestNew={() => setFeatureModalOpen(true)}
+              refreshTrigger={featureRefreshKey}
+            />
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Invite Dialog */}
@@ -1420,6 +1446,7 @@ export default function AdminPage() {
         onOpenChange={setFeatureModalOpen}
         currentOrg={currentOrg}
         user={user}
+        onSuccess={() => setFeatureRefreshKey((k) => k + 1)}
       />
     </motion.div>
   );

@@ -78,6 +78,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 import CustomTooltip from '@/components/CustomTooltip';
+import AiLegalFeatureRequestsTab from '@/components/admin/AiLegalFeatureRequestsTab';
 import { toast } from 'sonner';
 
 function KpiCard({ icon: Icon, label, value, subtext, color = 'text-primary' }) {
@@ -648,6 +649,18 @@ export default function SuperAdminPage() {
               {bugMetrics?.total || 0}
             </Badge>
           )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('feature-requests')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shrink-0 ${
+            activeTab === 'feature-requests'
+              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+          }`}
+        >
+          <Scale className="h-4 w-4" />
+          AI-Legal Requests
         </button>
       </div>
 
@@ -1869,6 +1882,13 @@ export default function SuperAdminPage() {
               )}
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* ================= TAB 4: AI-LEGAL FEATURE REQUESTS ================= */}
+      {activeTab === 'feature-requests' && (
+        <div className="space-y-6">
+          <AiLegalFeatureRequestsTab isSuperAdmin={true} />
         </div>
       )}
 

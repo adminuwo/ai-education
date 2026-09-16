@@ -122,6 +122,8 @@ export const orgApi = {
   getAiLegalTelemetry: (orgId) => api.get(`/orgs/${orgId}/ai-legal-telemetry`).then((r) => r.data),
   renewAiLegal: (orgId) => api.post(`/orgs/${orgId}/ai-legal-renew`).then((r) => r.data),
   requestAiLegalFeature: (orgId, feature) => api.post(`/orgs/${orgId}/ai-legal-feature-request`, { feature }).then((r) => r.data),
+  getAiLegalFeatureRequests: (orgId, params = {}) => api.get(`/orgs/${orgId}/ai-legal-feature-requests`, { params }).then((r) => r.data),
+  updateAiLegalFeatureRequest: (requestId, data) => api.patch(`/orgs/global/ai-legal-feature-requests/${requestId}`, data).then((r) => r.data),
 };
 
 
@@ -361,6 +363,8 @@ export const superAdminApi = {
   listOrgs: () => api.get('/orgs').then((r) => r.data),
   updateOrgAddons: (orgId, data) => api.patch(`/orgs/${orgId}/addons`, data).then((r) => r.data),
   renewAiLegalOrg: (orgId) => api.post(`/orgs/${orgId}/ai-legal-renew`).then((r) => r.data),
+  getAiLegalFeatureRequests: (params = {}) => api.get('/orgs/global/ai-legal-feature-requests', { params: { scope: 'all', ...params } }).then((r) => r.data),
+  updateAiLegalFeatureRequest: (requestId, data) => api.patch(`/orgs/global/ai-legal-feature-requests/${requestId}`, data).then((r) => r.data),
 };
 
 export const bugApi = {

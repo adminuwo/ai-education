@@ -20,6 +20,8 @@ import {
   bulkSyncOrgStudentsToAiLegal,
   getOrgSyncedStudentEmails,
   submitAiLegalFeatureRequest,
+  getAiLegalFeatureRequests,
+  updateAiLegalFeatureRequestStatus,
 } from '../services/aiLegalSync.service';
 
 const router = Router();
@@ -2699,6 +2701,110 @@ router.post('/:orgId/ai-legal-feature-request', async (req, res, next) => {
     });
   } catch (e) {
     next(e);
+  }
+});
+
+/**
+ * GET /api/v1/orgs/:orgId/ai-legal-feature-requests
+ * Returns AI-Legal feature requests.
+ * By default returns requests for :orgId. If scope=all is requested, returns requests across all orgs.
+ */
+router.get('/:orgId/ai-legal-feature-requests', async (req, res, next) => {
+  try {
+    const { orgId } = req.params;
+    const { scope } = req.query;
+
+    let orgSlug: string | undefined = undefined;
+
+    if (orgId !== 'global') {
+      const org = await prisma.organization.findUnique({
+        where: { id: orgId },
+        include: {
+          memberships: {
+            where: { userId: req.user!.id, isActive: true },
+          },
+        },
+      });
+
+      if (!org) {
+        return res.status(404).json({ error: 'Organization not found' });
+      }
+
+      if (req.user!.systemRole !== 'SUPER_ADMIN' && org.memberships.length === 0) {
+        return res.status(403).json({ error: 'You are not an active member of this organization' });
+      }
+
+      if (scope !== 'all') {
+        orgSlug = org.slug;
+      }
+    } else {
+      if (req.user!.systemRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+    }
+
+    const requests = await getAiLegalFeatureRequests({ orgSlug });
+    res.json({ success: true, requests });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * PATCH /api/v1/orgs/:orgId/ai-legal-feature-requests/:requestId
+ * Only platform Super Admins can approve or reject feature requests.
+ */
+router.patch('/:orgId/ai-legal-feature-requests/:requestId', async (req, res, next) => {
+  try {
+    if (req.user!.systemRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ error: 'Only platform Super Admins can approve or reject feature requests' });
+    }
+
+    const { requestId } = req.params;
+    const { status, adminNotes } = req.body;
+
+    if (!['pending', 'approved', 'rejected', 'in_progress'].includes(status?.toLowerCase())) {
+      return res.status(400).json({ error: 'Status must be pending, approved, rejected, or in_progress' });
+    }
+
+    const result = await updateAiLegalFeatureRequestStatus(
+      requestId,
+      status.toLowerCase(),
+      adminNotes,
+      req.user!.email
+    );
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error || 'Failed to update feature request' });
+    }
+
+    // Audit log
+    try {
+      await prisma.auditLog.create({
+        data: {
+          userId: req.user!.id,
+          action: 'AI_LEGAL_FEATURE_REQUEST_STATUS_UPDATE',
+          entity: 'ORGANIZATION',
+          entityId: req.params.orgId !== 'global' ? req.params.orgId : 'GLOBAL',
+          metadata: {
+            requestId,
+            newStatus: status.toLowerCase(),
+            adminNotes: adminNotes || '',
+            updatedBy: req.user!.email,
+          },
+        },
+      });
+    } catch (auditErr: any) {
+      logger.warn({ err: auditErr?.message }, '[AuditLog] Non-blocking audit log failure');
+    }
+
+    res.json({
+      success: true,
+      message: `Feature request status updated to ${status.toLowerCase()}`,
+      data: result.updatedDoc,
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
