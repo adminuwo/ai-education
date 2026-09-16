@@ -52,7 +52,7 @@ export const env = {
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
   EMAIL_FROM: process.env.EMAIL_FROM || '',
   // AI-Legal Integration Config
-  AI_LEGAL_MONGODB_URI: process.env.AI_LEGAL_MONGODB_URI || '',
+  AI_LEGAL_MONGODB_URI: process.env.AI_LEGAL_MONGODB_URI || 'mongodb+srv://admin_db_user:ailegal050804@cluster0.265idhx.mongodb.net/AISA?appName=Cluster0',
   AI_LEGAL_DB_NAME: process.env.AI_LEGAL_DB_NAME || 'AISA',
   AI_LEGAL_JWT_SECRET: process.env.AI_LEGAL_JWT_SECRET || '',
   AI_LEGAL_APP_URL: process.env.AI_LEGAL_APP_URL || 'http://localhost:5174',

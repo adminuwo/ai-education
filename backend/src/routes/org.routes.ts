@@ -2715,6 +2715,7 @@ router.get('/:orgId/ai-legal-feature-requests', async (req, res, next) => {
     const { scope } = req.query;
 
     let orgSlug: string | undefined = undefined;
+    let orgName: string | undefined = undefined;
 
     if (orgId !== 'global') {
       const org = await prisma.organization.findUnique({
@@ -2734,8 +2735,14 @@ router.get('/:orgId/ai-legal-feature-requests', async (req, res, next) => {
         return res.status(403).json({ error: 'You are not an active member of this organization' });
       }
 
-      if (scope !== 'all') {
+      // Regular organization members can ONLY see requests for their own campus.
+      // Cross-organization visibility is strictly restricted to platform SUPER_ADMIN.
+      if (req.user!.systemRole === 'SUPER_ADMIN' && scope === 'all') {
+        orgSlug = undefined;
+        orgName = undefined;
+      } else {
         orgSlug = org.slug;
+        orgName = org.name;
       }
     } else {
       if (req.user!.systemRole !== 'SUPER_ADMIN') {
@@ -2743,7 +2750,7 @@ router.get('/:orgId/ai-legal-feature-requests', async (req, res, next) => {
       }
     }
 
-    const requests = await getAiLegalFeatureRequests({ orgSlug });
+    const requests = await getAiLegalFeatureRequests({ orgSlug, orgName });
     res.json({ success: true, requests });
   } catch (err) {
     next(err);

@@ -138,7 +138,7 @@ gcloud run deploy $BackendService `
     --min-instances 0 `
     --max-instances 10 `
     --session-affinity `
-    --set-env-vars "NODE_ENV=production,DATABASE_URL=${DatabaseUrl},JWT_SECRET=${JwtSecret},LLM_BRIDGE_URL=${llmBridgeUrl},VERTEX_PROJECT_ID=${ProjectId},VERTEX_LOCATION=${Region},GCS_PROJECT_ID=${ProjectId},GCS_BUCKET_NAME=${GcsBucket},CORS_ORIGINS=*" `
+    --set-env-vars "NODE_ENV=production,DATABASE_URL=${DatabaseUrl},JWT_SECRET=${JwtSecret},LLM_BRIDGE_URL=${llmBridgeUrl},VERTEX_PROJECT_ID=${ProjectId},VERTEX_LOCATION=${Region},GCS_PROJECT_ID=${ProjectId},GCS_BUCKET_NAME=${GcsBucket},CORS_ORIGINS=*,AI_LEGAL_MONGODB_URI=mongodb+srv://admin_db_user:ailegal050804@cluster0.265idhx.mongodb.net/AISA?appName=Cluster0,AI_LEGAL_DB_NAME=AISA" `
     --quiet
 
 $backendUrl = (gcloud run services describe $BackendService --region $Region --format="value(status.url)").Trim()

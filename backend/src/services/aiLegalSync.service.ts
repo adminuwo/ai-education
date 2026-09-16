@@ -730,7 +730,16 @@ export async function getAiLegalFeatureRequests(filter?: { orgSlug?: string; org
 
     const query: any = { type: 'FEATURE_ADDON_REQUEST' };
     if (filter?.orgSlug) {
-      query.organizationSlug = filter.orgSlug;
+      const escapedSlug = filter.orgSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const conditions: any[] = [
+        { organizationSlug: filter.orgSlug },
+        { organizationSlug: new RegExp(`^${escapedSlug}$`, 'i') },
+      ];
+      if (filter.orgName) {
+        const escapedName = filter.orgName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        conditions.push({ organizationName: new RegExp(`^${escapedName}$`, 'i') });
+      }
+      query.$or = conditions;
     }
 
     const docs = await orgsCol.find(query).sort({ createdAt: -1 }).toArray();

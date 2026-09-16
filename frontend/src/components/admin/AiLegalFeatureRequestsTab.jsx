@@ -30,7 +30,6 @@ import {
 export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = false, onRequestNew, refreshTrigger }) {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [scope, setScope] = useState('org'); // 'org' | 'all'
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionDialog, setActionDialog] = useState({
@@ -45,7 +44,7 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
     setLoading(true);
     try {
       const orgId = currentOrg?.id || 'global';
-      const effectiveScope = isSuperAdmin ? 'all' : scope;
+      const effectiveScope = isSuperAdmin ? 'all' : 'org';
       const res = await orgApi.getAiLegalFeatureRequests(orgId, { scope: effectiveScope });
       setRequests(res?.requests || []);
     } catch (err) {
@@ -54,7 +53,7 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
     } finally {
       setLoading(false);
     }
-  }, [currentOrg?.id, isSuperAdmin, scope]);
+  }, [currentOrg?.id, isSuperAdmin]);
 
   useEffect(() => {
     loadRequests();
@@ -202,7 +201,7 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
                   <CardDescription className="text-xs text-muted-foreground">
                     {isSuperAdmin
                       ? 'Review, approve, and prioritize legal technology modules requested by educational institutions.'
-                      : 'Track the live approval status of legal AI features and explore roadmap ideas submitted by other campuses.'}
+                      : 'Track the live review and approval status of AI-Legal features requested for your institution.'}
                   </CardDescription>
                 </div>
               </div>
@@ -227,42 +226,13 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
             </div>
           </div>
 
-          {/* Scope Toggle & Filter Controls */}
+          {/* Filter Controls */}
           <div className="pt-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-            {/* Scope tabs for regular org admins */}
-            {!isSuperAdmin && (
-              <div className="inline-flex items-center bg-muted/60 p-1 rounded-lg border border-border text-xs shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setScope('org')}
-                  className={`px-3 py-1 rounded-md font-medium transition-all ${
-                    scope === 'org'
-                      ? 'bg-background text-foreground shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  This Campus ({currentOrg?.name?.split(',')[0] || 'My Org'})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScope('all')}
-                  className={`px-3 py-1 rounded-md font-medium transition-all flex items-center gap-1.5 ${
-                    scope === 'all'
-                      ? 'bg-background text-purple-600 dark:text-purple-400 shadow-xs font-semibold'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Building2 className="h-3 w-3" />
-                  All Campuses (Community Roadmap)
-                </button>
-              </div>
-            )}
-
             <div className="flex items-center gap-2 flex-1 md:justify-end">
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Search feature or campus..."
+                  placeholder={isSuperAdmin ? "Search feature or campus..." : "Search requested features..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-8 h-8 text-xs"
@@ -312,36 +282,27 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
             </div>
           ) : (
             <div className="divide-y divide-border/60">
-              {filteredRequests.map((req) => {
-                const isCurrentOrgReq = currentOrg && req.organizationSlug === currentOrg.slug;
-
-                return (
-                  <div
-                    key={req.id}
-                    className={`p-4 sm:p-5 transition-colors hover:bg-muted/20 flex flex-col md:flex-row md:items-start justify-between gap-4 ${
-                      isCurrentOrgReq && scope === 'all' ? 'bg-purple-500/[0.03] border-l-2 border-purple-500' : ''
-                    }`}
-                  >
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
+              {filteredRequests.map((req) => (
+                <div
+                  key={req.id}
+                  className="p-4 sm:p-5 transition-colors hover:bg-muted/20 flex flex-col md:flex-row md:items-start justify-between gap-4"
+                >
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {isSuperAdmin && (
                         <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-secondary text-secondary-foreground border border-border">
                           <Building2 className="h-3 w-3 text-muted-foreground" />
                           {req.organizationName || 'Educational Institution'}
                         </span>
+                      )}
 
-                        {isCurrentOrgReq && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-purple-500/40 text-purple-600 dark:text-purple-400 font-bold">
-                            Your Campus
-                          </Badge>
-                        )}
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'Recently'}
+                      </span>
 
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'Recently'}
-                        </span>
-
-                        <div className="ml-auto md:ml-0">{renderStatusBadge(req.status)}</div>
-                      </div>
+                      <div className="ml-auto md:ml-0">{renderStatusBadge(req.status)}</div>
+                    </div>
 
                       <div className="text-sm text-foreground font-medium whitespace-pre-wrap leading-relaxed">
                         {req.feature}
@@ -427,8 +388,7 @@ export default function AiLegalFeatureRequestsTab({ currentOrg, isSuperAdmin = f
                       </div>
                     )}
                   </div>
-                );
-              })}
+              ))}
             </div>
           )}
         </CardContent>
