@@ -65,6 +65,39 @@ const SAMPLE_MAINS_QUESTIONS = [
   },
 ];
 
+export const STATE_JUDICIARY_EXAMS = [
+  { value: 'DELHI', label: 'Delhi (DJS - High Analytical & Commercial Courts)', stateName: 'Delhi' },
+  { value: 'UP', label: 'Uttar Pradesh (UP PCS-J - Local Revenue & Tenancy Acts)', stateName: 'Uttar Pradesh' },
+  { value: 'MP', label: 'Madhya Pradesh (MP CJ - Bare Act Precision & Accommodation Control)', stateName: 'Madhya Pradesh' },
+  { value: 'BIHAR', label: 'Bihar (BPSC-J - Procedure, Specific Relief & General Law)', stateName: 'Bihar' },
+  { value: 'RAJASTHAN', label: 'Rajasthan (RJS - Civil, Rent Laws & Local Panchayati Acts)', stateName: 'Rajasthan' },
+  { value: 'HARYANA', label: 'Haryana (HCS Judicial Branch - Urban Rent & Customary Laws)', stateName: 'Haryana' },
+  { value: 'PUNJAB', label: 'Punjab (PCS Judicial Branch - Punjab Courts Act & Rent)', stateName: 'Punjab' },
+  { value: 'MAHARASHTRA', label: 'Maharashtra (Bombay HC JMFC - Rent Control & Land Revenue)', stateName: 'Maharashtra' },
+  { value: 'GUJARAT', label: 'Gujarat (Gujarat HC GJS - Civil Judge & Land Tenure)', stateName: 'Gujarat' },
+  { value: 'WEST_BENGAL', label: 'West Bengal (WBJS - WB Premises Tenancy & Land Reforms)', stateName: 'West Bengal' },
+  { value: 'UTTARAKHAND', label: 'Uttarakhand (UKPSC-J - Zamindari Abolition & Revenue Acts)', stateName: 'Uttarakhand' },
+  { value: 'HIMACHAL', label: 'Himachal Pradesh (HPJS - HP Courts Act & Urban Rent Control)', stateName: 'Himachal Pradesh' },
+  { value: 'JHARKHAND', label: 'Jharkhand (JPSC-J - CNT & SPT Chota Nagpur Tenancy Acts)', stateName: 'Jharkhand' },
+  { value: 'CHHATTISGARH', label: 'Chhattisgarh (CGPSC-J - CG Rent Control & Excise Acts)', stateName: 'Chhattisgarh' },
+  { value: 'ODISHA', label: 'Odisha (OJS - Odisha House Rent Control & Land Reforms)', stateName: 'Odisha' },
+  { value: 'KARNATAKA', label: 'Karnataka (Karnataka HC Civil Judge - Rent & Land Revenue)', stateName: 'Karnataka' },
+  { value: 'TAMIL_NADU', label: 'Tamil Nadu (TNPSC-J - Buildings Lease & Rent Control)', stateName: 'Tamil Nadu' },
+  { value: 'KERALA', label: 'Kerala (Kerala HC Civil Judge - Buildings Lease & Rent Control)', stateName: 'Kerala' },
+  { value: 'TELANGANA', label: 'Telangana (TSJS - Civil Judge & Land Acquisition / Tenancy)', stateName: 'Telangana' },
+  { value: 'ANDHRA', label: 'Andhra Pradesh (APJS - Civil Judge & Buildings Tenancy)', stateName: 'Andhra Pradesh' },
+  { value: 'ASSAM', label: 'Assam & North East (Gauhati HC AJS - Assam Urban Areas Rent)', stateName: 'Assam' },
+  { value: 'JAMMU_KASHMIR', label: 'Jammu & Kashmir (JKPSC-J - Civil Judge & Local Acts)', stateName: 'Jammu & Kashmir' },
+  { value: 'GOA', label: 'Goa (Bombay HC Goa JMFC - Buildings Lease & Rent Control)', stateName: 'Goa' },
+  { value: 'TRIPURA', label: 'Tripura (Tripura HC TJS - Land Revenue & Tenancy)', stateName: 'Tripura' },
+  { value: 'MANIPUR', label: 'Manipur (Manipur HC MJS - Civil Judge & Local Customs)', stateName: 'Manipur' },
+  { value: 'MEGHALAYA', label: 'Meghalaya (Meghalaya HC MJS - Autonomous District Council Laws)', stateName: 'Meghalaya' },
+  { value: 'SIKKIM', label: 'Sikkim (Sikkim HC SJS - Civil Judge Cadre & Local Laws)', stateName: 'Sikkim' },
+  { value: 'ARUNACHAL', label: 'Arunachal Pradesh (Gauhati HC APJS - Customary Laws & Civil Courts)', stateName: 'Arunachal Pradesh' },
+  { value: 'MIZORAM', label: 'Mizoram (Gauhati HC MJS - Civil Judge Cadre)', stateName: 'Mizoram' },
+  { value: 'NAGALAND', label: 'Nagaland (Gauhati HC NJS - Customary Law & Civil Procedure)', stateName: 'Nagaland' },
+];
+
 export default function LegalStudyHubTab({ currentOrg, user }) {
   const [activeSubTab, setActiveSubTab] = useState('library'); // library, planner, transition, mains, drill
 
@@ -437,12 +470,12 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               onChange={(e) => setStateFilter(e.target.value)}
               className="bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-300 h-8 focus:outline-none"
             >
-              <option value="ALL">All States</option>
-              <option value="DELHI">Delhi (DJS)</option>
-              <option value="UP">Uttar Pradesh (PCS-J)</option>
-              <option value="MP">Madhya Pradesh (MP CJ)</option>
-              <option value="BIHAR">Bihar (BPSC-J)</option>
-              <option value="RAJASTHAN">Rajasthan (RJS)</option>
+              <option value="ALL">All States (Pan-India)</option>
+              {STATE_JUDICIARY_EXAMS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.stateName}
+                </option>
+              ))}
             </select>
 
             <Button
@@ -660,12 +693,11 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   onChange={(e) => setPlanState(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200"
                 >
-                  <option value="DELHI">Delhi (DJS - High Analytical & Commercial)</option>
-                  <option value="UP">Uttar Pradesh (UP PCS-J - Local Revenue Acts)</option>
-                  <option value="MP">Madhya Pradesh (MP CJ - Bare Act Precision)</option>
-                  <option value="BIHAR">Bihar (BPSC-J - Procedure & General Law)</option>
-                  <option value="RAJASTHAN">Rajasthan (RJS - Civil & Rent Laws)</option>
-                  <option value="HARYANA">Haryana (HCS Judicial Branch)</option>
+                  {STATE_JUDICIARY_EXAMS.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 

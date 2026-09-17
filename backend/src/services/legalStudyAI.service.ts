@@ -47,7 +47,31 @@ FOCUS STAGE: ${params.stageFocus}
 
 REQUIREMENTS:
 1. Provide a phase-wise breakdown (Foundational Phase $\rightarrow$ Bare Act Mastery & Procedural Laws $\rightarrow$ Mains Answer Writing & Local Laws $\rightarrow$ Mock Drills & Revision).
-2. Detail state-specific local laws (e.g. if Delhi: Delhi Rent Control, Commercial Courts Act; if UP: UP Revenue Code 2006, Urban Buildings Act; if MP: MP Accommodation Control, Land Revenue Code).
+2. Detail state-specific local laws according to the selected state:
+   - Delhi: Delhi Rent Control Act 1958, Commercial Courts Act 2015, High Court Rules.
+   - Uttar Pradesh: UP Revenue Code 2006, UP Urban Buildings Act 1972, UP Municipalities Act.
+   - Madhya Pradesh: MP Accommodation Control Act 1961, MP Land Revenue Code 1959.
+   - Bihar: Bihar Buildings (Lease, Rent & Eviction) Control Act 1982, Bihar Land Reforms.
+   - Rajasthan: Rajasthan Rent Control Act 2001, Rajasthan Land Revenue Act 1956.
+   - Haryana: Haryana Urban (Control of Rent and Eviction) Act 1973, Punjab Courts Act 1918.
+   - Punjab: East Punjab Urban Rent Restriction Act 1949, Punjab Courts Act 1918.
+   - Maharashtra: Maharashtra Rent Control Act 1999, Maharashtra Land Revenue Code 1966, Bombay Police Act.
+   - Gujarat: Gujarat Court Fees Act 2004, Gujarat Rent Control / Land Tenancy Acts.
+   - West Bengal: West Bengal Premises Tenancy Act 1997, West Bengal Land Reforms Act 1955.
+   - Uttarakhand: UP Zamindari Abolition & Land Reforms Act as applicable to UK, UK Urban Buildings Act.
+   - Himachal Pradesh: HP Urban Rent Control Act 1987, HP Courts Act 1976.
+   - Jharkhand: Chota Nagpur Tenancy Act (CNTA) 1908, Santhal Parganas Tenancy Act (SPTA) 1949.
+   - Chhattisgarh: Chhattisgarh Rent Control Act 2011, CG Land Revenue Code, CG Excise Act.
+   - Odisha: Odisha House Rent Control Act, Odisha Land Reforms Act 1960.
+   - Karnataka: Karnataka Rent Act 1999, Karnataka Land Revenue Act 1964.
+   - Tamil Nadu: Tamil Nadu Regulation of Rights and Responsibilities of Landlords and Tenants Act 2017.
+   - Kerala: Kerala Buildings (Lease and Rent Control) Act 1965.
+   - Telangana: Telangana Buildings (Lease, Rent and Eviction) Control Act, Telangana Land Revenue.
+   - Andhra Pradesh: AP Buildings (Lease, Rent and Eviction) Control Act, AP Land Reforms.
+   - Assam & North-East: Assam Urban Areas Rent Control Act 1972, Assam Land and Revenue Regulation 1886.
+   - Jammu & Kashmir: J&K Civil Courts Act, Local Tenancy & Land Revenue enactments.
+   - Goa: Goa Buildings (Lease, Rent and Eviction) Control Act 1968.
+   - Other States: In-depth local acts, rent control legislation, land revenue codes, and customary laws for the jurisdiction.
 3. Emphasize the transition to New Criminal Laws (BNS 2023, BNSS 2023, BSA 2023) alongside legacy comparative references.
 4. Provide daily hourly time-blocks (e.g. 2 hrs Bare Act memorization + 2 hrs Concept study + 1 hr Mains answer writing + 1 hr Current legal GK).
 5. Format in crisp GitHub Markdown with tables and bullet points.`;
