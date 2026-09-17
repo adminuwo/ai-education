@@ -401,6 +401,7 @@ export const legalApi = {
   compareCriminalLaws: (data) => api.post('/legal/ai/law-transition', data).then((r) => r.data),
   solvePYQPaper: (data) => api.post('/legal/ai/solve-pyq', data).then((r) => r.data),
   discoverPYQPaper: (data) => api.post('/legal/pyq/discover', data).then((r) => r.data),
+  exploreStatute: (data) => api.post('/legal/ai/explore-statute', data).then((r) => r.data),
 };
 
 

@@ -33,15 +33,66 @@ export const FOUNDATIONAL_LEGAL_CATALOG = [
     sourceUrl: 'https://www.indiacode.nic.in/handle/123456789/21808',
     sectionCount: 358,
     summary: 'Replaces Indian Penal Code (IPC) 1860. Key changes: organized crime (Sec 111), mob lynching (Sec 103(2)), terrorism (Sec 113), sedition reform (Sec 152 - acts endangering sovereignty), community service penalties.',
-    contentSnippet: `BHARATIYA NYAYA SANHITA, 2023
-CHAPTER I: PRELIMINARY
-1. Short title, commencement and application.
-CHAPTER II: OF PUNISHMENTS
-4. Punishments: Death, Imprisonment for life, Imprisonment (Rigorous/Simple), Forfeiture of property, Fine, Community service.
-CHAPTER VI: OFFENCES AGAINST THE HUMAN BODY
-100. Culpable homicide (Corresponds to Sec 299 IPC).
-101. Murder (Corresponds to Sec 300 IPC).
-103. Punishment for murder: Death or imprisonment for life, and fine. Sub-section (2): Mob lynching on ground of race, caste, community, sex, place of birth, language.`,
+    contentSnippet: `# BHARATIYA NYAYA SANHITA (BNS), 2023
+**[Act No. 45 of 2023] • Official Central Statute • 358 Sections Across 20 Chapters**
+*An Act to consolidate and amend the provisions relating to offences and for matters connected therewith.*
+
+---
+
+### CHAPTER I: PRELIMINARY (Sections 1–3)
+- **Section 1**: Short title, commencement and application. Applies to offences committed within and beyond India.
+- **Section 2**: Definitions: Act, Child, Court of Justice, Dishonestly, Fraudulently, Good faith, Grievous hurt, Harbor, Injury, Man, Month, Offence, Person, Public servant, Reason to believe, Special law, Local law, Valuable security, Vessel, Voluntary, Will, Woman, Wrongful gain, Wrongful loss.
+- **Section 3**: General explanations and common intention (Corresponds to Sec 34 IPC). Acts done by several persons in furtherance of common intention.
+
+### CHAPTER II: OF PUNISHMENTS (Sections 4–13)
+- **Section 4**: Punishments: (1) Death; (2) Imprisonment for life; (3) Imprisonment (Rigorous or Simple); (4) Forfeiture of property; (5) Fine; (6) Community service (New penalty for petty offences: defamation, public intoxication, theft under ₹5,000 upon return).
+- **Section 8**: Commutation of sentence.
+- **Section 9**: Fraction of terms of punishment.
+
+### CHAPTER III: GENERAL EXCEPTIONS (Sections 14–44)
+- **Section 14**: Act done by person bound, or by mistake of fact believing himself bound by law (Corresponds to Sec 76 IPC).
+- **Section 15**: Act of Judge when acting judicially (Sec 77 IPC).
+- **Section 17**: Accident in doing a lawful act (Sec 80 IPC).
+- **Section 20**: Act of child under seven years of age (Doli incapax - Sec 82 IPC).
+- **Section 22**: Act of person of unsound mind (McNaghten Rules - Sec 84 IPC).
+- **Section 23**: Involuntary intoxication (Sec 85 IPC).
+- **Section 34–44**: Right of Private Defence of body and property (Corresponds to Sec 96–106 IPC). When right extends to causing death (Sec 38 BNS / Sec 100 IPC).
+
+### CHAPTER IV: ABETMENT, CRIMINAL CONSPIRACY & ATTEMPT (Sections 45–62)
+- **Section 45**: Abetment of a thing.
+- **Section 61**: Criminal conspiracy defined and punished (Corresponds to Sec 120A/120B IPC).
+- **Section 62**: Punishment for attempting to commit offences (Corresponds to Sec 511 IPC).
+
+### CHAPTER V: OFFENCES AGAINST WOMEN & CHILDREN (Sections 63–99)
+- **Section 63**: Rape defined (Corresponds to Sec 375 IPC).
+- **Section 64**: Punishment for rape: Rigorous imprisonment not less than 10 years, extending to life.
+- **Section 69**: Sexual intercourse by deceitful means or promise to marry (New explicit statutory provision).
+- **Section 70**: Gang rape: Rigorous imprisonment for not less than 20 years or life imprisonment.
+- **Section 80**: Dowry Death (Corresponds to Sec 304B IPC). Minimum 7 years imprisonment to life.
+- **Section 85–86**: Cruelty by husband or relatives of husband (Corresponds to Sec 498A IPC).
+
+### CHAPTER VI: OFFENCES AGAINST THE HUMAN BODY (Sections 100–146)
+- **Section 100**: Culpable homicide defined (Corresponds to Sec 299 IPC).
+- **Section 101**: Murder defined (Corresponds to Sec 300 IPC). 5 Exceptions to Murder.
+- **Section 103(1)**: Punishment for murder: Death or imprisonment for life, and fine (Sec 302 IPC).
+- **Section 103(2)**: Mob Lynching & Hate Murder. When a group of five or more persons acting in concert commits murder on grounds of race, caste, community, sex, place of birth, language, personal belief, each member shall be punished with death or imprisonment for life.
+- **Section 105**: Culpable homicide not amounting to murder (Sec 304 IPC).
+- **Section 106**: Causing death by negligence (Sec 304A IPC). Sub-section (2): Hit-and-run without reporting to police.
+- **Section 111**: Organised crime defined and punished (New chapter provision).
+- **Section 113**: Terrorist act defined and punished (Incorporated into general criminal penal code).
+- **Section 115–124**: Hurt, Grievous Hurt, Acid Attack.
+
+### CHAPTER VII: OFFENCES AGAINST THE STATE (Sections 147–158)
+- **Section 147**: Waging war against the Government of India (Sec 121 IPC).
+- **Section 152**: Act endangering sovereignty, unity and integrity of India (Repeals and replaces Section 124A Sedition IPC with precise democratic and constitutional safeguards).
+
+### CHAPTER XVII: OFFENCES AGAINST PROPERTY (Sections 303–334)
+- **Section 303**: Theft defined and punished (Corresponds to Sec 378/379 IPC). Community service for first-time theft under ₹5,000.
+- **Section 308**: Extortion (Sec 383 IPC).
+- **Section 309**: Robbery (Sec 390 IPC).
+- **Section 310**: Dacoity (Sec 391 IPC).
+- **Section 316**: Criminal breach of trust (Sec 405/406 IPC).
+- **Section 318**: Cheating (Sec 415/420 IPC).`,
   },
   {
     title: 'Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 [Act No. 46 of 2023]',
@@ -52,13 +103,54 @@ CHAPTER VI: OFFENCES AGAINST THE HUMAN BODY
     sourceUrl: 'https://www.indiacode.nic.in/handle/123456789/21809',
     sectionCount: 531,
     summary: 'Replaces Code of Criminal Procedure (CrPC) 1973. Mandates audio-video electronic recording of searches & seizures (Sec 105), Zero FIR nationwide, preliminary inquiry timeline (14 days), trial in absentia for proclaimed offenders (Sec 356).',
-    contentSnippet: `BHARATIYA NAGARIK SURAKSHA SANHITA, 2023
-CHAPTER II: CONSTITUTION OF CRIMINAL COURTS AND OFFICES
-9. Courts of Session. 10. Courts of Judicial Magistrates.
-CHAPTER V: ARREST OF PERSONS
-35. When police may arrest without warrant. Prior permission of Deputy Superintendent of Police required for arrests of elderly or infirm persons accused of offences punishable with less than 3 years.
-CHAPTER VIII: ZERO FIR & INVESTIGATION
-173. Information in cognizable cases (Mandatory Zero FIR recording irrespective of territorial jurisdiction; e-FIR with signature within 3 days).`,
+    contentSnippet: `# BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+**[Act No. 46 of 2023] • Official Procedural Code • 531 Sections Across 39 Chapters**
+*An Act to consolidate and amend the law relating to Criminal Procedure.*
+
+---
+
+### CHAPTER I & II: PRELIMINARY & COURTS (Sections 1–20)
+- **Section 1**: Short title, extent and commencement.
+- **Section 2**: Definitions: Audio-video electronic means, Bail, Bailable offence, Charge, Cognizable offence, Inquiry, Investigation, Judicial proceeding, Police report, Public Prosecutor, Warrant-case, Summons-case.
+- **Section 8–15**: Constitution of Criminal Courts (Sessions Courts, Judicial Magistrates First Class, Chief Judicial Magistrates).
+
+### CHAPTER V: ARREST OF PERSONS (Sections 35–62)
+- **Section 35**: When police may arrest without warrant (Corresponds to Sec 41 CrPC).
+  - Sub-section (7): For offences punishable with less than 3 years imprisonment or elderly persons (above 60 years), no arrest shall be made without prior permission of an officer not below the rank of Deputy Superintendent of Police (DSP).
+- **Section 37**: Designated Police Officer in every district and police station to maintain display boards of arrested persons.
+- **Section 43**: Health and safety of arrested person, mandatory medical examination.
+
+### CHAPTER VII & VIII: SEARCH, SEIZURE & PROCESSES (Sections 94–110)
+- **Section 105 (Mandatory Videography of Search & Seizure)**:
+  - The process of conducting search of a place or seizure of any property under this Code shall be recorded through audio-video electronic means preferably mobile phone.
+  - The police officer shall prepare a list of all things seized and signature of witnesses, and forward the digital recording without delay to the District Magistrate, Sub-divisional Magistrate or Judicial Magistrate.
+
+### CHAPTER XII: INFORMATION TO POLICE & INVESTIGATION (Sections 173–196)
+- **Section 173 (Zero FIR & Electronic Reporting)**:
+  - Corresponds to Section 154 CrPC.
+  - Information regarding cognizable offence may be given orally or through electronic communication (e-FIR), irrespective of the area where the crime was committed (Zero FIR).
+  - e-FIR must be signed by informant within 3 days.
+  - Sub-section (3): Preliminary enquiry permissible for offences punishable between 3 to 7 years, to be completed within 14 days.
+- **Section 175**: Police officer's power to investigate cognizable cases (Sec 156 CrPC).
+- **Section 176**: Procedure for investigation; forensic visit mandatory for offences punishable with 7 years or more.
+- **Section 187 (Default Bail & Police Custody)**:
+  - Corresponds to Section 167(2) CrPC.
+  - Detention in police custody of 15 days can be taken in whole or in parts during the initial 40 or 60 days of the total 60/90 day period.
+  - Right to default bail remains indefeasible upon expiry of 60/90 days without charge sheet.
+- **Section 193**: Police report on completion of investigation (Charge-sheet / Final Report - Sec 173 CrPC). Must be submitted within 90 days. Progress report to informant/victim within 90 days.
+
+### CHAPTER XXIV & XXV: TRIAL PROCEDURE & EVIDENCE (Sections 248–356)
+- **Section 251–260**: Trial before Court of Session.
+- **Section 261–273**: Trial of Warrant-cases by Magistrates.
+- **Section 274–282**: Trial of Summons-cases by Magistrates.
+- **Section 283–290**: Summary Trials.
+- **Section 356 (Trial in Absentia)**:
+  - When a person proclaimed as an absconder fails to appear, trial can proceed and judgment pronounced in his absence after expiry of 90 days from framing of charges.
+
+### CHAPTER XXXIII & XXXIV: BAIL & BONDS (Sections 478–496)
+- **Section 479**: Maximum period for which undertrial prisoner can be detained (First-time offender eligible for release on bail upon completing 1/3rd of maximum sentence).
+- **Section 480**: When bail may be taken in case of non-bailable offence (Sec 437 CrPC).
+- **Section 482 (Anticipatory Bail)**: Direction for grant of bail to person apprehending arrest (Corresponds to Sec 438 CrPC). Guided by *Sushila Aggarwal v. State (NCT of Delhi) (2020) 5 SCC 1*.`,
   },
   {
     title: 'Bharatiya Sakshya Adhiniyam (BSA), 2023 [Act No. 47 of 2023]',
@@ -69,12 +161,103 @@ CHAPTER VIII: ZERO FIR & INVESTIGATION
     sourceUrl: 'https://www.indiacode.nic.in/handle/123456789/21810',
     sectionCount: 170,
     summary: 'Replaces Indian Evidence Act 1872. Extends primary evidence rules to electronic & digital records (Sec 61-63), eliminates archaic distinctions, provides certificate admissibility framework.',
-    contentSnippet: `BHARATIYA SAKSHYA ADHINIYAM, 2023
-CHAPTER II: OF THE RELEVANCY OF FACTS
-CHAPTER V: OF ORAL AND DOCUMENTARY EVIDENCE
-57. Primary evidence. 58. Secondary evidence.
-61. Electronic or digital record: Treated as document with equal legal admissibility.
-63. Admissibility of electronic records: Certificate in Schedule format to establish hash value integrity, device custody, and server provenance.`,
+    contentSnippet: `# BHARATIYA SAKSHYA ADHINIYAM (BSA), 2023
+**[Act No. 47 of 2023] • Official Evidence Code • 170 Sections Across 4 Parts & 12 Chapters**
+*An Act to consolidate and to provide for general rules and principles of evidence for fair trial.*
+
+---
+
+## PART I: PRELIMINARY
+### CHAPTER I: PRELIMINARY & KEY DEFINITIONS (Sections 1–2)
+- **Section 1**: Short title, application, and commencement. Applies to all judicial proceedings in or before any Court, including Courts-martial, but not to affidavits presented to any Court or officer, nor to proceedings before an arbitrator.
+- **Section 2(1)(a) "Court"**: Includes all Judges and Magistrates, and all persons, except arbitrators, legally authorized to take evidence.
+- **Section 2(1)(c) "Document"**: Any matter expressed or described upon any substance by means of letters, figures or marks, or by more than one of those means, intended to be used, or which may be used, for the purpose of recording that matter, including electronic and digital records.
+- **Section 2(1)(d) "Electronic and Digital Record"**: Shall have the meaning assigned to it in clause (t) of sub-section (1) of section 2 of the Information Technology Act, 2000.
+- **Section 2(1)(e) "Evidence"**: Means and includes—
+  1. All statements which the Court permits or requires to be made before it by witnesses, in relation to matters of fact under inquiry (oral evidence);
+  2. All documents including electronic or digital records produced for the inspection of the Court (documentary evidence).
+- **Section 2(1)(h) "Proved"**: A fact is said to be proved when, after considering the matters before it, the Court either believes it to exist, or considers its existence so probable that a prudent man ought, under the circumstances of the particular case, to act upon the supposition that it exists.
+- **Section 2(1)(i) "Disproved"**: A fact is said to be disproved when the Court either believes that it does not exist, or considers its non-existence so probable that a prudent man ought to act upon the supposition that it does not exist.
+- **Section 2(1)(j) "Not Proved"**: A fact is not proved when it is neither proved nor disproved.
+
+---
+
+## PART II: RELEVANCY OF FACTS
+### CHAPTER II: RELEVANCY OF FACTS (Sections 3–14)
+- **Section 3**: Evidence may be given of facts in issue and relevant facts.
+- **Section 4 (Res Gestae)**: Relevancy of facts forming part of same transaction (Corresponds to Sec 6 IEA 1872). Facts which, though not in issue, are so connected with a fact in issue as to form part of the same transaction, are relevant, whether they occurred at the same time and place or at different times and places. Leading case: *Ratten v. R*, *Gentela Vijayavardhan Rao v. State of AP*.
+- **Section 5**: Facts which are the occasion, cause or effect of facts in issue (Sec 7 IEA).
+- **Section 6**: Motive, preparation and previous or subsequent conduct (Sec 8 IEA).
+- **Section 7**: Facts necessary to explain or introduce relevant facts, fixing time/place, identity of parties (Test Identification Parade - TIP) (Sec 9 IEA).
+- **Section 8**: Things said or done by conspirator in reference to common design (Sec 10 IEA).
+- **Section 9**: When facts not otherwise relevant become relevant — Plea of Alibi; inconsistency; highly probable or improbable (Sec 11 IEA).
+
+### ADMISSIONS & CONFESSIONS (Sections 15–24)
+- **Section 15**: Admission defined (Sec 17 IEA). Statement, oral or documentary or contained in electronic form, which suggests any inference as to any fact in issue or relevant fact.
+- **Section 21**: Confession caused by inducement, threat or promise, when irrelevant in criminal proceeding (Sec 24 IEA).
+- **Section 22**: Confession made to police officer not to be proved against person accused of any offence (Sec 25 IEA).
+- **Section 23 (Information Leading to Discovery)**: How much of information received from accused may be proved. Provided that when any fact is deposed to as discovered in consequence of information received from a person accused of any offence, in the custody of a police officer, so much of such information, whether it amounts to a confession or not, as relates distinctly to the fact thereby discovered, may be proved (Corresponds to Sec 27 IEA). Landmark rulings: *Pulukuri Kotayya v. Emperor*, *State of UP v. Deoman Upadhyaya*.
+- **Section 24**: Consideration of proved confession affecting person making it and others jointly under trial for the same offence (Sec 30 IEA).
+
+### STATEMENTS BY PERSONS WHO CANNOT BE CALLED AS WITNESSES (Sections 26–33)
+- **Section 26 (Dying Declaration)**: Cases in which statement of relevant fact by person who is dead or cannot be found, etc., is relevant (Corresponds to Sec 32 IEA).
+  - Sub-section (1): When the statement is made by a person as to the cause of his death, or as to any of the circumstances of the transaction which resulted in his death.
+  - Maxim: *Nemo moriturus praesumitur mentire* (No one at the point of death is presumed to lie).
+  - Landmark rules: *Khushal Rao v. State of Bombay*, *Sharad Birdhichand Sarda v. State of Maharashtra*.
+
+### OPINIONS OF THIRD PERSONS / EXPERTS (Sections 39–45)
+- **Section 39**: Opinions of experts on questions of foreign law, science, art, handwriting, finger impressions, or examiner of electronic evidence (Sec 45 IEA).
+- **Section 40**: Facts bearing upon opinions of experts (Sec 46 IEA).
+
+---
+
+## PART III: PROOF & DOCUMENTARY EVIDENCE
+### CHAPTER IV: OF ORAL EVIDENCE (Sections 55–58)
+- **Section 55**: Proof of facts by oral evidence.
+- **Section 56**: Oral evidence must be direct (Sec 60 IEA). Hearsay rule.
+
+### CHAPTER V: OF DOCUMENTARY & ELECTRONIC EVIDENCE (Sections 59–93)
+- **Section 59**: Proof of contents of documents.
+- **Section 60**: Primary evidence (The document itself produced for inspection of Court).
+- **Section 61 (Legal Admissibility of Electronic Records)**: Nothing in this Adhiniyam shall apply to deny the admissibility, validity, or enforceability of any electronic or digital record as evidence, on the sole ground that it is in electronic or digital form. Such record shall have the same legal effect, validity and enforceability as any paper document.
+- **Section 62**: Secondary evidence defined (Certified copies, copies made by mechanical processes, counterparts).
+- **Section 63 (Admissibility of Electronic Records)**: Corresponds to Section 65B of Indian Evidence Act, 1872.
+  - Sub-section (1): Electronic records stored, recorded, optical, magnetic media or cloud server deemed documents.
+  - Sub-section (4): Certificate requirement to establish device custody, integrity of hash value, and lawful operating condition.
+  - Follows Supreme Court 3-Judge Bench ruling in *Arjun Panditrao Khotkar v. Kailash Kushanrao Gorantyal (2020) 7 SCC 1*.
+
+### CHAPTER VII: OF THE BURDEN OF PROOF (Sections 104–120)
+- **Section 104**: Burden of proof lies on the person who asserts the fact (Sec 101 IEA).
+- **Section 106**: Burden of proof as to particular fact (Sec 103 IEA).
+- **Section 109**: Burden of proving that case of accused comes within general exceptions (Sec 105 IEA).
+- **Section 112**: Burden of proving fact especially within knowledge (Sec 106 IEA - *Shambhu Nath Mehra v. State of Ajmer*).
+- **Section 116**: Birth during marriage conclusive proof of legitimacy (Sec 112 IEA).
+- **Section 117**: Presumption as to abetment of suicide by married woman (Sec 113A IEA).
+- **Section 118**: Presumption as to dowry death (Sec 113B IEA). When a woman dies within 7 years of marriage under abnormal circumstances and cruelty is proved.
+
+---
+
+## PART IV: PRODUCTION & EFFECT OF EVIDENCE
+### CHAPTER IX: OF WITNESSES & PRIVILEGE (Sections 124–139)
+- **Section 124**: Who may testify (Competence of witnesses).
+- **Section 126**: Marital privilege (Communications during marriage).
+- **Section 129**: Professional communications (Attorney-client privilege - Sec 126 IEA).
+- **Section 132**: Accomplice as a competent witness (Sec 133 IEA read with Illustration (b) to Sec 119 BSA).
+
+### CHAPTER X: EXAMINATION OF WITNESSES (Sections 140–165)
+- **Section 141**: Order of examinations (Examination-in-chief, Cross-examination, Re-examination).
+- **Section 145**: Leading questions defined.
+- **Section 146**: When leading questions must not be asked (In chief or re-examination without permission of Court).
+- **Section 149**: Question by party to his own witness (Hostile witness - Sec 154 IEA).
+- **Section 162**: Refreshing memory by reference to contemporaneous writing (Sec 159 IEA).
+- **Section 165**: Judge's plenary power to put questions or order production (Sec 165 IEA).
+
+---
+
+## SCHEDULE: Section 63(4) Certificate Format
+Prescribed statutory certificate format for admissibility of electronic evidence:
+- **Part A**: Device custody, operational status, and certification by person in charge of computer/system.
+- **Part B**: Forensic certification, SHA-256 hash value verification, device MAC address, and provenance verification.`,
   },
   {
     title: 'Code of Civil Procedure, 1908 (CPC) with Order & Rules',
@@ -85,11 +268,55 @@ CHAPTER V: OF ORAL AND DOCUMENTARY EVIDENCE
     sourceUrl: 'https://www.indiacode.nic.in/handle/123456789/2191',
     sectionCount: 158,
     summary: 'Core procedural law for Civil Courts. Critical exam topics: Res Judicata (Sec 11), Sub Judice (Sec 10), Inherent Powers (Sec 151), Execution of Decrees (Order XXI), Temporary Injunctions (Order XXXIX).',
-    contentSnippet: `CODE OF CIVIL PROCEDURE, 1908
-Section 9: Courts to try all civil suits unless barred.
-Section 10: Stay of suit (Res Sub Judice).
-Section 11: Res Judicata (Conditions: Direct & substantial issue, same parties, competent court, heard & finally decided).
-Order VI: Pleadings generally. Order VII: Plaint. Order VIII: Written statement & set-off/counterclaim. Order XXXIX: Temporary injunctions and interlocutory orders.`,
+    contentSnippet: `# CODE OF CIVIL PROCEDURE, 1908 (CPC)
+**[Act No. 5 of 1908] • Fundamental Civil Adjudication Code • 158 Sections & 51 Orders**
+*An Act to consolidate and amend the laws relating to the procedure of the Courts of Civil Judicature.*
+
+---
+
+### PART I: SUITS IN GENERAL (Sections 9–35B)
+- **Section 9**: Courts to try all civil suits unless expressly or impliedly barred.
+- **Section 10 (Res Sub Judice)**: Stay of suit when matter in issue directly and substantially in issue in a previously instituted suit between same parties.
+- **Section 11 (Res Judicata)**: No Court shall try any suit or issue in which the matter directly and substantially in issue has been directly and substantially in issue in a former suit between the same parties and heard and finally decided by a competent Court.
+  - Explanation IV (Constructive Res Judicata): Any matter which might and ought to have been made ground of defence or attack. Leading case: *Forward Construction Co. v. Prabhat Mandal*.
+- **Section 13 & 14**: When foreign judgment not conclusive; presumption as to foreign judgments.
+- **Section 15–20**: Place of Suing (Territorial & Pecuniary Jurisdiction).
+- **Section 26**: Institution of suits by presentation of plaint.
+- **Section 34**: Interest (Pre-suit, pendente lite, and future interest).
+- **Section 35 & 35A**: Costs and Compensatory costs in respect of false or vexatious claims.
+
+### PART II: EXECUTION (Sections 36–74) & ORDER XXI
+- **Section 38**: Court by which decree may be executed.
+- **Section 47**: Questions to be determined by Court executing decree (Bar to separate suit).
+- **Section 51**: Powers of Court to enforce execution (Delivery of property, attachment and sale, arrest and detention).
+- **Section 60**: Property liable to attachment and sale in execution of decree (List of exemptions: tools of artisans, wearing apparel, pension).
+
+### PART III & IV: INCIDENTAL PROCEEDINGS & SUITS IN PARTICULAR CASES
+- **Section 75**: Power of Court to issue commissions.
+- **Section 79–80**: Suits by or against Government. Section 80(1): Two months mandatory statutory notice. Section 80(2): Urgent or immediate relief with leave of Court.
+- **Section 89**: Settlement of disputes outside the Court (Arbitration, Conciliation, Judicial settlement through Lok Adalat, Mediation) - *Afcons Infrastructure Ltd. v. Cherian Varkey*.
+
+### PART VII: APPEALS, REFERENCE & REVISION
+- **Section 96**: Appeal from original decree (First Appeal on fact and law).
+- **Section 100**: Second Appeal to High Court on substantial question of law.
+- **Section 113 & Order XLVI**: Reference to High Court.
+- **Section 114 & Order XLVII**: Review of judgment.
+- **Section 115**: Revision before High Court for jurisdictional errors.
+
+### PART X: INHERENT POWERS
+- **Section 148**: Enlargement of time (Up to 30 days in aggregate).
+- **Section 151**: Inherent powers of the Court to make such orders as may be necessary for ends of justice or to prevent abuse of the process of the Court (*Manohar Lal Chopra v. Rai Raja Seth Hiralal*).
+
+---
+
+### KEY FIRST SCHEDULE ORDERS FOR JUDICIAL MAINS
+- **Order I**: Parties to suits (Joinder, Misjoinder, Non-joinder, Representative suits Rule 8).
+- **Order II**: Frame of suit (Rule 2: Suit to include whole claim; relinquishment of part of claim).
+- **Order VI**: Pleadings generally (Rule 17: Amendment of pleadings; proviso regarding post-trial commencement).
+- **Order VII**: Plaint (Rule 11: Rejection of plaint grounds).
+- **Order VIII**: Written Statement (Rule 1: 30–90 day timeline; Rule 6: Set-off; Rule 6A: Counter-claim).
+- **Order IX**: Appearance of parties and consequence of non-appearance (Rule 9: Setting aside dismissal; Rule 13: Setting aside ex-parte decree).
+- **Order XXXIX**: Temporary Injunctions and Interlocutory Orders (Rule 1 & 2: Prima facie case, balance of convenience, irreparable injury; Rule 3A: Disposing ex-parte injunctions in 30 days).`,
   },
   {
     title: 'Constitution of India (Bare Text with Landmark Amendments)',
@@ -100,14 +327,55 @@ Order VI: Pleadings generally. Order VII: Plaint. Order VIII: Written statement 
     sourceUrl: 'https://www.indiacode.nic.in/handle/123456789/15240',
     sectionCount: 395,
     summary: 'Supreme Law of India. Essential for Judicial Preliminary & Mains GS/Law papers. Covers Fundamental Rights (Arts 12-35), Directive Principles (Arts 36-51), Writ Jurisdiction (Arts 32 & 226), Subordinate Judiciary (Arts 233-237).',
-    contentSnippet: `CONSTITUTION OF INDIA
-PART III: FUNDAMENTAL RIGHTS
-Article 14: Equality before law.
-Article 19: Protection of certain rights regarding freedom of speech, assembly, movement.
-Article 21: Protection of life and personal liberty (Due process and expanded horizons).
-Article 32: Remedies for enforcement of rights (Habeas Corpus, Mandamus, Prohibition, Quo Warranto, Certiorari).
-PART VI - CHAPTER VI: SUBORDINATE COURTS
-Article 233: Appointment of district judges. Article 234: Recruitment of persons other than district judges to the judicial service.`,
+    contentSnippet: `# CONSTITUTION OF INDIA
+**Supreme Law of the Republic • 395 Articles in 22 Parts & 12 Schedules**
+
+---
+
+### PREAMBLE
+*WE, THE PEOPLE OF INDIA, having solemnly resolved to constitute India into a SOVEREIGN SOCIALIST SECULAR DEMOCRATIC REPUBLIC and to secure to all its citizens: JUSTICE, LIBERTY, EQUALITY, and FRATERNITY.* (Basic Structure - *Kesavananda Bharati*).
+
+---
+
+### PART III: FUNDAMENTAL RIGHTS (Articles 12–35)
+- **Article 12**: Definition of "State" for Part III enforcement (*R.D. Shetty*, *Pradeep Kumar Biswas*).
+- **Article 13**: Laws inconsistent with or in derogation of Fundamental Rights are void (Doctrine of Eclipse, Severability, Judicial Review).
+- **Article 14**: Equality before law and equal protection of laws (Rule of Law, Non-arbitrariness doctrine - *E.P. Royappa*).
+- **Article 15**: Prohibition of discrimination on grounds of religion, race, caste, sex or place of birth.
+- **Article 16**: Equality of opportunity in matters of public employment.
+- **Article 19**: Protection of six freedoms (Speech & expression, assembly, association, movement, residence, profession). Reasonable restrictions under 19(2)–(6).
+- **Article 20**: Protection in respect of conviction for offences (Ex-post facto laws, Double jeopardy, Self-incrimination *Nandini Satpathy*).
+- **Article 21**: Protection of life and personal liberty (*Maneka Gandhi v. UOI* - Procedure established by law must be just, fair and reasonable; Right to Privacy *K.S. Puttaswamy*).
+- **Article 21A**: Right to free and compulsory education for children (6–14 years).
+- **Article 22**: Protection against arrest and preventive detention.
+- **Article 25–28**: Freedom of religion and secularism (*S.R. Bommai*).
+- **Article 32**: Constitutional remedies for enforcement of Fundamental Rights (Heart and Soul of Constitution - Dr. B.R. Ambedkar). Writs: Habeas Corpus, Mandamus, Prohibition, Quo Warranto, Certiorari.
+
+---
+
+### PART IV: DIRECTIVE PRINCIPLES OF STATE POLICY (Articles 36–51)
+- **Article 38**: State to secure a social order for promotion of welfare of people.
+- **Article 39A**: Equal justice and free legal aid.
+- **Article 40**: Organisation of village panchayats.
+- **Article 44**: Uniform Civil Code for citizens.
+- **Article 50**: Separation of judiciary from executive in public services of State.
+
+---
+
+### PART V & VI: THE UNION & STATE JUDICIARY
+- **Article 124**: Establishment and constitution of Supreme Court (Collegium system, NJAC ruling *Supreme Court Advocates-on-Record Association*).
+- **Article 129**: Supreme Court to be a Court of Record (Power to punish for contempt).
+- **Article 136**: Special leave to appeal by Supreme Court.
+- **Article 141**: Law declared by Supreme Court to be binding on all courts within India.
+- **Article 142**: Plenary power of Supreme Court to pass decree or order for doing complete justice.
+- **Article 215**: High Courts to be Courts of record.
+- **Article 226**: Extraordinary power of High Courts to issue writs for Fundamental Rights and "for any other purpose".
+- **Article 227**: Power of superintendence over all courts and tribunals by High Court.
+
+### SUBORDINATE COURTS (Articles 233–237)
+- **Article 233**: Appointment of district judges in consultation with High Court.
+- **Article 234**: Recruitment of persons other than district judges to judicial service (State Public Service Commission & High Court).
+- **Article 235**: Control over subordinate courts vested in High Court.`,
   },
   {
     title: 'Delhi Judicial Service (DJS) & DHJS Comprehensive Syllabus & Mains Benchmark',

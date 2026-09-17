@@ -456,4 +456,26 @@ router.post('/ai/solve-pyq', async (req: AiLegalRequest, res, next) => {
   }
 });
 
+/**
+ * POST /api/v1/legal/ai/explore-statute
+ * Explores or expands specific statutory section or doctrine with AI.
+ */
+router.post('/ai/explore-statute', async (req: AiLegalRequest, res, next) => {
+  try {
+    const { actName, query } = req.body;
+    if (!query) {
+      return res.status(400).json({ error: 'Query or section number is required.' });
+    }
+
+    const result = await LegalStudyAIService.exploreStatuteSection(
+      req.user!.id,
+      actName || 'Indian Law',
+      String(query).trim()
+    );
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

@@ -480,4 +480,56 @@ Format in crisp, beautifully structured GitHub Markdown with clear headers (##, 
       solvedAt: new Date().toISOString(),
     };
   }
+
+  /**
+   * Explores a specific section or legal doctrine of an Act, providing verbatim text,
+   * predecessor cross-referencing (BNS/BNSS/BSA), explanations, illustrations, and judicial exam rulings.
+   */
+  static async exploreStatuteSection(userId: string, actName: string, query: string) {
+    const systemPrompt = `You are the Supreme Legal Scholar and Master Bare Act Commentator for Indian Law (Indian Penal Code/BNS 2023, CrPC/BNSS 2023, Evidence Act/BSA 2023, CPC 1908, Constitution of India).
+Your task is to provide an authoritative, comprehensive examination-grade breakdown of the requested statutory section or topic.
+
+ACT: ${actName}
+QUERY / SECTION: ${query}
+
+STRUCTURE YOUR RESPONSE IN GITHUB MARKDOWN:
+1. **Statutory Heading & Section Number**: Cite exact Section and Act.
+2. **Verbatim Bare Act Text & Ingredients**: Provide the exact statutory provisions, explanations, provisos, and essential ingredients.
+3. **Transition & Cross-Referencing**:
+   - If BSA 2023: Compare with corresponding Section in Indian Evidence Act 1872.
+   - If BNS 2023: Compare with Indian Penal Code 1860.
+   - If BNSS 2023: Compare with Code of Criminal Procedure 1973.
+   - Explicitly highlight what has changed or remained constant.
+4. **Landmark Supreme Court Judgments**: Cite 2 to 4 authoritative constitutional/appellate rulings with case titles, years, and legal ratios.
+5. **Judicial & ADP Examination Hotspot**: What questions (Prelims MCQs or Mains problem scenarios) are commonly asked from this section.`;
+
+    const userMessage = `Provide the authoritative bare act text and analysis for ${query} under ${actName}.`;
+    const sessionKey = `legal-section-explore-${userId}-${Date.now()}`;
+    const startTime = Date.now();
+    const llmResp = await callLLM(sessionKey, systemPrompt, userMessage);
+    const latencyMs = Date.now() - startTime;
+
+    await GuardrailService.recordTokenUsage({
+      userId,
+      promptTokens: llmResp.promptTokens,
+      completionTokens: llmResp.completionTokens,
+      totalTokens: llmResp.totalTokens,
+      provider: llmResp.provider,
+      model: llmResp.model,
+      feature: 'LEGAL_SECTION_EXPLORE',
+    });
+
+    return {
+      actName,
+      query,
+      content: llmResp.text,
+      model: llmResp.model,
+      latencyMs,
+      tokens: {
+        promptTokens: llmResp.promptTokens,
+        completionTokens: llmResp.completionTokens,
+        totalTokens: llmResp.totalTokens,
+      },
+    };
+  }
 }

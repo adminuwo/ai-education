@@ -33,7 +33,8 @@ import {
   ListOrdered,
   Eye,
   BookMarked,
-  Send
+  Send,
+  Flame
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -251,6 +252,9 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
   const [selectedLibraryDoc, setSelectedLibraryDoc] = useState(null);
   const [libraryDocModalOpen, setLibraryDocModalOpen] = useState(false);
   const [downloadingDocId, setDownloadingDocId] = useState(null);
+  const [docSearchQuery, setDocSearchQuery] = useState('');
+  const [exploringDoc, setExploringDoc] = useState(false);
+  const [docExplorationResult, setDocExplorationResult] = useState(null);
 
   const handleDownloadDoc = async (doc) => {
     if (!doc?.id) return;
@@ -266,6 +270,25 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       toast.error('Failed to download document. Please try again.');
     } finally {
       setDownloadingDocId(null);
+    }
+  };
+
+  const handleExploreSection = async (queryText) => {
+    const q = (queryText || docSearchQuery).trim();
+    if (!q || !selectedLibraryDoc) return;
+    setExploringDoc(true);
+    try {
+      const res = await legalApi.exploreStatute({
+        actName: selectedLibraryDoc.actName || selectedLibraryDoc.title,
+        query: q,
+      });
+      setDocExplorationResult(res);
+      toast.success(`Explored ${q}`);
+    } catch (err) {
+      console.error('Failed to explore section', err);
+      toast.error('Failed to explore section. Please try again.');
+    } finally {
+      setExploringDoc(false);
     }
   };
 
@@ -2330,101 +2353,266 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
         </DialogContent>
       </Dialog>
 
-      {/* MODAL 6: IN-APP LEGAL DOCUMENT VIEWER */}
-      <Dialog open={libraryDocModalOpen} onOpenChange={setLibraryDocModalOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <Badge
-                variant="outline"
-                className={`text-[10px] font-semibold uppercase tracking-wider ${
-                  selectedLibraryDoc?.category === 'BARE_ACT'
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                    : selectedLibraryDoc?.category === 'PYQ'
-                    ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
-                    : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                }`}
-              >
-                {selectedLibraryDoc?.category?.replace('_', ' ') || 'DOCUMENT'}
-              </Badge>
-              {selectedLibraryDoc?.targetExams && (
-                <Badge variant="secondary" className="text-[10px] bg-slate-800 text-slate-300">
-                  {selectedLibraryDoc.targetExams}
-                </Badge>
-              )}
-              {selectedLibraryDoc?.state && selectedLibraryDoc.state !== 'ALL' && (
-                <Badge variant="secondary" className="text-[10px] bg-indigo-950/60 text-indigo-300 border border-indigo-800/40">
-                  {selectedLibraryDoc.state}
-                </Badge>
-              )}
-            </div>
-            <DialogTitle className="text-base font-semibold text-white leading-tight">
-              {selectedLibraryDoc?.title}
-            </DialogTitle>
-            <DialogDescription className="text-xs text-slate-400">
-              {selectedLibraryDoc?.actName ? `Act: ${selectedLibraryDoc.actName}` : ''}
-              {selectedLibraryDoc?.sectionCount ? ` • ${selectedLibraryDoc.sectionCount} Sections` : ''}
-            </DialogDescription>
-          </DialogHeader>
+      {/* MODAL 6: IN-APP LEGAL DOCUMENT VIEWER & AI STATUTORY EXPLORER */}
+      <Dialog
+        open={libraryDocModalOpen}
+        onOpenChange={(open) => {
+          setLibraryDocModalOpen(open);
+          if (!open) {
+            setDocExplorationResult(null);
+            setDocSearchQuery('');
+          }
+        }}
+      >
+        <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-3xl max-h-[92vh] flex flex-col">
+          {(() => {
+            const title = selectedLibraryDoc?.title || '';
+            const act = selectedLibraryDoc?.actName || '';
+            const isBSA = title.includes('Sakshya') || act.includes('Sakshya') || title.includes('BSA');
+            const isBNS = title.includes('Nyaya') || act.includes('Nyaya') || title.includes('BNS');
+            const isBNSS = title.includes('Nagarik') || act.includes('Nagarik') || title.includes('BNSS');
+            const isCPC = title.includes('Civil Procedure') || title.includes('CPC');
+            const isConsti = title.includes('Constitution');
 
-          <div className="flex-1 overflow-hidden my-2">
-            <ScrollArea className="h-[52vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
-              <pre className="text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed select-text">
-                {selectedLibraryDoc?.metadata?.paperContent ||
-                  selectedLibraryDoc?.metadata?.fullText ||
-                  selectedLibraryDoc?.metadata?.snippet ||
-                  selectedLibraryDoc?.summary ||
-                  'No text content preview available for this document.'}
-              </pre>
-            </ScrollArea>
-          </div>
+            let chips = [];
+            if (isBSA) {
+              chips = [
+                { label: '§63 Electronic Evidence', q: 'Section 63 admissibility of electronic records and certificate format under BSA 2023 vs 65B IEA' },
+                { label: '§23 Discovery Confession', q: 'Section 23 confession to police officer leading to discovery of fact under BSA 2023 vs Sec 27 IEA' },
+                { label: '§26 Dying Declaration', q: 'Section 26 dying declaration rules and evidentiary value under BSA 2023 vs Sec 32 IEA' },
+                { label: '§118 Dowry Death', q: 'Section 118 presumption as to dowry death under BSA 2023' },
+                { label: '§116 Legitimacy', q: 'Section 116 birth during marriage as conclusive proof of legitimacy' },
+                { label: '§149 Hostile Witness', q: 'Section 149 questions by party to own witness under BSA 2023' },
+              ];
+            } else if (isBNS) {
+              chips = [
+                { label: '§103 Murder & Mob Lynching', q: 'Section 103 punishment for murder and mob lynching under BNS 2023' },
+                { label: '§111 Organised Crime', q: 'Section 111 organized crime ingredients and penalties under BNS 2023' },
+                { label: '§113 Terrorist Act', q: 'Section 113 terrorist act definition and scope under BNS 2023' },
+                { label: '§152 Sovereignty of India', q: 'Section 152 acts endangering sovereignty of India under BNS 2023' },
+                { label: '§69 Promise to Marry', q: 'Section 69 sexual intercourse by deceitful means or promise of marriage under BNS 2023' },
+              ];
+            } else if (isBNSS) {
+              chips = [
+                { label: '§35 Arrest without Warrant', q: 'Section 35 when police may arrest without warrant and prior DSP permission under BNSS 2023' },
+                { label: '§105 Audio-Video Recording', q: 'Section 105 mandatory electronic recording of search and seizure under BNSS 2023' },
+                { label: '§173 Zero FIR & e-FIR', q: 'Section 173 Zero FIR and electronic FIR reporting timeline under BNSS 2023' },
+                { label: '§187 Default Bail (167)', q: 'Section 187 detention in police custody and default bail under BNSS 2023' },
+                { label: '§482 Anticipatory Bail', q: 'Section 482 direction for grant of anticipatory bail under BNSS 2023' },
+              ];
+            } else if (isCPC) {
+              chips = [
+                { label: '§9 Civil Jurisdiction', q: 'Section 9 courts to try all civil suits unless expressly or impliedly barred under CPC' },
+                { label: '§10 Res Sub Judice', q: 'Section 10 stay of suit' },
+                { label: '§11 Res Judicata', q: 'Section 11 res judicata and constructive res judicata under CPC' },
+                { label: '§151 Inherent Powers', q: 'Section 151 inherent powers of civil court under CPC' },
+                { label: 'Order 39 R 1 & 2 Injunctions', q: 'Order 39 Rules 1 and 2 temporary injunctions and interlocutory orders under CPC' },
+              ];
+            } else if (isConsti) {
+              chips = [
+                { label: 'Art 14 Equality', q: 'Article 14 equality before law and non-arbitrariness doctrine' },
+                { label: 'Art 21 Personal Liberty', q: 'Article 21 protection of life and personal liberty' },
+                { label: 'Art 32 & 226 Writs', q: 'Articles 32 and 226 constitutional writ jurisdiction' },
+                { label: 'Art 233-234 Subordinate Courts', q: 'Articles 233 and 234 appointment and recruitment of district judges' },
+              ];
+            }
 
-          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setLibraryDocModalOpen(false)}
-              className="text-slate-400 text-xs"
-            >
-              Close
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const content =
-                    selectedLibraryDoc?.metadata?.paperContent ||
-                    selectedLibraryDoc?.metadata?.fullText ||
-                    selectedLibraryDoc?.metadata?.snippet ||
-                    selectedLibraryDoc?.summary ||
-                    '';
-                  navigator.clipboard.writeText(content);
-                  toast.success('Document text copied to clipboard!');
-                }}
-                className="text-xs border-slate-700 text-slate-200 hover:bg-slate-800"
-              >
-                <Copy className="w-3.5 h-3.5 mr-1.5" />
-                Copy Text
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                disabled={downloadingDocId === selectedLibraryDoc?.id}
-                onClick={() => selectedLibraryDoc && handleDownloadDoc(selectedLibraryDoc)}
-                className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
-              >
-                {downloadingDocId === selectedLibraryDoc?.id ? (
-                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                ) : (
-                  <Download className="w-3.5 h-3.5 mr-1.5" />
-                )}
-                Download File
-              </Button>
-            </div>
-          </DialogFooter>
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] font-semibold uppercase tracking-wider ${
+                          selectedLibraryDoc?.category === 'BARE_ACT'
+                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                            : selectedLibraryDoc?.category === 'PYQ'
+                            ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
+                            : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                        }`}
+                      >
+                        {selectedLibraryDoc?.category?.replace('_', ' ') || 'DOCUMENT'}
+                      </Badge>
+                      {selectedLibraryDoc?.targetExams && (
+                        <Badge variant="secondary" className="text-[10px] bg-slate-800 text-slate-300">
+                          {selectedLibraryDoc.targetExams}
+                        </Badge>
+                      )}
+                      {selectedLibraryDoc?.state && selectedLibraryDoc.state !== 'ALL' && (
+                        <Badge variant="secondary" className="text-[10px] bg-indigo-950/60 text-indigo-300 border border-indigo-800/40">
+                          {selectedLibraryDoc.state}
+                        </Badge>
+                      )}
+                      {selectedLibraryDoc?.sectionCount > 0 && (
+                        <span className="text-[11px] text-amber-400 font-medium">
+                          • {selectedLibraryDoc.sectionCount} Sections
+                        </span>
+                      )}
+                    </div>
+
+                    {(isBSA || isBNS || isBNSS) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setLibraryDocModalOpen(false);
+                          setActiveSubTab('transition');
+                          if (isBSA) setTransQuery('Indian Evidence Act Section 65B vs BSA Section 63');
+                          if (isBNS) setTransQuery('IPC Section 300/302 vs BNS Section 100/101/103');
+                          if (isBNSS) setTransQuery('CrPC Section 438 vs BNSS Section 482');
+                        }}
+                        className="h-6 text-[11px] border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
+                      >
+                        <RefreshCw className="w-3 h-3 mr-1 text-amber-400" />
+                        Compare with Old Act ({isBSA ? 'IEA 1872' : isBNS ? 'IPC 1860' : 'CrPC 1973'})
+                      </Button>
+                    )}
+                  </div>
+                  <DialogTitle className="text-base font-semibold text-white leading-tight">
+                    {selectedLibraryDoc?.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-400">
+                    {selectedLibraryDoc?.actName ? `Act: ${selectedLibraryDoc.actName}` : ''}
+                    {selectedLibraryDoc?.summary ? ` • ${selectedLibraryDoc.summary}` : ''}
+                  </DialogDescription>
+                </DialogHeader>
+
+                {/* Interactive AI Section Explorer & Quick Hotspots */}
+                <div className="p-2.5 bg-slate-950/80 border border-slate-800 rounded-lg space-y-2 my-1">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Explore or jump to any Section (e.g. 'Section 63', 'Dying declaration', 'Res Judicata')..."
+                      value={docSearchQuery}
+                      onChange={(e) => setDocSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleExploreSection();
+                      }}
+                      className="text-xs bg-slate-900 border-slate-700 h-8 flex-1 text-slate-100 placeholder:text-slate-500"
+                      disabled={exploringDoc}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => handleExploreSection()}
+                      disabled={exploringDoc || !docSearchQuery.trim()}
+                      className="h-8 px-3 text-xs bg-amber-600 hover:bg-amber-500 text-white font-medium"
+                    >
+                      {exploringDoc ? <RefreshCw className="w-3.5 h-3.5 animate-spin mr-1" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                      Explore with AI
+                    </Button>
+                  </div>
+
+                  {chips.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      <span className="text-[10px] text-slate-400 font-medium mr-1 flex items-center">
+                        <Flame className="w-3 h-3 text-amber-400 mr-0.5" />
+                        Exam Hotspots:
+                      </span>
+                      {chips.map((chip, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setDocSearchQuery(chip.label);
+                            handleExploreSection(chip.q);
+                          }}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 hover:border-amber-500/50 hover:text-amber-300 transition-colors"
+                        >
+                          {chip.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 overflow-hidden my-1">
+                  <ScrollArea className="max-h-[54vh] min-h-[160px] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+                    {docExplorationResult ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                          <span className="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                            AI Statutory Analysis: {docExplorationResult.query}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setDocExplorationResult(null)}
+                            className="h-6 text-[11px] text-slate-400 hover:text-white"
+                          >
+                            ← Back to Full Statute
+                          </Button>
+                        </div>
+                        <div className="text-xs text-slate-200 leading-relaxed select-text">
+                          <FormattedMarkdown content={docExplorationResult.content} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-200 leading-relaxed select-text">
+                        <FormattedMarkdown
+                          content={
+                            selectedLibraryDoc?.metadata?.paperContent ||
+                            selectedLibraryDoc?.metadata?.fullText ||
+                            selectedLibraryDoc?.metadata?.snippet ||
+                            selectedLibraryDoc?.summary ||
+                            'No text content preview available for this document.'
+                          }
+                        />
+                      </div>
+                    )}
+                  </ScrollArea>
+                </div>
+
+                <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLibraryDocModalOpen(false)}
+                    className="text-slate-400 text-xs"
+                  >
+                    Close
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const content = docExplorationResult
+                          ? docExplorationResult.content
+                          : selectedLibraryDoc?.metadata?.paperContent ||
+                            selectedLibraryDoc?.metadata?.fullText ||
+                            selectedLibraryDoc?.metadata?.snippet ||
+                            selectedLibraryDoc?.summary ||
+                            '';
+                        navigator.clipboard.writeText(content);
+                        toast.success('Document text copied to clipboard!');
+                      }}
+                      className="text-xs border-slate-700 text-slate-200 hover:bg-slate-800"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1.5" />
+                      Copy Text
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      disabled={downloadingDocId === selectedLibraryDoc?.id}
+                      onClick={() => selectedLibraryDoc && handleDownloadDoc(selectedLibraryDoc)}
+                      className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
+                    >
+                      {downloadingDocId === selectedLibraryDoc?.id ? (
+                        <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5 mr-1.5" />
+                      )}
+                      Download File
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>
