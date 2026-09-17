@@ -239,6 +239,161 @@ class ApiService {
     return res.data as Map<String, dynamic>?;
   }
 
+  // -------------------------------------------------------------
+  // Legal / Judicial & ADP Exam Hub Endpoints
+  // -------------------------------------------------------------
+
+  static Future<List<dynamic>> getLegalLibrary({
+    String? category,
+    String? state,
+    String? search,
+    int? year,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (category != null && category.isNotEmpty && category.toLowerCase() != 'all') {
+        queryParams['category'] = category;
+      }
+      if (state != null && state.isNotEmpty && state.toLowerCase() != 'all') {
+        queryParams['state'] = state;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        queryParams['search'] = search.trim();
+      }
+      if (year != null && year > 0) {
+        queryParams['year'] = year;
+      }
+
+      final res = await dio.get('/legal/library', queryParameters: queryParams);
+      if (res.data is List) {
+        return res.data as List<dynamic>;
+      } else if (res.data is Map && res.data['assets'] is List) {
+        return res.data['assets'] as List<dynamic>;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getLegalAssetContent(String id) async {
+    try {
+      final res = await dio.get('/legal/assets/$id');
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<List<dynamic>> compareCriminalLaws({
+    String? query,
+    String? category,
+    int? page,
+    int? limit,
+  }) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (query != null && query.trim().isNotEmpty) {
+        queryParams['query'] = query.trim();
+      }
+      if (category != null && category.isNotEmpty && category.toLowerCase() != 'all') {
+        queryParams['category'] = category;
+      }
+      if (page != null) queryParams['page'] = page;
+      if (limit != null) queryParams['limit'] = limit;
+
+      final res = await dio.get('/legal/transition/compare', queryParameters: queryParams);
+      if (res.data is List) {
+        return res.data as List<dynamic>;
+      } else if (res.data is Map && res.data['comparisons'] is List) {
+        return res.data['comparisons'] as List<dynamic>;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> exploreStatute({
+    required String statuteName,
+    required String sectionNumber,
+    String? contextQuery,
+  }) async {
+    try {
+      final res = await dio.post('/legal/statutes/explore', data: {
+        'statuteName': statuteName,
+        'sectionNumber': sectionNumber,
+        if (contextQuery != null && contextQuery.isNotEmpty) 'contextQuery': contextQuery,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> solvePYQPaper({
+    String? paperId,
+    required String paperTitle,
+    String? state,
+    String? examType,
+    int? year,
+    String? userDoubt,
+    String? fullPaperText,
+  }) async {
+    try {
+      final res = await dio.post('/legal/pyq/solve', data: {
+        if (paperId != null && paperId.isNotEmpty) 'paperId': paperId,
+        'paperTitle': paperTitle,
+        if (state != null && state.isNotEmpty) 'state': state,
+        if (examType != null && examType.isNotEmpty) 'examType': examType,
+        if (year != null) 'year': year,
+        if (userDoubt != null && userDoubt.isNotEmpty) 'userDoubt': userDoubt,
+        if (fullPaperText != null && fullPaperText.isNotEmpty) 'fullPaperText': fullPaperText,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> discoverPYQPaper({
+    required String state,
+    required String examType,
+    required int year,
+    String? stage,
+  }) async {
+    try {
+      final res = await dio.post('/legal/pyq/discover', data: {
+        'state': state,
+        'examType': examType,
+        'year': year,
+        if (stage != null && stage.isNotEmpty) 'stage': stage,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> generateSectionDrill({
+    String? actName,
+    String? topic,
+    int count = 5,
+    String difficulty = 'INTERMEDIATE',
+  }) async {
+    try {
+      final res = await dio.post('/legal/drills/generate', data: {
+        if (actName != null && actName.isNotEmpty) 'actName': actName,
+        if (topic != null && topic.isNotEmpty) 'topic': topic,
+        'count': count,
+        'difficulty': difficulty,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');

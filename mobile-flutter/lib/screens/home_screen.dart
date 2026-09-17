@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import 'login_screen.dart';
 import 'tasks_screen.dart';
 import 'homework_screen.dart';
+import 'legal_study_hub_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -256,6 +257,82 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Judicial & ADP Exam Hub High-Priority Action Banner
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF2E1C05),
+                        ConveeColors.card,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: ConveeColors.amber.withOpacity(0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: ConveeColors.amber.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.gavel, color: ConveeColors.amber, size: 22),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Judicial & ADP Exam Hub',
+                                  style: TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                  decoration: BoxDecoration(
+                                    color: ConveeColors.amber,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text(
+                                    'LEGAL',
+                                    style: TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              'Bare Acts, 16+ State PYQs, AI Solver & Transition',
+                              style: TextStyle(color: ConveeColors.textSecondary, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios, color: ConveeColors.amber, size: 14),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Live Status KPI Cards (Attendance, Tasks, Homework)
@@ -363,6 +440,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Parent & Student',
                     Icons.badge_outlined,
                     ConveeColors.textSecondary,
+                  ),
+                  _buildModuleItem(
+                    'Judicial Hub',
+                    'Bare Acts & PYQs',
+                    Icons.balance,
+                    ConveeColors.amber,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                 ],
               ),

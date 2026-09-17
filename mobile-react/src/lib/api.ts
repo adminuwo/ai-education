@@ -216,4 +216,43 @@ export const notifApi = {
   markAllRead: () => api.post('/notifications/read-all').then((r) => r.data),
 };
 
+// 11. Legal / Judicial Studies API
+export const legalApi = {
+  getLibrary: (params: Record<string, any> = {}) =>
+    api.get('/legal/library', { params }).then((r) => r.data),
+  getAssetContent: (id: string) =>
+    api.get(`/legal/library/${id}/content`).then((r) => r.data),
+  getDownloadUrl: (id: string) =>
+    api.get(`/legal/library/${id}/download?json=true`).then((r) => r.data),
+  exploreStatute: (data: { actName: string; query: string }) =>
+    api.post('/legal/ai/explore-statute', data).then((r) => r.data),
+  solvePYQPaper: (data: { paperId: string; specificQuestion?: string }) =>
+    api.post('/legal/ai/solve-pyq', data).then((r) => r.data),
+  discoverPYQPaper: (data: {
+    state: string;
+    examType: string;
+    stage: string;
+    year: number;
+    subject?: string;
+  }) => api.post('/legal/pyq/discover', data).then((r) => r.data),
+  compareCriminalLaws: (data: { query: string; contextLaw?: string }) =>
+    api.post('/legal/ai/law-transition', data).then((r) => r.data),
+  generateSectionDrill: (data: { subject: string; count?: number; difficulty?: string }) =>
+    api.post('/legal/ai/section-drill', data).then((r) => r.data),
+  evaluateMainsAnswer: (data: {
+    subject: string;
+    topic?: string;
+    question: string;
+    candidateAnswer: string;
+    state?: string;
+  }) => api.post('/legal/ai/evaluate-answer', data).then((r) => r.data),
+  generateStudyPlan: (data: {
+    state: string;
+    examType: string;
+    durationMonths: number;
+    dailyHours: number;
+  }) => api.post('/legal/ai/study-plan', data).then((r) => r.data),
+};
+
 export default api;
+

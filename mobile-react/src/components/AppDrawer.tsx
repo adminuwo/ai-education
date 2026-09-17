@@ -28,6 +28,7 @@ import {
   GraduationCap,
   Video,
   TrendingUp,
+  Scale,
 } from 'lucide-react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useDrawer } from '../contexts/DrawerContext';
@@ -200,6 +201,15 @@ export default function AppDrawer() {
       badge: 'AI',
       badgeColor: colors.purple,
       onPress: () => handleNavigate('AIScreen'),
+    },
+    {
+      id: 'legal',
+      label: 'Judicial & ADP Hub ⚖️',
+      subtitle: 'Bare acts, PYQs & transition engine',
+      icon: Scale,
+      badge: 'LEGAL',
+      badgeColor: '#f59e0b',
+      onPress: () => handleNavigate('LegalStudyHub'),
     },
     {
       id: 'profile',

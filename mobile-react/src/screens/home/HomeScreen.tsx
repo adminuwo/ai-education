@@ -23,11 +23,12 @@ import {
   Video,
   TrendingUp,
   CheckSquare,
+  Scale,
 } from 'lucide-react-native';
 
 export default function HomeScreen({ navigation }: any) {
   const { user, currentOrg } = useAuth();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const [briefing, setBriefing] = useState('');
   const [briefingLoading, setBriefingLoading] = useState(false);
@@ -237,6 +238,36 @@ export default function HomeScreen({ navigation }: any) {
       {/* Quick Action Navigation */}
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
       <View style={styles.actionsList}>
+        {/* Judicial & ADP Exam Hub (High-Priority Academic Action) */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('LegalStudyHub')}
+          style={[
+            styles.actionItem,
+            {
+              backgroundColor: isDark ? 'rgba(245, 158, 11, 0.08)' : '#fffbeb',
+              borderColor: 'rgba(245, 158, 11, 0.35)',
+            },
+          ]}
+        >
+          <View style={styles.actionLeft}>
+            <View style={[styles.actionIcon, { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+              <Scale size={18} color="#f59e0b" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={[styles.actionName, { color: colors.text }]}>Judicial & ADP Exam Hub</Text>
+                <View style={{ backgroundColor: '#f59e0b', borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1 }}>
+                  <Text style={{ color: '#000', fontSize: 9, fontWeight: 'bold' }}>LEGAL</Text>
+                </View>
+              </View>
+              <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
+                Bare Acts, 16+ State PYQs, AI Solver & BNS Transition
+              </Text>
+            </View>
+          </View>
+          <ArrowRight size={18} color="#f59e0b" />
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => navigation.navigate('Tasks')}
           style={[styles.actionItem, { backgroundColor: colors.card, borderColor: colors.border }]}

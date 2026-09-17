@@ -15,6 +15,7 @@ import MeetingsScreen from '../screens/meetings/MeetingsScreen';
 import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import ParentStudentPortalScreen from '../screens/portal/ParentStudentPortalScreen';
 import TasksScreen from '../screens/tasks/TasksScreen';
+import LegalStudyHubScreen from '../screens/legal/LegalStudyHubScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -129,6 +130,13 @@ export default function RootNavigator() {
                 title: 'My Profile & Settings',
                 headerStyle: { backgroundColor: colors.card },
                 headerTintColor: colors.text,
+              }}
+            />
+            <Stack.Screen
+              name="LegalStudyHub"
+              component={LegalStudyHubScreen}
+              options={{
+                headerShown: false,
               }}
             />
           </>
