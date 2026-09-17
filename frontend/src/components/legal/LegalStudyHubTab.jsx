@@ -2431,7 +2431,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
 
             return (
               <>
-                <DialogHeader>
+                <DialogHeader className="shrink-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge
@@ -2485,13 +2485,12 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                     {selectedLibraryDoc?.title}
                   </DialogTitle>
                   <DialogDescription className="text-xs text-slate-400">
-                    {selectedLibraryDoc?.actName ? `Act: ${selectedLibraryDoc.actName}` : ''}
-                    {selectedLibraryDoc?.summary ? ` • ${selectedLibraryDoc.summary}` : ''}
+                    Act: {selectedLibraryDoc?.actName || 'General Statute'} • {selectedLibraryDoc?.summary}
                   </DialogDescription>
                 </DialogHeader>
 
                 {/* Interactive AI Section Explorer & Quick Hotspots */}
-                <div className="p-2.5 bg-slate-950/80 border border-slate-800 rounded-lg space-y-2 my-1">
+                <div className="shrink-0 p-2.5 bg-slate-950/80 border border-slate-800 rounded-lg space-y-2 my-1">
                   <div className="flex gap-2">
                     <Input
                       placeholder="Explore or jump to any Section (e.g. 'Section 63', 'Dying declaration', 'Res Judicata')..."
@@ -2540,7 +2539,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 <div className="flex-1 min-h-0 my-1">
                   <div
                     tabIndex={0}
-                    className="max-h-[56vh] min-h-[160px] overflow-y-auto overflow-x-hidden pr-3.5 p-4 rounded-lg bg-slate-950/90 border border-slate-800 text-xs text-slate-200 leading-relaxed select-text focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                    className="max-h-[44vh] min-h-[140px] overflow-y-auto overflow-x-hidden pr-3.5 p-4 rounded-lg bg-slate-950/90 border border-slate-800 text-xs text-slate-200 leading-relaxed select-text focus:outline-none focus:ring-1 focus:ring-amber-500/30"
                     style={{
                       scrollbarWidth: 'thin',
                       scrollbarColor: '#64748b #0f172a',
@@ -2582,7 +2581,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   </div>
                 </div>
 
-                <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
+                <DialogFooter className="shrink-0 flex items-center justify-between sm:justify-between pt-3 mt-1 border-t border-slate-800 bg-slate-900 z-10">
                   <Button
                     type="button"
                     variant="ghost"
