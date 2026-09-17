@@ -22,10 +22,15 @@ import {
   Gavel,
   Sliders,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true }) {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.systemRole === 'SUPER_ADMIN';
+
   const [telemetry, setTelemetry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -154,26 +159,46 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
                   ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30'
                   : 'bg-amber-500/10 text-amber-600 border-amber-500/30'
               }`}
+              title={
+                telemetry?.autoMonthlyResetActive !== false
+                  ? 'Institutional plan automatically refreshes for all enrolled students & faculty on the 1st of every month'
+                  : 'Automatic monthly renewal has been paused by the Platform Super Admin'
+              }
             >
-              {telemetry?.autoMonthlyResetActive !== false ? 'Auto-Reset: Active (1st/mo)' : 'Auto-Reset: Paused'}
+              {telemetry?.autoMonthlyResetActive !== false ? (
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                  Auto-Renewal: Active (1st of month)
+                </span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 text-amber-500" />
+                  Auto-Renewal: Paused by Superadmin
+                </span>
+              )}
             </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRenewNow}
-              disabled={renewing}
-              className="h-8 text-xs gap-1.5 border-purple-500/30 text-purple-600 hover:bg-purple-500/10"
-              title="Instantly renew all student academic plans for this campus"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${renewing ? 'animate-spin' : ''}`} />
-              {renewing ? 'Renewing...' : 'Renew Plans Now'}
-            </Button>
+
+            {isSuperAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRenewNow}
+                disabled={renewing}
+                className="h-8 text-xs gap-1.5 border-purple-500/30 text-purple-600 hover:bg-purple-500/10"
+                title="Superadmin Override: Instantly force-renew student plans for this campus"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${renewing ? 'animate-spin' : ''}`} />
+                {renewing ? 'Renewing...' : 'Superadmin Force Renew'}
+              </Button>
+            )}
+
             <Button
               variant="outline"
               size="sm"
               onClick={() => fetchTelemetry(true)}
               disabled={refreshing}
-              className="h-8 text-xs gap-1.5 border-border/80"
+              className="h-8 text-xs gap-1.5 border-border/80 text-muted-foreground hover:text-foreground"
+              title="Refresh real-time inquiry telemetry and student scholar counts"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-purple-600' : ''}`} />
               {refreshing ? 'Syncing...' : 'Refresh'}

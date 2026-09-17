@@ -424,16 +424,10 @@ router.post('/:orgId/ai-legal-renew', async (req, res, next) => {
     const org = await prisma.organization.findUnique({ where: { id: req.params.orgId } });
     if (!org) return res.status(404).json({ error: 'Organization not found' });
 
-    const callerMember = await prisma.membership.findFirst({
-      where: { userId: req.user!.id, orgId: org.id, isActive: true },
-    });
-
-    const isAuthorized =
-      req.user!.systemRole === 'SUPER_ADMIN' ||
-      (callerMember && ['OWNER', 'ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN'].includes(callerMember.role));
-
-    if (!isAuthorized) {
-      return res.status(403).json({ error: 'Only Administrators and Super Admins can trigger student plan renewals.' });
+    if (req.user!.systemRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        error: 'Only Platform Super Admins can manually force plan renewals. Institutional student subscriptions renew automatically on the 1st of every month.',
+      });
     }
 
     const result = await monthlyResetAiLegalPlan(org.id, true);
