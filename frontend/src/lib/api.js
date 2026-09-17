@@ -376,5 +376,17 @@ export const bugApi = {
   delete: (id) => api.delete(`/bugs/${id}`).then((r) => r.data),
 };
 
+export const legalApi = {
+  getLibrary: (params = {}) => api.get('/legal/library', { params }).then((r) => r.data),
+  uploadAsset: (formData) => api.post('/legal/library/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data),
+  getDownloadUrl: (id) => api.get(`/legal/library/${id}/download`).then((r) => r.data),
+  runScraper: (data) => api.post('/legal/scraper/run', data).then((r) => r.data),
+  getScraperJobs: () => api.get('/legal/scraper/jobs').then((r) => r.data),
+  generateStudyPlan: (data) => api.post('/legal/ai/study-plan', data).then((r) => r.data),
+  evaluateMainsAnswer: (data) => api.post('/legal/ai/evaluate-answer', data).then((r) => r.data),
+  generateSectionDrill: (data) => api.post('/legal/ai/section-drill', data).then((r) => r.data),
+  compareCriminalLaws: (data) => api.post('/legal/ai/law-transition', data).then((r) => r.data),
+};
+
 
 

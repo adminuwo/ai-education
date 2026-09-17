@@ -8,11 +8,12 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Send, Zap, ListTodo, FileText, MessageSquareText, Plus, Trash2, PanelLeft, Clock, GraduationCap, BookOpen, Check, UserCheck, Mail, RefreshCw, Landmark, DollarSign, Calculator, Building2, Megaphone, ShieldCheck, Play } from 'lucide-react';
+import { Sparkles, Send, Zap, ListTodo, FileText, MessageSquareText, Plus, Trash2, PanelLeft, Clock, GraduationCap, BookOpen, Check, UserCheck, Mail, RefreshCw, Landmark, DollarSign, Calculator, Building2, Megaphone, ShieldCheck, Play, Scale } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import FormattedMarkdown from '@/components/FormattedMarkdown';
 import DailyHomeQuiz from '@/components/classroom/DailyHomeQuiz';
+import LegalStudyHubTab from '@/components/legal/LegalStudyHubTab';
 
 const QUICK_PROMPTS = [
   { icon: MessageSquareText, label: 'Summarize channel', prompt: 'Summarize the last 24 hours of activity in my current workspace.' },
@@ -80,16 +81,28 @@ export default function AIPage() {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const scrollRef = useRef();
+  const hasAiLegal = Boolean(
+    currentOrg?.hasAiLegal ||
+    currentOrg?.addons?.includes('AI_LEGAL') ||
+    /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') === 'quiz' ? 'quiz' : 'chat';
+  const initialTab = (searchParams.get('tab') === 'legal' && hasAiLegal)
+    ? 'legal'
+    : searchParams.get('tab') === 'quiz'
+    ? 'quiz'
+    : 'chat';
   const [studentTab, setStudentTab] = useState(initialTab);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam === 'quiz' || tabParam === 'chat') {
+    if (tabParam === 'legal' && hasAiLegal) {
+      setStudentTab('legal');
+    } else if (tabParam === 'quiz' || tabParam === 'chat') {
       setStudentTab(tabParam);
     }
-  }, [searchParams]);
+  }, [searchParams, hasAiLegal]);
 
   const isStudent = currentOrg?.role === 'STUDENT' || user?.email?.includes('student');
   const isParent = currentOrg?.role === 'PARENT' || user?.email?.includes('parent');
@@ -523,7 +536,7 @@ export default function AIPage() {
       {/* Top Header */}
       <div className="border-b border-border px-4 py-2.5 flex items-center justify-between bg-card/50">
         <div className="flex items-center gap-3">
-          {(!isStudent || studentTab === 'chat') && (
+          {studentTab === 'chat' && (
             <Button
               variant="ghost"
               size="icon"
@@ -537,7 +550,9 @@ export default function AIPage() {
 
           <div className="flex items-center gap-2">
             <div className={`h-8 w-8 rounded-md flex items-center justify-center ${
-              isStudent
+              hasAiLegal
+                ? 'bg-amber-500/15 text-amber-400'
+                : isStudent
                 ? 'bg-emerald-500/15 text-emerald-500'
                 : isParent
                 ? 'bg-purple-500/15 text-purple-500'
@@ -549,7 +564,9 @@ export default function AIPage() {
                 ? 'bg-amber-500/15 text-amber-500'
                 : 'bg-accent/15 text-accent'
             }`}>
-              {isStudent ? (
+              {hasAiLegal ? (
+                <Scale className="h-4.5 w-4.5" />
+              ) : isStudent ? (
                 <GraduationCap className="h-4.5 w-4.5" />
               ) : isParent ? (
                 <UserCheck className="h-4.5 w-4.5" />
@@ -565,7 +582,9 @@ export default function AIPage() {
             </div>
             <div>
               <div className="font-display font-semibold text-sm leading-tight">
-                {isStudent
+                {hasAiLegal && studentTab === 'legal'
+                  ? 'Judicial Services & ADP Hub ⚖️'
+                  : isStudent
                   ? 'Study Buddy 🎒'
                   : isParent
                   ? 'Parent AI Academic Assistant'
@@ -578,7 +597,9 @@ export default function AIPage() {
                   : 'AI Academic & Classroom Assistant'}
               </div>
               <div className="text-[11px] text-muted-foreground">
-                {isStudent
+                {hasAiLegal && studentTab === 'legal'
+                  ? 'Bare Acts, open legal scraping vault, BNS/BNSS/BSA transition, and Mains answer evaluation'
+                  : isStudent
                   ? 'Your 24/7 personal tutor for homework, daily quizzes, and study guidance'
                   : isParent
                   ? "Monitor your child's progress & homework, and connect with Teachers & HOD"
@@ -594,9 +615,9 @@ export default function AIPage() {
           </div>
         </div>
 
-        {/* Action / Student Tab Switcher */}
+        {/* Action / Student & Legal Tab Switcher */}
         <div className="flex items-center gap-2">
-          {isStudent && (
+          {(isStudent || hasAiLegal) && (
             <div className="flex items-center bg-muted/60 p-1 rounded-xl border border-border">
               <button
                 type="button"
@@ -610,26 +631,44 @@ export default function AIPage() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <MessageSquareText className="h-3.5 w-3.5" /> Ask Study Buddy
+                <MessageSquareText className="h-3.5 w-3.5" /> Ask AI
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setStudentTab('quiz');
-                  setSearchParams({ tab: 'quiz' });
-                }}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-                  studentTab === 'quiz'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Play className="h-3.5 w-3.5" /> Daily Home Quiz 🎯
-              </button>
+              {isStudent && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudentTab('quiz');
+                    setSearchParams({ tab: 'quiz' });
+                  }}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                    studentTab === 'quiz'
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Play className="h-3.5 w-3.5" /> Daily Home Quiz 🎯
+                </button>
+              )}
+              {hasAiLegal && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudentTab('legal');
+                    setSearchParams({ tab: 'legal' });
+                  }}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                    studentTab === 'legal'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-amber-500 hover:text-amber-400'
+                  }`}
+                >
+                  <Scale className="h-3.5 w-3.5" /> Judicial & ADP Hub ⚖️
+                </button>
+              )}
             </div>
           )}
 
-          {(!isStudent || studentTab === 'chat') && (
+          {studentTab === 'chat' && (
             <Button onClick={handleNewChat} size="sm" className="gap-1.5 font-medium shadow-xs">
               <Plus className="h-4 w-4" /> New Chat
             </Button>
@@ -638,7 +677,11 @@ export default function AIPage() {
       </div>
 
       {/* Main View Area */}
-      {isStudent && studentTab === 'quiz' ? (
+      {studentTab === 'legal' && hasAiLegal ? (
+        <div className="flex-1 overflow-auto p-4 sm:p-6">
+          <LegalStudyHubTab currentOrg={currentOrg} user={user} />
+        </div>
+      ) : isStudent && studentTab === 'quiz' ? (
         <div className="flex-1 overflow-auto p-4 sm:p-6">
           <DailyHomeQuiz
             onNavigateToChat={() => {

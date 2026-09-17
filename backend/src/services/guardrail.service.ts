@@ -194,6 +194,51 @@ If you are feeling overwhelmed, hopeless, or having thoughts of hurting yourself
   }
 
   /**
+   * Evaluates Legal / Judicial / ADP Examination Queries.
+   * Enforces statutory accuracy, legal ethics, and educational disclaimers.
+   */
+  static evaluateLegalQuery(query: string, examContext?: string): GuardrailCheckResult {
+    const qLower = query.toLowerCase().trim();
+
+    // 1. Check for Illegal Obstruction of Justice / Malpractice Patterns
+    const MALPRACTICE_PATTERNS = [
+      /\b(bribe|pay off|buy off|fix)\b.*\b(judge|magistrate|prosecutor|court|officer)\b/i,
+      /\b(tamper with|destroy|falsify|fabricate|forge)\b.*\b(evidence|records?|court|affidavit|stamp|signature)\b/i,
+      /\b(threaten|intimidate|influence)\b.*\b(witness|victim|informant)\b/i,
+      /\b(how to escape custody|evade arrest|abscond from bail)\b/i,
+    ];
+
+    for (const pattern of MALPRACTICE_PATTERNS) {
+      if (pattern.test(qLower)) {
+        return {
+          allowed: false,
+          status: 'BLOCKED',
+          severity: 'HIGH',
+          category: 'LEGAL_ETHICS_VIOLATION',
+          overrideResponse: `I cannot provide assistance or strategies related to bribing judicial officers, tampering with evidence, threatening witnesses, or evading law enforcement.\n\nI can, however, provide educational explanations of the relevant statutory offenses (such as under the Prevention of Corruption Act, Sections 229-231 of Bharatiya Nyaya Sanhita / 191-193 IPC) and standard judicial examination questions on these topics.`,
+          reason: 'Legal malpractice or obstruction of justice pattern detected.',
+        };
+      }
+    }
+
+    // 2. Safe Legal & Examination Query
+    const contextTag = examContext ? `[EXAM CONTEXT: ${examContext}]` : '[EXAM CONTEXT: Judicial Services / ADP Examination]';
+    return {
+      allowed: true,
+      status: 'PASSED',
+      severity: 'LOW',
+      category: 'LEGAL_STUDY',
+      augmentedSystemPrompt: `\n${contextTag}
+[LEGAL ACADEMIC & STATUTORY ACCURACY GUARD]:
+- You are an expert Judicial Services (Civil Judge / PCS-J) and ADP (Assistant District Public Prosecutor / APO) Academic Mentor.
+- Always provide precise statutory citations with Section and Act names.
+- When explaining criminal law, provide comparative analysis between the new criminal laws (BNS 2023, BNSS 2023, BSA 2023) and the erstwhile statutes (IPC 1860, CrPC 1973, Indian Evidence Act 1872).
+- Structure subjective answers following standard Judicial Mains format: (1) Core Legal Issue, (2) Applicable Statutory Provisions, (3) Landmark & Recent Precedents (Supreme Court / High Courts), (4) Judicial Analysis & Reasoning, and (5) Concluding Order/Ratio.
+- MANDATORY DISCLAIMER: Always conclude with: "*(Disclaimer: This analysis is provided for educational and competitive examination preparation only and does not constitute formal legal counsel.)*"`,
+    };
+  }
+
+  /**
    * Computes estimated token cost in USD based on provider and model.
    */
   static calculateEstimatedCost(promptTokens: number, completionTokens: number, provider: string, model: string): number {

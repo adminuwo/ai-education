@@ -1255,3 +1255,54 @@ model BugReport {
   @@index([createdAt])
 }
 
+// ============ LEGAL AGENT & JUDICIAL / ADP EDUCATION SUITE ============
+
+model LegalDocumentAsset {
+  id           String   @id @default(uuid())
+  orgId        String
+  uploaderId   String?
+  title        String
+  actName      String?
+  category     String   @default("BARE_ACT") // BARE_ACT, CASE_LAW, PYQ, SYLLABUS, BOOK_COMMENTARY
+  targetExams  String   @default("BOTH")     // JUDICIARY, ADP, BOTH
+  state        String   @default("ALL")      // ALL, DELHI, UP, MP, BIHAR, RAJASTHAN, etc.
+  sourceUrl    String?
+  gcsKey       String?
+  publicUrl    String?
+  signedUrl    String?
+  fileSize     Int      @default(0)
+  mimeType     String   @default("application/pdf")
+  summary      String?
+  sectionCount Int      @default(0)
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([orgId])
+  @@index([category])
+  @@index([targetExams])
+  @@index([state])
+  @@index([createdAt])
+}
+
+model LegalScraperJob {
+  id              String    @id @default(uuid())
+  orgId           String
+  createdById     String?
+  targetSource    String    @default("INDIA_CODE") // INDIA_CODE, ESCR_SUPREME_COURT, STATE_PSC_PYQ, CUSTOM_SEARCH
+  searchQuery     String
+  category        String    @default("BARE_ACT")
+  status          String    @default("PENDING")   // PENDING, RUNNING, COMPLETED, FAILED
+  discoveredCount Int       @default(0)
+  ingestedCount   Int       @default(0)
+  errorDetails    String?
+  metadata        Json?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([orgId])
+  @@index([status])
+  @@index([createdAt])
+}
+
