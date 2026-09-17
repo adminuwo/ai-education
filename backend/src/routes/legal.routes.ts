@@ -180,6 +180,31 @@ router.get('/scraper/jobs', async (req: AiLegalRequest, res, next) => {
 });
 
 /**
+ * POST /api/v1/legal/pyq/discover
+ * Autonomous agent endpoint to search, discover, and ingest past papers for any state, exam, year, and stage.
+ */
+router.post('/pyq/discover', async (req: AiLegalRequest, res, next) => {
+  try {
+    const orgId = req.aiLegalOrg!.id;
+    const userId = req.user?.id;
+    const { state, examType, stage, year, subject, customQuery } = req.body;
+
+    const result = await LegalScraperService.discoverAndIngestPYQPaper(orgId, userId, {
+      state: state || 'ALL',
+      examType: examType || 'JUDICIARY',
+      stage: stage || 'MAINS',
+      year: Number(year) || 2023,
+      subject,
+      customQuery,
+    });
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/legal/ai/study-plan
  * AI Judicial Services / ADP Exam Roadmap Generator.
  */

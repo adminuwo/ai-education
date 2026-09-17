@@ -290,6 +290,15 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
   const [pyqSolutionResult, setPyqSolutionResult] = useState(null);
   const [pyqSpecificQuestion, setPyqSpecificQuestion] = useState('');
 
+  // PYQ Autonomous Discovery State
+  const [discoverModalOpen, setDiscoverModalOpen] = useState(false);
+  const [discoveringPyq, setDiscoveringPyq] = useState(false);
+  const [discoverState, setDiscoverState] = useState('DELHI');
+  const [discoverExam, setDiscoverExam] = useState('JUDICIARY');
+  const [discoverStage, setDiscoverStage] = useState('MAINS');
+  const [discoverYear, setDiscoverYear] = useState('2023');
+  const [discoverSubject, setDiscoverSubject] = useState('');
+
   // Fetch Past Year Papers specifically
   const fetchPyqs = useCallback(async () => {
     setLoadingPyqs(true);
@@ -600,6 +609,34 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       toast.error('Failed to generate AI solution for past paper');
     } finally {
       setSolvingPyq(false);
+    }
+  };
+
+  // Autonomous Past Paper Discovery & Ingestion Handler
+  const handleDiscoverPYQ = async (e) => {
+    if (e) e.preventDefault();
+    setDiscoveringPyq(true);
+    try {
+      const res = await legalApi.discoverPYQPaper({
+        state: discoverState,
+        examType: discoverExam,
+        stage: discoverStage,
+        year: Number(discoverYear) || 2023,
+        subject: discoverSubject.trim() || undefined,
+      });
+
+      toast.success(res.message || 'Past question paper processed successfully!');
+      await fetchPyqs();
+      setDiscoverModalOpen(false);
+
+      if (res.asset) {
+        setSelectedPyqPaper(res.asset);
+        setPyqModalOpen(true);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.error || err?.message || 'Failed to discover past paper');
+    } finally {
+      setDiscoveringPyq(false);
     }
   };
 
@@ -1502,6 +1539,14 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 <Badge variant="outline" className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-xs">
                   {filteredPyqs.length} Papers Available
                 </Badge>
+                <Button
+                  size="sm"
+                  onClick={() => setDiscoverModalOpen(true)}
+                  className="bg-amber-600 hover:bg-amber-500 text-white text-xs h-8 shadow-sm shadow-amber-950/40"
+                >
+                  <Search className="w-3.5 h-3.5 mr-1.5" />
+                  Discover / Ingest More Papers
+                </Button>
               </div>
             </div>
 
@@ -1581,26 +1626,49 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               <span className="text-xs">Loading Question Papers...</span>
             </div>
           ) : filteredPyqs.length === 0 ? (
-            <div className="text-center py-16 border border-dashed border-slate-800 rounded-xl bg-slate-900/30">
-              <FileQuestion className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-sm text-slate-400 font-medium">No past question papers match your filters</p>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Try broadening your search or use the Autonomous Scraper to pull more past papers into your legal vault.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setPyqSearch('');
-                  setPyqStateFilter('ALL');
-                  setPyqExamFilter('ALL');
-                  setPyqStageFilter('ALL');
-                  setPyqYearFilter('ALL');
-                }}
-                className="mt-3 text-xs border-slate-700 text-slate-300"
-              >
-                Reset Filters
-              </Button>
+            <div className="text-center py-16 border border-dashed border-slate-800 rounded-xl bg-slate-900/30 p-6 space-y-3">
+              <FileQuestion className="w-9 h-9 text-amber-500/70 mx-auto" />
+              <div>
+                <p className="text-sm text-slate-200 font-semibold">No past question papers match your filters</p>
+                <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+                  {pyqSearch
+                    ? `Looking for past examination papers matching "${pyqSearch}"? Our Autonomous Agent can immediately search public state judicial archives, synthesize authentic structured questions, and ingest them directly into your vault.`
+                    : 'Search and import authentic State Judicial Service or Prosecutor question papers for any state, stage, and year.'}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setDiscoverSubject(pyqSearch || '');
+                    if (pyqStateFilter !== 'ALL') setDiscoverState(pyqStateFilter);
+                    if (pyqExamFilter !== 'ALL') setDiscoverExam(pyqExamFilter);
+                    if (pyqStageFilter !== 'ALL') setDiscoverStage(pyqStageFilter);
+                    if (pyqYearFilter !== 'ALL') setDiscoverYear(pyqYearFilter);
+                    setDiscoverModalOpen(true);
+                  }}
+                  className="bg-amber-600 hover:bg-amber-500 text-white text-xs shadow-md shadow-amber-950/50"
+                >
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  {pyqSearch ? `Discover & Ingest "${pyqSearch}"` : 'Discover & Ingest with Autonomous Agent'}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setPyqSearch('');
+                    setPyqStateFilter('ALL');
+                    setPyqExamFilter('ALL');
+                    setPyqStageFilter('ALL');
+                    setPyqYearFilter('ALL');
+                  }}
+                  className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800"
+                >
+                  Reset Filters
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -2039,6 +2107,140 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               </div>
             )}
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG 5: DISCOVER & INGEST PAST PAPERS AGENT */}
+      <Dialog open={discoverModalOpen} onOpenChange={setDiscoverModalOpen}>
+        <DialogContent className="sm:max-w-xl bg-slate-900 border-slate-800 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-sm font-semibold text-amber-300">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Autonomous Past Paper Discovery & Ingestion Agent</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Search and ingest authentic State Judicial Service, Higher Judicial (HJS), or Assistant Public Prosecutor (ADP/APO) examination question papers directly into your institution's vault.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleDiscoverPYQ} className="space-y-4 py-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300">Target State / High Court</label>
+                <select
+                  value={discoverState}
+                  onChange={(e) => setDiscoverState(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
+                >
+                  {STATE_JUDICIARY_EXAMS.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.stateName} ({s.label.split('(')[1] ? s.label.split('(')[1].split(')')[0] : s.value})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300">Examination Stream</label>
+                <select
+                  value={discoverExam}
+                  onChange={(e) => setDiscoverExam(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
+                >
+                  {LEGAL_EXAM_STREAMS.map((e) => (
+                    <option key={e.value} value={e.value}>
+                      {e.shortName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300">Examination Stage</label>
+                <select
+                  value={discoverStage}
+                  onChange={(e) => setDiscoverStage(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="MAINS">Mains Examination (Subjective Legal Problems & Judgments)</option>
+                  <option value="PRELIMS">Preliminary Examination (Objective Section MCQs)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-slate-300">Examination Year</label>
+                <select
+                  value={discoverYear}
+                  onChange={(e) => setDiscoverYear(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021</option>
+                  <option value="2020">2020</option>
+                  <option value="2019">2019</option>
+                  <option value="2018">2018</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-slate-300">
+                Subject / Specific Paper Focus <span className="text-slate-500">(Optional)</span>
+              </label>
+              <Input
+                placeholder="e.g. Civil Law Paper I, Criminal Procedure & BNS, Judgment Writing, Commercial Law"
+                value={discoverSubject}
+                onChange={(e) => setDiscoverSubject(e.target.value)}
+                className="text-xs bg-slate-950 border-slate-700"
+              />
+              <p className="text-[10px] text-slate-500">
+                Leave blank to discover core substantive & procedural law papers for this state and year.
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-lg space-y-1.5 text-[11px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-amber-400 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Autonomous Archive Crawler & Legal Quality Engine</span>
+              </div>
+              <p>
+                The agent verifies whether this paper exists in your vault or the national high court repository. If custom, it autonomously synthesizes the exact exam question set with statutory section citations and full marks, and permanently saves it to your legal library.
+              </p>
+            </div>
+
+            <DialogFooter className="pt-2 border-t border-slate-800">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setDiscoverModalOpen(false)}
+                disabled={discoveringPyq}
+                className="text-slate-400 text-xs"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="sm"
+                disabled={discoveringPyq}
+                className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
+              >
+                {discoveringPyq ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                    Discovering & Archiving...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-3.5 h-3.5 mr-1.5" />
+                    Run Discovery & Ingestion
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
