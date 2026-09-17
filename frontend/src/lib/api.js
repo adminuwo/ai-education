@@ -387,6 +387,7 @@ export const legalApi = {
   evaluateMainsAnswer: (data) => api.post('/legal/ai/evaluate-answer', data).then((r) => r.data),
   generateSectionDrill: (data) => api.post('/legal/ai/section-drill', data).then((r) => r.data),
   compareCriminalLaws: (data) => api.post('/legal/ai/law-transition', data).then((r) => r.data),
+  solvePYQPaper: (data) => api.post('/legal/ai/solve-pyq', data).then((r) => r.data),
 };
 
 

@@ -33,6 +33,17 @@ export interface GenerateMainsQuestionParams {
   questionType?: 'PROBLEM_BASED' | 'THEORETICAL' | 'JUDGMENT_WRITING' | 'MIXED';
 }
 
+export interface SolvePYQParams {
+  paperId?: string;
+  paperTitle: string;
+  year?: number | string;
+  state?: string;
+  targetExam?: string;
+  stage?: 'PRELIMS' | 'MAINS' | 'INTEGRATED';
+  paperContent?: string;
+  specificQuestion?: string;
+}
+
 export class LegalStudyAIService {
   /**
    * Generates a state-tailored, month-by-month study blueprint for Judicial Services or ADP aspirants.
@@ -383,6 +394,90 @@ Do NOT wrap in markdown code fence. Output ONLY valid raw JSON.`;
       targetExam: exam,
       targetState: state,
       generatedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Solves a State Judicial or Prosecution Previous Year Question Paper (PYQ)
+   * generating step-by-step Prelims solutions or publication-quality Mains model answers.
+   */
+  static async solvePYQPaper(userId: string, params: SolvePYQParams) {
+    const stage = params.stage || 'MAINS';
+    const exam = params.targetExam || 'State Judicial Service';
+    const state = params.state || 'General State Judiciary';
+
+    let specificDirective = '';
+    if (params.specificQuestion) {
+      specificDirective = `FOCUSED QUESTION TO SOLVE:
+"${params.specificQuestion}"
+Solve this specific question thoroughly following official examination and judicial evaluation standards.`;
+    } else {
+      specificDirective = `PAPER CONTENT / QUESTIONS:
+${params.paperContent || 'Standard Past Year Examination Paper for ' + params.paperTitle}
+Provide a comprehensive question-by-question solution and answer key for this past year paper.`;
+    }
+
+    const systemPrompt = `You are the Chief Academic Jurist and Master Solution Author for State Judicial Services (Civil Judge / PCS-J, Higher Judicial Services HJS, and Prosecution Officer ADP/APO) Examination Boards.
+You are generating official, comprehensive examination solutions for:
+PAPER: ${params.paperTitle} (${params.year || 'Past Year Paper'})
+JURISDICTION: ${state}
+EXAMINATION: ${exam}
+EXAM STAGE: ${stage}
+
+${specificDirective}
+
+SOLVING STANDARDS:
+${stage === 'PRELIMS' ? `
+FOR PRELIMS (OBJECTIVE MCQs):
+1. State the Correct Option clearly: **Correct Answer: [Option X]**.
+2. Provide the Exact Bare Act Section Citation (incorporate Bharatiya Nyaya Sanhita 2023, BNSS 2023, BSA 2023, CPC 1908, Constitution of India, and relevant local state acts).
+3. Pedagogical Explanation: Explain the legal principle, proviso, or statutory exception that governs this question.
+4. Distractor Analysis: Briefly explain why the other options are legally incorrect or inapposite.
+` : `
+FOR MAINS (SUBJECTIVE / PROBLEM-BASED / JUDGMENT WRITING):
+1. **Issue Identification & Framing**: Explicitly frame the core legal controversies (e.g., Issue 1, Issue 2).
+2. **Statutory Provisions**: Cite the exact Sections, Sub-sections, and Rules applicable (including New Criminal Laws BNS/BNSS/BSA transition notes where applicable).
+3. **Landmark Case Laws**: Cite authoritative Supreme Court and High Court precedents with precise case names and their legal ratios.
+4. **Judicial Reasoning & Application**: Apply the statutory rule and case ratios systematically to the given problem facts.
+5. **Operative Decision / Conclusion**: Provide the conclusive judicial finding, decree, or order that a top-ranker would write in the actual Mains exam.
+`}
+
+FORMATTING:
+Format in crisp, beautifully structured GitHub Markdown with clear headers (##, ###), bullet points, bold sections, and callout blocks. Include a summary scorecard / key takeaways at the top.`;
+
+    const userMessage = `Generate the comprehensive judicial solutions and answer key for: ${params.paperTitle} (${state}, ${stage}). ${params.specificQuestion ? 'Specific Question: ' + params.specificQuestion : ''}`;
+    const sessionKey = `legal-pyq-solve-${userId}-${Date.now()}`;
+    const startTime = Date.now();
+    const llmResp = await callLLM(sessionKey, systemPrompt, userMessage);
+    const latencyMs = Date.now() - startTime;
+
+    await GuardrailService.recordTokenUsage({
+      userId,
+      promptTokens: llmResp.promptTokens,
+      completionTokens: llmResp.completionTokens,
+      totalTokens: llmResp.totalTokens,
+      provider: llmResp.provider,
+      model: llmResp.model,
+      feature: 'LEGAL_PYQ_SOLVE',
+    });
+
+    return {
+      paperTitle: params.paperTitle,
+      state,
+      targetExam: exam,
+      stage,
+      year: params.year,
+      specificQuestion: params.specificQuestion || null,
+      solution: llmResp.text,
+      solutionsMarkdown: llmResp.text,
+      model: llmResp.model,
+      latencyMs,
+      tokens: {
+        promptTokens: llmResp.promptTokens,
+        completionTokens: llmResp.completionTokens,
+        totalTokens: llmResp.totalTokens,
+      },
+      solvedAt: new Date().toISOString(),
     };
   }
 }

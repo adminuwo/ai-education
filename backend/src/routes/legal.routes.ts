@@ -300,4 +300,31 @@ router.post('/ai/law-transition', async (req: AiLegalRequest, res, next) => {
   }
 });
 
+/**
+ * POST /api/v1/legal/ai/solve-pyq
+ * Solves a past year paper or specific question with comprehensive model answers.
+ */
+router.post('/ai/solve-pyq', async (req: AiLegalRequest, res, next) => {
+  try {
+    const { paperId, paperTitle, year, state, targetExam, stage, paperContent, specificQuestion } = req.body;
+    if (!paperTitle && !paperContent && !specificQuestion) {
+      return res.status(400).json({ error: 'Paper title, content, or specific question is required.' });
+    }
+
+    const result = await LegalStudyAIService.solvePYQPaper(req.user!.id, {
+      paperId,
+      paperTitle: paperTitle || 'Judicial Services Past Year Paper',
+      year,
+      state,
+      targetExam,
+      stage,
+      paperContent,
+      specificQuestion,
+    });
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

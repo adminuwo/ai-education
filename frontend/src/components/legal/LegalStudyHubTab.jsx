@@ -28,7 +28,12 @@ import {
   Lightbulb,
   RotateCcw,
   FileQuestion,
-  Eraser
+  Eraser,
+  Calendar,
+  ListOrdered,
+  Eye,
+  BookMarked,
+  Send
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -270,6 +275,34 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
     statutoryPointers: SAMPLE_MAINS_QUESTIONS[0].statutoryPointers,
   });
 
+  // PYQ State
+  const [pyqAssets, setPyqAssets] = useState([]);
+  const [loadingPyqs, setLoadingPyqs] = useState(false);
+  const [pyqSearch, setPyqSearch] = useState('');
+  const [pyqStateFilter, setPyqStateFilter] = useState('ALL');
+  const [pyqExamFilter, setPyqExamFilter] = useState('ALL');
+  const [pyqStageFilter, setPyqStageFilter] = useState('ALL');
+  const [pyqYearFilter, setPyqYearFilter] = useState('ALL');
+  const [selectedPyqPaper, setSelectedPyqPaper] = useState(null);
+  const [pyqModalOpen, setPyqModalOpen] = useState(false);
+  const [pyqSolverOpen, setPyqSolverOpen] = useState(false);
+  const [solvingPyq, setSolvingPyq] = useState(false);
+  const [pyqSolutionResult, setPyqSolutionResult] = useState(null);
+  const [pyqSpecificQuestion, setPyqSpecificQuestion] = useState('');
+
+  // Fetch Past Year Papers specifically
+  const fetchPyqs = useCallback(async () => {
+    setLoadingPyqs(true);
+    try {
+      const res = await legalApi.getLibrary({ category: 'PYQ' });
+      setPyqAssets(Array.isArray(res.assets) ? res.assets : []);
+    } catch (e) {
+      console.error('Failed to load PYQ library', e);
+    } finally {
+      setLoadingPyqs(false);
+    }
+  }, []);
+
   // Section Drill State
   const [drillAct, setDrillAct] = useState('Bharatiya Nyaya Sanhita (BNS) 2023');
   const [drillTopic, setDrillTopic] = useState('Offences Against Human Body');
@@ -306,8 +339,9 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
 
   useEffect(() => {
     fetchLibrary();
+    fetchPyqs();
     fetchScraperJobs();
-  }, [fetchLibrary, fetchScraperJobs]);
+  }, [fetchLibrary, fetchPyqs, fetchScraperJobs]);
 
   // Trigger Scraper
   const handleRunScraper = async (e) => {
@@ -328,7 +362,10 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       setScraperModalOpen(false);
       setScraperQuery('');
       fetchScraperJobs();
-      setTimeout(fetchLibrary, 2500);
+      setTimeout(() => {
+        fetchLibrary();
+        fetchPyqs();
+      }, 2500);
     } catch (err) {
       toast.error('Failed to launch scraper agent');
     } finally {
@@ -357,6 +394,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       setUploadFile(null);
       setUploadTitle('');
       fetchLibrary();
+      fetchPyqs();
     } catch (err) {
       toast.error('Upload failed. Check file format and size.');
     } finally {
@@ -514,6 +552,57 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
     return correct;
   };
 
+  // PYQ Filtering
+  const filteredPyqs = pyqAssets.filter((asset) => {
+    if (pyqSearch.trim()) {
+      const q = pyqSearch.toLowerCase();
+      const matchTitle = (asset.title || '').toLowerCase().includes(q);
+      const matchContent = (asset.textContent || '').toLowerCase().includes(q);
+      const matchSubject = (asset.metadata?.subject || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchContent && !matchSubject) return false;
+    }
+    if (pyqStateFilter !== 'ALL' && asset.state !== pyqStateFilter) return false;
+    if (pyqExamFilter !== 'ALL' && asset.targetExams !== pyqExamFilter && asset.targetExams !== 'BOTH') return false;
+    if (pyqStageFilter !== 'ALL') {
+      const stage = asset.metadata?.stage || (asset.title.toLowerCase().includes('prelim') ? 'PRELIMS' : 'MAINS');
+      if (stage !== pyqStageFilter) return false;
+    }
+    if (pyqYearFilter !== 'ALL') {
+      const yr = String(asset.metadata?.year || '');
+      if (yr !== pyqYearFilter) return false;
+    }
+    return true;
+  });
+
+  // AI Exam Solver handler
+  const handleSolvePYQ = async (paperToSolve, specificQuestionText = '') => {
+    const paper = paperToSolve || selectedPyqPaper;
+    if (!paper) return;
+    setSelectedPyqPaper(paper);
+    setSolvingPyq(true);
+    setPyqSolverOpen(true);
+    try {
+      const stage = paper.metadata?.stage || (paper.title.toLowerCase().includes('prelim') ? 'PRELIMS' : 'MAINS');
+      const year = paper.metadata?.year || (paper.title.match(/20\d\d/) ? parseInt(paper.title.match(/20\d\d/)[0]) : 2023);
+      const res = await legalApi.solvePYQPaper({
+        paperId: paper.id,
+        paperTitle: paper.title,
+        paperContent: paper.summary || paper.textContent || (paper.metadata?.snippet) || '',
+        state: paper.state || 'DELHI',
+        examType: paper.targetExams || 'CIVIL_JUDGE',
+        stage: stage,
+        year: year,
+        specificQuestion: specificQuestionText || pyqSpecificQuestion,
+      });
+      setPyqSolutionResult(res);
+      toast.success('AI Solution & Model Answers generated!');
+    } catch (err) {
+      toast.error('Failed to generate AI solution for past paper');
+    } finally {
+      setSolvingPyq(false);
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-4 pb-8">
       {/* Top Header Banner */}
@@ -615,6 +704,17 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
           <span>Prelims Bare Act Drills</span>
+        </button>
+        <button
+          onClick={() => setActiveSubTab('pyq')}
+          className={`px-3 py-1.5 rounded-lg flex items-center space-x-2 transition-all text-xs font-medium ${
+            activeSubTab === 'pyq'
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Past Papers & PYQs ({filteredPyqs.length})</span>
         </button>
       </div>
 
@@ -1383,6 +1483,224 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
         </div>
       )}
 
+      {/* TAB 6: PREVIOUS YEAR PAPERS (PYQs) & AI SOLVER */}
+      {activeSubTab === 'pyq' && (
+        <div className="flex flex-col space-y-4">
+          {/* Header Description & Search/Filter Controls */}
+          <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-amber-400" />
+                  Previous Year Papers (PYQ) Bank & AI Legal Solver
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Search authentic State Judicial Service & Prosecution exam question papers. Ask AI for verified Prelims answer keys with statutory citations or top-ranker Mains model answers.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-xs">
+                  {filteredPyqs.length} Papers Available
+                </Badge>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 pt-1">
+              <div className="relative md:col-span-2">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Input
+                  placeholder="Search papers by state, subject, question keywords..."
+                  value={pyqSearch}
+                  onChange={(e) => setPyqSearch(e.target.value)}
+                  className="pl-8 text-xs bg-slate-950/80 border-slate-700 h-8"
+                />
+              </div>
+
+              <div>
+                <select
+                  value={pyqStateFilter}
+                  onChange={(e) => setPyqStateFilter(e.target.value)}
+                  className="w-full bg-slate-950/80 border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-200 h-8 focus:outline-none focus:border-amber-500"
+                >
+                  <option value="ALL">All States & UTs</option>
+                  {STATE_JUDICIARY_EXAMS.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.stateName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <select
+                  value={pyqExamFilter}
+                  onChange={(e) => setPyqExamFilter(e.target.value)}
+                  className="w-full bg-slate-950/80 border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-200 h-8 focus:outline-none focus:border-amber-500"
+                >
+                  <option value="ALL">All Streams</option>
+                  {LEGAL_EXAM_STREAMS.map((e) => (
+                    <option key={e.value} value={e.value}>
+                      {e.shortName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-1.5">
+                <select
+                  value={pyqStageFilter}
+                  onChange={(e) => setPyqStageFilter(e.target.value)}
+                  className="w-1/2 bg-slate-950/80 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 h-8 focus:outline-none focus:border-amber-500"
+                >
+                  <option value="ALL">All Stages</option>
+                  <option value="PRELIMS">Prelims</option>
+                  <option value="MAINS">Mains</option>
+                </select>
+
+                <select
+                  value={pyqYearFilter}
+                  onChange={(e) => setPyqYearFilter(e.target.value)}
+                  className="w-1/2 bg-slate-950/80 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 h-8 focus:outline-none focus:border-amber-500"
+                >
+                  <option value="ALL">All Years</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021</option>
+                  <option value="2020">2020</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Paper Cards Grid */}
+          {loadingPyqs ? (
+            <div className="flex items-center justify-center py-16 text-slate-400">
+              <RefreshCw className="w-5 h-5 animate-spin mr-2 text-amber-400" />
+              <span className="text-xs">Loading Question Papers...</span>
+            </div>
+          ) : filteredPyqs.length === 0 ? (
+            <div className="text-center py-16 border border-dashed border-slate-800 rounded-xl bg-slate-900/30">
+              <FileQuestion className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+              <p className="text-sm text-slate-400 font-medium">No past question papers match your filters</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                Try broadening your search or use the Autonomous Scraper to pull more past papers into your legal vault.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPyqSearch('');
+                  setPyqStateFilter('ALL');
+                  setPyqExamFilter('ALL');
+                  setPyqStageFilter('ALL');
+                  setPyqYearFilter('ALL');
+                }}
+                className="mt-3 text-xs border-slate-700 text-slate-300"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filteredPyqs.map((paper) => {
+                const stage = paper.metadata?.stage || (paper.title.toLowerCase().includes('prelim') ? 'PRELIMS' : 'MAINS');
+                const isPrelims = stage === 'PRELIMS';
+                const year = paper.metadata?.year || (paper.title.match(/20\d\d/) ? paper.title.match(/20\d\d/)[0] : '2023');
+                const stateObj = STATE_JUDICIARY_EXAMS.find((s) => s.value === paper.state);
+                const stateLabel = stateObj ? stateObj.stateName : paper.state || 'National';
+                const questionCount = paper.metadata?.questionCount || (isPrelims ? '125 MCQs' : '5 Questions');
+                const marks = paper.metadata?.totalMarks || 100;
+
+                return (
+                  <Card
+                    key={paper.id}
+                    className="p-3.5 bg-slate-900/80 border-slate-800 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge
+                            variant="outline"
+                            className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-[10px] font-semibold uppercase tracking-wider"
+                          >
+                            {stateLabel}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className={
+                              isPrelims
+                                ? 'bg-purple-500/10 text-purple-300 border-purple-500/30 text-[10px]'
+                                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 text-[10px]'
+                            }
+                          >
+                            {isPrelims ? 'Prelims (MCQs)' : 'Mains (Subjective)'}
+                          </Badge>
+                          <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 text-[10px]">
+                            {year}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <h4 className="text-xs font-semibold text-slate-100 leading-snug line-clamp-2">
+                        {paper.title}
+                      </h4>
+
+                      <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-slate-500" />
+                          {year}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <ListOrdered className="w-3 h-3 text-slate-500" />
+                          {questionCount}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Award className="w-3 h-3 text-slate-500" />
+                          {marks} Marks
+                        </span>
+                      </div>
+
+                      {(paper.summary || paper.textContent) && (
+                        <p className="text-[11px] text-slate-400 line-clamp-3 bg-slate-950/60 p-2 rounded border border-slate-800/80 font-mono leading-relaxed">
+                          {(paper.summary || paper.textContent).slice(0, 180)}...
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1 border-t border-slate-800/80">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedPyqPaper(paper);
+                          setPyqModalOpen(true);
+                        }}
+                        className="flex-1 text-xs border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white h-7"
+                      >
+                        <Eye className="w-3 h-3 mr-1.5" />
+                        View Paper
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          handleSolvePYQ(paper);
+                        }}
+                        className="flex-1 text-xs bg-amber-600 hover:bg-amber-500 text-white font-medium h-7"
+                      >
+                        <Sparkles className="w-3 h-3 mr-1.5" />
+                        AI Solve
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* MODAL 1: AUTONOMOUS SCRAPER AGENT */}
       <Dialog open={scraperModalOpen} onOpenChange={setScraperModalOpen}>
         <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-md">
@@ -1537,6 +1855,190 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: VIEW PAST QUESTION PAPER */}
+      <Dialog open={pyqModalOpen} onOpenChange={setPyqModalOpen}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant="outline" className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-xs">
+                {selectedPyqPaper?.state || 'ALL-INDIA'}
+              </Badge>
+              <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 text-xs">
+                {selectedPyqPaper?.metadata?.stage || 'PAST PAPER'}
+              </Badge>
+              <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 text-xs">
+                {selectedPyqPaper?.metadata?.year || '2023'}
+              </Badge>
+            </div>
+            <DialogTitle className="text-base font-semibold text-white leading-tight">
+              {selectedPyqPaper?.title}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Exam: {selectedPyqPaper?.targetExams || 'JUDICIARY'} • Total Marks: {selectedPyqPaper?.metadata?.totalMarks || 100} • Questions: {selectedPyqPaper?.metadata?.questionCount || 'Full Set'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-hidden my-2">
+            <ScrollArea className="h-[50vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+              <pre className="text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed select-text">
+                {selectedPyqPaper?.summary || selectedPyqPaper?.textContent || 'No text content available for this paper.'}
+              </pre>
+            </ScrollArea>
+          </div>
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setPyqModalOpen(false)}
+              className="text-slate-400 text-xs"
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => {
+                setPyqModalOpen(false);
+                handleSolvePYQ(selectedPyqPaper);
+              }}
+              className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              Ask AI to Solve this Paper
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL: AI EXAM SOLVER / MODEL ANSWERS */}
+      <Dialog open={pyqSolverOpen} onOpenChange={setPyqSolverOpen}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-3xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <DialogTitle className="text-base font-semibold text-white">
+                  AI Legal Exam Solver
+                </DialogTitle>
+                <Badge variant="outline" className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-xs">
+                  {selectedPyqPaper?.metadata?.stage || 'EXAM SOLVER'}
+                </Badge>
+              </div>
+            </div>
+            <DialogDescription className="text-xs text-slate-400 leading-snug">
+              {selectedPyqPaper?.title}
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Specific Question Query Input */}
+          <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-lg space-y-2">
+            <label className="text-[11px] font-medium text-slate-300 block">
+              Solve Entire Paper or Focus on Specific Question:
+            </label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="e.g. 'Solve Question 2 on constructive res judicata' or leave blank to solve full paper..."
+                value={pyqSpecificQuestion}
+                onChange={(e) => setPyqSpecificQuestion(e.target.value)}
+                className="text-xs bg-slate-900 border-slate-700 h-8 flex-1"
+                disabled={solvingPyq}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSolvePYQ(selectedPyqPaper, pyqSpecificQuestion);
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                onClick={() => handleSolvePYQ(selectedPyqPaper, pyqSpecificQuestion)}
+                disabled={solvingPyq}
+                className="bg-amber-600 hover:bg-amber-500 text-white text-xs h-8 px-3"
+              >
+                {solvingPyq ? <RefreshCw className="w-3.5 h-3.5 animate-spin mr-1" /> : <Send className="w-3.5 h-3.5 mr-1" />}
+                Solve
+              </Button>
+            </div>
+          </div>
+
+          {/* Solution Body */}
+          <div className="flex-1 overflow-hidden my-2">
+            {solvingPyq ? (
+              <div className="h-[45vh] flex flex-col items-center justify-center space-y-3 bg-slate-950/60 rounded-lg border border-slate-800 p-6 text-center">
+                <RefreshCw className="w-8 h-8 text-amber-400 animate-spin" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-white">
+                    Synthesizing Judicial Solutions & Model Answers...
+                  </p>
+                  <p className="text-xs text-slate-400 max-w-md">
+                    Cross-referencing statutory bare acts (IPC/CrPC & BNS/BNSS/BSA), invoking landmark Supreme Court rulings, and structuring rank-1 legal reasoning.
+                  </p>
+                </div>
+              </div>
+            ) : pyqSolutionResult ? (
+              <ScrollArea className="h-[48vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+                <div className="space-y-3">
+                  {/* Telemetry info header */}
+                  <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+                    <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      Verified AI Legal Engine ({pyqSolutionResult.model || 'Gemini 2.5 Pro'})
+                    </span>
+                    <div className="flex items-center gap-3 text-slate-400">
+                      {pyqSolutionResult.latencyMs && (
+                        <span>Latency: {(pyqSolutionResult.latencyMs / 1000).toFixed(1)}s</span>
+                      )}
+                      {pyqSolutionResult.tokens?.totalTokens && (
+                        <span>Tokens: {pyqSolutionResult.tokens.totalTokens}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-xs leading-relaxed text-slate-200">
+                    <FormattedMarkdown content={pyqSolutionResult.solution} />
+                  </div>
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="h-[40vh] flex flex-col items-center justify-center text-slate-400 space-y-2 border border-dashed border-slate-800 rounded-lg">
+                <Bot className="w-8 h-8 text-slate-600" />
+                <p className="text-xs">Click Solve above to synthesize model answers for this past paper.</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setPyqSolverOpen(false)}
+              className="text-slate-400 text-xs"
+            >
+              Close
+            </Button>
+            {pyqSolutionResult && (
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(pyqSolutionResult.solution || '');
+                    toast.success('Model Answer copied to clipboard!');
+                  }}
+                  className="text-xs border-slate-700 text-slate-200 hover:bg-slate-800"
+                >
+                  <Copy className="w-3.5 h-3.5 mr-1.5" />
+                  Copy Solution
+                </Button>
+              </div>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

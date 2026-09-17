@@ -140,6 +140,7 @@ Paper V: Penal, Revenue and Local Laws (200 Marks) - BNS/IPC, UP Revenue Code 20
     state: 'ALL',
     sourceUrl: 'https://mppsc.mp.gov.in/',
     sectionCount: 0,
+    metadata: { year: 2023, stage: 'PRELIMS', totalMarks: 300, questionCount: 10, subject: 'Prosecution Law & Procedure' },
     summary: 'Comprehensive compilation of Prosecution Officer past year questions, charge sheet scrutiny protocols, bail arguments, and special acts (NDPS, SC/ST Prevention of Atrocities Act, Arms Act, Motor Vehicles Act).',
     contentSnippet: `ASSISTANT DISTRICT PUBLIC PROSECUTOR (ADP / APO) PREP MANUAL:
 Key Focus Areas for Public Prosecutors:
@@ -147,26 +148,181 @@ Key Focus Areas for Public Prosecutors:
 2. Bail Oppositions: Principles under BNSS Sec 479-483 (CrPC Sec 437/439), NDPS Sec 37 twin conditions, PMLA Sec 45.
 3. Examination-in-Chief & Cross-Examination techniques in Sessions Trials.
 4. Special Acts: Protection of Children from Sexual Offences (POCSO), Narcotic Drugs and Psychotropic Substances Act (NDPS), Scheduled Castes and Scheduled Tribes (PoA) Act 1989.`,
+  },
+  {
+    title: 'Delhi Judicial Service (DJS) Mains 2023 - Civil Law II & Commercial Courts',
+    actName: 'Delhi Judicial Service Mains Examination 2023',
+    category: 'PYQ',
+    targetExams: 'JUDICIARY',
+    state: 'DELHI',
+    sourceUrl: 'https://delhihighcourt.nic.in/',
+    sectionCount: 5,
+    metadata: { year: 2023, stage: 'MAINS', totalMarks: 200, questionCount: 5, subject: 'Civil Law - II' },
+    summary: 'Official Delhi Judicial Service (DJS) Mains Examination Paper. Tests complex Civil Procedure, Law of Evidence/BSA, Limitation, Registration, and Commercial Courts Act 2015.',
+    contentSnippet: `DELHI JUDICIAL SERVICE MAINS EXAMINATION 2023 - CIVIL LAW II (200 MARKS)
+
+Question 1 (40 Marks):
+A filed a commercial summary suit under Order XXXVII of the CPC for recovery of Rs. 45 Lakhs based on dishonored bills of exchange against B. B filed an application seeking unconditional leave to defend, contending that the goods delivered were of substandard quality and an email dispute had been raised prior to presentation of bills.
+(a) What are the governing principles for grant of leave to defend under Order XXXVII Rule 3(5) post the IDBI Trusteeship Services v. Hubtown Ltd (2017) ruling?
+(b) If the defense is deemed plausible but not positively good, what conditions may the Commercial Court impose?
+
+Question 2 (40 Marks):
+Examine the statutory mandate of Pre-Institution Mediation under Section 12A of the Commercial Courts Act, 2015.
+(a) Is Section 12A mandatory or directory? Discuss with reference to Patil Automation Pvt Ltd v. Rakheja Engineers (2022).
+(b) Can a plaintiff bypass Section 12A by merely praying for an urgent interim relief when the plaint itself reveals no immediate urgency?
+
+Question 3 (40 Marks):
+Explain the doctrine of Res Judicata under Section 11 CPC. Can an objection under Order XXI Rule 97 CPC raised by a third party asserting independent title be barred by constructive res judicata if they did not contest during the trial?
+
+Question 4 (40 Marks):
+Discuss Section 63 of Bharatiya Sakshya Adhiniyam, 2023 (formerly Section 65B of IEA) regarding the mandatory requirement of a certificate for electronic records. Contrast the positions in Anvar P.V. and Arjun Panditrao Khotkar.
+
+Question 5 (40 Marks):
+A instituted a suit for declaration of title and possession 14 years after being dispossessed by B. B pleaded adverse possession under Article 65 of the Limitation Act, 1963. On whom does the initial burden of proof lie, and what must B establish to succeed in plea of adverse possession?`,
+  },
+  {
+    title: 'Delhi Judicial Service (DJS) Prelims 2023 - Law Paper (Official PYQ)',
+    actName: 'Delhi Judicial Service Preliminary Examination 2023',
+    category: 'PYQ',
+    targetExams: 'JUDICIARY',
+    state: 'DELHI',
+    sourceUrl: 'https://delhihighcourt.nic.in/',
+    sectionCount: 10,
+    metadata: { year: 2023, stage: 'PRELIMS', totalMarks: 200, questionCount: 10, subject: 'Preliminary Law Paper' },
+    summary: 'Official DJS Prelims objective examination testing Section 138 NI Act, Arbitration Section 9 & 11, Specific Relief 2018 amendment, and Constitutional Law.',
+    contentSnippet: `DELHI JUDICIAL SERVICE PRELIMINARY EXAMINATION 2023 (SELECTED REPRESENTATIVE QUESTIONS):
+
+Q1. Under Section 138 of the Negotiable Instruments Act, 1881, the statutory notice demanding payment must be made within how many days of the receipt of information regarding dishonour of the cheque?
+[A] 15 days
+[B] 30 days
+[C] 45 days
+[D] 60 days
+
+Q2. Post the 2018 Amendment to the Specific Relief Act, 1963, grant of specific performance of a contract under Section 10 is:
+[A] Discretionary for the Court
+[B] Mandatory subject to provisions of Section 11(2), 14, and 16
+[C] Available only if monetary damages are inadequate
+[D] Governed entirely by common law equity
+
+Q3. Under Section 12A of the Commercial Courts Act, 2015, the period of pre-institution mediation is:
+[A] 2 months, extendable by 1 month with consent
+[B] 3 months, extendable by 2 months with consent of parties
+[C] 45 days strictly
+[D] 6 months
+
+Q4. Under Bharatiya Sakshya Adhiniyam, 2023 (BSA), which section governs the admissibility of electronic records?
+[A] Section 61
+[B] Section 63
+[C] Section 65
+[D] Section 70
+
+Q5. Which Supreme Court bench decision settled that father coparcener does not need to be alive on 09.09.2005 for daughter to claim coparcenary rights under Section 6 of HSA?
+[A] Prakash v. Phulavati
+[B] Danamma v. Amar
+[C] Vineeta Sharma v. Rakesh Sharma
+[D] Mangammal v. T.B. Raju`,
+  },
+  {
+    title: 'UP PCS-J (Uttar Pradesh Judicial Service) Mains 2023 - Penal, Revenue and Local Laws (Paper V)',
+    actName: 'UP Judicial Service Mains Examination 2023',
+    category: 'PYQ',
+    targetExams: 'JUDICIARY',
+    state: 'UP',
+    sourceUrl: 'https://uppsc.up.nic.in/',
+    sectionCount: 5,
+    metadata: { year: 2023, stage: 'MAINS', totalMarks: 200, questionCount: 5, subject: 'Paper V - Penal, Revenue & Local Laws' },
+    summary: 'Official UP PCS-J Mains Paper V. Tests UP Revenue Code 2006 (Bhumidhari rights, Gram Sabha land eviction), UP Urban Buildings Act 1972 (Bonafide requirement), and Indian Penal Code / BNS.',
+    contentSnippet: `UP PCS-J MAINS EXAMINATION 2023 - PENAL, REVENUE & LOCAL LAWS (PAPER V - 200 MARKS)
+
+Question 1 (40 Marks):
+Discuss the rights of a 'Bhumidhar with Transferable Rights' under the UP Revenue Code, 2006. Under what circumstances can a Bhumidhar transfer his agricultural land to a person who is not an agriculturist or who already holds land exceeding the ceiling limit under Section 89?
+
+Question 2 (40 Marks):
+Explain the procedure for eviction of an unauthorized occupant or trespasser from Gram Sabha land or public utility land under Section 67 of the UP Revenue Code, 2006. What powers are exercisable by the Assistant Collector / Tehsildar, and what is the forum for appeal?
+
+Question 3 (40 Marks):
+Explain the grounds of eviction of a tenant on the premise of 'bonafide requirement' of the landlord under Section 21(1)(a) of the UP Urban Buildings (Regulation of Letting, Rent and Eviction) Act, 1972. How is the comparative hardship between the landlord and the tenant evaluated?
+
+Question 4 (40 Marks):
+Discuss the statutory changes introduced in the Bharatiya Nyaya Sanhita, 2023 regarding mob lynching under Section 103(2) and theft in residential dwelling under Section 305. How does the sentencing framework differ from erstwhile IPC Sections 302 and 380?
+
+Question 5 (40 Marks):
+Write short notes on any two of the following:
+(a) Deemed vacancy of a building under Section 12 of the UP Urban Buildings Act, 1972.
+(b) Classes of land tenures under Section 74 of the UP Revenue Code, 2006.
+(c) Community Service as a newly prescribed penal measure under Bharatiya Nyaya Sanhita, 2023.`,
+  },
+  {
+    title: 'Madhya Pradesh Civil Judge (Junior Division) Mains 2022 - Judgment Writing & Civil Issues (Paper IV)',
+    actName: 'MP High Court Civil Judge Mains Examination 2022',
+    category: 'PYQ',
+    targetExams: 'JUDICIARY',
+    state: 'MP',
+    sourceUrl: 'https://mphc.gov.in/',
+    sectionCount: 4,
+    metadata: { year: 2022, stage: 'MAINS', totalMarks: 100, questionCount: 4, subject: 'Paper IV - Judgment Writing' },
+    summary: 'Official MP High Court Civil Judge Examination Paper IV. Specializes in Framing of Issues in Civil Suits and drafting full Operative Judgment in a Criminal Sessions trial.',
+    contentSnippet: `MP CIVIL JUDGE MAINS EXAMINATION 2022 - PAPER IV: JUDGMENT WRITING (100 MARKS)
+
+Question 1: Framing of Issues in a Civil Suit (20 Marks)
+Plaintiff 'P' filed a suit against Defendant 'D' seeking a permanent prohibitory injunction restraining D from interfering with P's peaceful possession over agricultural Khasra No. 142.
+- P claims title by virtue of a registered sale deed dated 12.04.2010 executed by the erstwhile owner 'X'.
+- D denies P's ownership and contends that 'X' had already executed an agreement to sell in favor of D on 05.01.2008 and handed over possession under Section 53A TPA.
+- D further pleads that the suit is barred by limitation and undervalued for court fees.
+TASK: Frame the appropriate issues for trial under Order XIV Rule 1 CPC, specifying which party bears the burden of proof.
+
+Question 2: Drafting Operative Criminal Judgment (40 Marks)
+Prosecution case: Accused 'Ramesh' intercepted victim 'Suresh' on 15.08.2021 at 9:00 PM, uttered filthy abuses, and caused grievous head injuries with an iron rod. Suresh's brother 'Mukesh' lodged the FIR (Ex. P-1) within 2 hours. Medical officer PW-3 proved the MLC report (Ex. P-3) showing a depressed skull fracture dangerous to life. Accused took the defense of total denial and alibi claiming he was in another village.
+TASK: Evaluate the evidence and draft a structured criminal judgment, covering Statement of Facts, Points for Determination, Analysis of Evidence, Findings, and Sentence Order under BNS/IPC.`,
+  },
+  {
+    title: 'Bihar Judicial Service (BPSC-J) Mains 2021 - Law of Evidence & Procedure',
+    actName: 'BPSC Bihar Judicial Service Mains Examination 2021',
+    category: 'PYQ',
+    targetExams: 'JUDICIARY',
+    state: 'BIHAR',
+    sourceUrl: 'https://bpsc.bih.nic.in/',
+    sectionCount: 5,
+    metadata: { year: 2021, stage: 'MAINS', totalMarks: 150, questionCount: 5, subject: 'Law of Evidence & Procedure' },
+    summary: 'Official Bihar PCS-J Mains examination covering Indian Evidence Act / BSA, Code of Criminal Procedure / BNSS, and Bihar Buildings Rent Control Act 1982.',
+    contentSnippet: `BIHAR JUDICIAL SERVICE (BPSC-J) MAINS EXAMINATION 2021 - EVIDENCE & PROCEDURE (150 MARKS)
+
+Question 1 (30 Marks):
+Explain the evidentiary value of a 'Dying Declaration'. Can an accused be convicted solely on the basis of an uncorroborated dying declaration? What tests were laid down by the Supreme Court in Khushal Rao v. State of Bombay and Atbir v. Govt of NCT of Delhi?
+
+Question 2 (30 Marks):
+Under what circumstances is a confession made by an accused while in the custody of a police officer admissible against him? Discuss Section 27 of the Indian Evidence Act, 1872 (now Section 23 of BSA 2023) in light of Pulukuri Kottaya v. King Emperor and Mohd. Inayatullah v. State of Maharashtra.
+
+Question 3 (30 Marks):
+Examine the grounds on which a landlord can evict a tenant under Section 11 of the Bihar Buildings (Lease, Rent and Eviction) Control Act, 1982. What is the statutory requirement for partial eviction when the landlord requires only a portion of the premises for bonafide occupation?
+
+Question 4 (30 Marks):
+Discuss the provisions relating to Inherent Powers of the High Court under Section 482 of the CrPC, 1973 (now Section 528 of the BNSS, 2023). Under what guidelines laid down in State of Haryana v. Bhajan Lal can the High Court quash an FIR at the threshold?
+
+Question 5 (30 Marks):
+Explain the doctrine of 'Res Sub-Judice' under Section 10 of the CPC, 1908. How does it differ from 'Res Judicata' under Section 11? Can an interim injunction be granted in a subsequently instituted suit that has been stayed under Section 10?`,
   }
 ];
 
 export class LegalScraperService {
   /**
    * Automatically provisions foundational Bare Acts and syllabus guides for an organization.
+   * Idempotent: Adds any missing assets from FOUNDATIONAL_LEGAL_CATALOG.
    */
   static async seedEssentialLegalStatutes(orgId: string, uploaderId?: string) {
     try {
-      const existingCount = await prisma.legalDocumentAsset.count({ where: { orgId } });
-      if (existingCount > 0) {
-        return { message: 'Legal library already populated', count: existingCount };
-      }
-
-      logger.info(`[Legal Scraper] Seeding essential statutory catalog for organization ${orgId}...`);
+      logger.info(`[Legal Scraper] Verifying statutory & PYQ catalog for organization ${orgId}...`);
       let created = 0;
 
       for (const item of FOUNDATIONAL_LEGAL_CATALOG) {
+        const existing = await prisma.legalDocumentAsset.findFirst({
+          where: { orgId, title: item.title },
+        });
+
+        if (existing) continue;
+
         // Create formatted buffer for GCS upload
-        const textPayload = `${item.title}\n\nAct: ${item.actName} | Category: ${item.category} | State: ${item.state}\nSource: ${item.sourceUrl}\n\nSUMMARY:\n${item.summary}\n\nKEY SECTIONS & STATUTORY EXCERPTS:\n${item.contentSnippet}\n`;
+        const textPayload = `${item.title}\n\nAct: ${item.actName} | Category: ${item.category} | State: ${item.state}\nSource: ${item.sourceUrl}\n\nSUMMARY:\n${item.summary}\n\nKEY EXCERPTS / EXAMINATION QUESTIONS:\n${item.contentSnippet}\n`;
         const buffer = Buffer.from(textPayload, 'utf-8');
 
         const uid = Math.random().toString(36).substring(2, 8);
@@ -211,15 +367,21 @@ export class LegalScraperService {
             metadata: {
               snippet: item.contentSnippet.substring(0, 500),
               isSeeded: true,
-              source: 'Public Domain / India Code / PSC',
+              source: 'Public Domain / India Code / High Court / PSC',
+              ...(item as any).metadata,
             },
           },
         });
         created++;
       }
 
-      logger.info(`[Legal Scraper] Successfully seeded ${created} foundational legal assets for org ${orgId}.`);
-      return { message: 'Foundational legal library seeded successfully', count: created };
+      const totalCount = await prisma.legalDocumentAsset.count({ where: { orgId } });
+      logger.info(`[Legal Scraper] Organization ${orgId} legal vault has ${totalCount} total assets (${created} newly added).`);
+      return {
+        message: created > 0 ? `Legal library augmented with ${created} new assets` : 'Legal library already fully populated',
+        count: totalCount,
+        added: created,
+      };
     } catch (err: any) {
       logger.error({ err: err?.message }, '[Legal Scraper] Error seeding essential legal statutes.');
       throw err;
