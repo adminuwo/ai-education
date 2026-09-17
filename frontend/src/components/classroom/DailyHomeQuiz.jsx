@@ -188,7 +188,7 @@ export default function DailyHomeQuiz({ onNavigateToChat }) {
               <div className="flex items-center gap-2">
                 <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/30 font-semibold px-2.5 py-0.5 border border-emerald-500/30">
                   <Zap className="h-3.5 w-3.5 mr-1" />
-                  {quizStatus?.skillTitle || 'Developing (Level 2)'}
+                  {quizStatus?.skillTitle || (quizStatus?.totalQuizzes > 0 ? 'Developing (Level 2)' : 'Uncalibrated (Take 1st Quiz)')}
                 </Badge>
                 <Badge variant="outline" className="bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30">
                   <Flame className="h-3.5 w-3.5 mr-1 text-orange-500" />
@@ -209,10 +209,10 @@ export default function DailyHomeQuiz({ onNavigateToChat }) {
               <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between sm:justify-end gap-2">
                 <span>Mastery Score</span>
                 <span className="text-emerald-500 font-bold text-sm tabular-nums">
-                  {quizStatus?.skillScore || 50}/100
+                  {quizStatus?.totalQuizzes > 0 ? `${quizStatus.skillScore ?? 0}/100` : '0/100'}
                 </span>
               </div>
-              <Progress value={quizStatus?.skillScore || 50} className="h-2 bg-muted [&>div]:bg-emerald-500" />
+              <Progress value={quizStatus?.totalQuizzes > 0 ? (quizStatus?.skillScore ?? 0) : 0} className="h-2 bg-muted [&>div]:bg-emerald-500" />
               <div className="text-[10px] text-muted-foreground text-left sm:text-right">
                 {quizStatus?.totalQuizzes || 0} quizzes completed
               </div>

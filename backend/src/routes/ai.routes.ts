@@ -1389,7 +1389,15 @@ ${annSummary || 'No recent announcements.'}`;
 // STUDENT DAILY ADAPTIVE QUIZ & STUDY BUDDY ENGINE
 // =========================================================================
 
-function resolveStudentSkillTier(score: number): { tier: string; title: string; level: number; description: string } {
+function resolveStudentSkillTier(score: number, totalQuizzes: number = 1): { tier: string; title: string; level: number; description: string } {
+  if (totalQuizzes === 0 || score <= 0) {
+    return {
+      tier: 'UNCALIBRATED',
+      title: 'Uncalibrated (Take 1st Quiz)',
+      level: 0,
+      description: 'Complete your first daily quiz to calibrate your initial subject mastery level.',
+    };
+  }
   if (score >= 90) {
     return {
       tier: 'MASTERY',
@@ -1446,7 +1454,7 @@ router.get('/student/daily-quiz', async (req, res, next) => {
     });
 
     const totalQuizzes = pastQuizzes.length;
-    let currentSkillScore = 50.0; // Default baseline score (50/100)
+    let currentSkillScore = 0.0; // Starts at 0 for uncalibrated new students
     let streakDays = 0;
 
     if (totalQuizzes > 0) {
@@ -1462,7 +1470,7 @@ router.get('/student/daily-quiz', async (req, res, next) => {
       }
     }
 
-    const skillTier = resolveStudentSkillTier(currentSkillScore);
+    const skillTier = resolveStudentSkillTier(currentSkillScore, totalQuizzes);
 
     // Check for today's active or completed quiz
     const startOfToday = new Date();
@@ -2067,14 +2075,7 @@ router.post('/student/daily-quiz/:id/submit', async (req, res, next) => {
 
     const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
 
-    // Adaptive skill score adjustment formula:
-    // Performance above 60% increases skill score; below 60% adjusts score to reinforce fundamentals.
-    const oldSkillScore = quiz.skillScore || 50.0;
-    const delta = (scorePercentage - 60) * 0.18; // scaled delta (-10.8 to +7.2)
-    const newSkillScore = Math.min(100, Math.max(10, Math.round((oldSkillScore + delta) * 10) / 10));
-    const newTier = resolveStudentSkillTier(newSkillScore);
-
-    // Update streak: fetch previous quiz completion
+    // Update streak & check historical completed quizzes
     const prevQuiz = await prisma.studentDailyQuiz.findFirst({
       where: {
         studentId: userId,
@@ -2083,6 +2084,23 @@ router.post('/student/daily-quiz/:id/submit', async (req, res, next) => {
       },
       orderBy: { completedAt: 'desc' },
     });
+
+    const isFirstQuiz = !prevQuiz;
+    let oldSkillScore = isFirstQuiz ? 0 : (prevQuiz.skillScore || 50.0);
+    let newSkillScore: number;
+
+    if (isFirstQuiz) {
+      // Diagnostic Calibration: Establish baseline directly from 1st quiz score
+      // 100% -> 90.0 (Mastery Level 4), 80% -> 75.0 (Proficient Level 3), 60% -> 60.0 (Developing Level 2), 40% -> 45.0 (Foundational Level 1)
+      newSkillScore = Math.min(95, Math.max(15, Math.round((scorePercentage * 0.75 + 15) * 10) / 10));
+    } else {
+      // Adaptive skill score adjustment formula:
+      // Performance above 60% increases skill score; below 60% adjusts score to reinforce fundamentals.
+      const delta = (scorePercentage - 60) * 0.18; // scaled delta (-10.8 to +7.2)
+      newSkillScore = Math.min(100, Math.max(10, Math.round((oldSkillScore + delta) * 10) / 10));
+    }
+
+    const newTier = resolveStudentSkillTier(newSkillScore, 1);
 
     let newStreak = 1;
     if (prevQuiz && prevQuiz.completedAt) {
@@ -2096,7 +2114,9 @@ router.post('/student/daily-quiz/:id/submit', async (req, res, next) => {
 
     // Feedback synthesis
     let feedback = `You scored ${correctCount}/${totalQuestions} (${scorePercentage}%). Keep up the great practice!`;
-    if (scorePercentage === 100) {
+    if (isFirstQuiz) {
+      feedback = `🎯 Diagnostic Completed! You scored ${scorePercentage}% (${correctCount}/${totalQuestions}). Your initial mastery has been calibrated to ${newSkillScore}/100 (${newTier.title}). Take tomorrow's quiz to keep progressing!`;
+    } else if (scorePercentage === 100) {
       feedback = `🌟 Perfect Score! You achieved 100% and boosted your mastery score to ${newSkillScore}! You're advancing to higher-level conceptual challenges.`;
     } else if (scorePercentage >= 80) {
       feedback = `🎯 Excellent work! You scored ${correctCount}/${totalQuestions} (${scorePercentage}%) and demonstrated strong subject proficiency.`;

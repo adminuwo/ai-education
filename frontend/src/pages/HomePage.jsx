@@ -171,7 +171,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
                 <div className="text-right hidden md:block">
                   <div className="text-[10px] uppercase font-semibold text-muted-foreground">Mastery Score</div>
-                  <div className="text-sm font-bold text-emerald-500 tabular-nums">{studentQuiz?.skillScore || 50}/100</div>
+                  <div className="text-sm font-bold text-emerald-500 tabular-nums">{studentQuiz?.totalQuizzes > 0 ? `${studentQuiz.skillScore ?? 0}/100` : '0/100'}</div>
                 </div>
 
                 <Button
@@ -237,7 +237,7 @@ export default function HomePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="kpi-row">
           <KpiCard icon={BookOpen} label="My Homework" value={empData?.myTasks?.length ?? 0} tone="primary" testid="kpi-homework" />
           <KpiCard icon={Flame} label="Daily Quiz Streak" value={`${studentQuiz?.streakDays || 0} Days`} tone="warning" testid="kpi-streak" />
-          <KpiCard icon={Zap} label="Mastery Score" value={`${studentQuiz?.skillScore || 50}/100`} tone="accent" testid="kpi-mastery" />
+          <KpiCard icon={Zap} label="Mastery Score" value={studentQuiz?.totalQuizzes > 0 ? `${studentQuiz.skillScore ?? 0}/100` : '0/100'} tone="accent" testid="kpi-mastery" />
           <KpiCard icon={MessageSquare} label="Study Channels" value={empData?.myChannels ?? 0} tone="info" testid="kpi-channels" />
         </div>
       ) : isAdmin && orgData ? (
