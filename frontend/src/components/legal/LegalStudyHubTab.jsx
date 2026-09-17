@@ -21,7 +21,8 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronRight,
-  Plus
+  Plus,
+  Copy
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -777,8 +778,48 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 Synthesizing state exam timeline, local acts allocation, and revision schedules...
               </div>
             ) : planResult ? (
-              <div className="prose prose-invert max-w-none text-xs">
-                <FormattedMarkdown content={planResult.planMarkdown} />
+              <div className="space-y-3.5">
+                {/* Clean Top Metadata Bar & Actions */}
+                <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-r from-amber-500/10 via-slate-900 to-indigo-500/10 border border-amber-500/20">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-xs font-semibold">
+                      🏛️ {planResult.state}
+                    </Badge>
+                    <Badge variant="outline" className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-xs font-medium">
+                      ⚖️ {planResult.examTitle}
+                    </Badge>
+                    <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 text-xs">
+                      ⏱️ {planResult.availableMonths} Months • {planResult.dailyHours}h Daily
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        navigator.clipboard.writeText(planResult.planMarkdown);
+                        toast.success('Study plan copied to clipboard!');
+                      }}
+                      className="h-7 px-2.5 text-[11px] text-slate-300 hover:text-white hover:bg-slate-800/60"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" /> Copy
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        window.print();
+                      }}
+                      className="h-7 px-2.5 text-[11px] bg-amber-600/20 border-amber-500/30 text-amber-300 hover:bg-amber-600 hover:text-white"
+                    >
+                      <Download className="w-3.5 h-3.5 mr-1" /> Print / Save PDF
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="prose prose-invert max-w-none text-xs leading-relaxed">
+                  <FormattedMarkdown content={planResult.planMarkdown} />
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500 text-xs">

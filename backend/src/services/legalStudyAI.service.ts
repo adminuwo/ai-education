@@ -94,7 +94,14 @@ REQUIREMENTS:
    - Other States: In-depth local acts, rent control legislation, land revenue codes, and customary laws for the jurisdiction.
 3. Emphasize the transition to New Criminal Laws (BNS 2023, BNSS 2023, BSA 2023) alongside legacy comparative references.
 4. Provide daily hourly time-blocks (e.g. 2 hrs Bare Act memorization + 2 hrs Concept study + 1 hr Mains answer writing + 1 hr Current legal GK).
-5. Format in crisp GitHub Markdown with tables and bullet points.`;
+5. FORMATTING & TABLE RULES:
+   - For each phase, structure study schedules using standard GitHub-Flavored Markdown (GFM) tables:
+     | Week | Subject / Module | Daily Focus (Hours) | Key Pedagogical Activities & Bare Acts |
+     |------|------------------|---------------------|---------------------------------------|
+   - Never leave empty cells (e.g. repeat the week number or write "Week 1 (Contd.)" rather than leaving "| |").
+   - Do NOT insert blank empty lines between the table header row and data rows.
+   - Format Phase titles explicitly as: "### Phase 1: Foundational Phase (Month 1)" followed by "Objectives: ...".
+   - Include clear bullet points for High-Yield Case Laws, Local Act strategies, and Mains Answer Writing techniques.`;
 
     const userMessage = `Create an exhaustive, structured study plan for ${params.targetState} ${examTitle} for ${params.availableMonths} months at ${params.dailyHours} hours daily focus.`;
 
