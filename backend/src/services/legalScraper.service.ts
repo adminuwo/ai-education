@@ -139,15 +139,32 @@ Paper V: Penal, Revenue and Local Laws (200 Marks) - BNS/IPC, UP Revenue Code 20
     targetExams: 'ADP',
     state: 'ALL',
     sourceUrl: 'https://mppsc.mp.gov.in/',
-    sectionCount: 0,
-    metadata: { year: 2023, stage: 'PRELIMS', totalMarks: 300, questionCount: 10, subject: 'Prosecution Law & Procedure' },
+    sectionCount: 5,
+    metadata: { year: 2023, stage: 'MAINS', totalMarks: 300, questionCount: 5, subject: 'Prosecution Law & Procedure' },
     summary: 'Comprehensive compilation of Prosecution Officer past year questions, charge sheet scrutiny protocols, bail arguments, and special acts (NDPS, SC/ST Prevention of Atrocities Act, Arms Act, Motor Vehicles Act).',
-    contentSnippet: `ASSISTANT DISTRICT PUBLIC PROSECUTOR (ADP / APO) PREP MANUAL:
-Key Focus Areas for Public Prosecutors:
-1. Scrutiny of Police Investigation Reports under BNSS Sec 193 (CrPC Sec 173): Evidentiary sufficiency, chain of custody, seizure memo legality.
-2. Bail Oppositions: Principles under BNSS Sec 479-483 (CrPC Sec 437/439), NDPS Sec 37 twin conditions, PMLA Sec 45.
-3. Examination-in-Chief & Cross-Examination techniques in Sessions Trials.
-4. Special Acts: Protection of Children from Sexual Offences (POCSO), Narcotic Drugs and Psychotropic Substances Act (NDPS), Scheduled Castes and Scheduled Tribes (PoA) Act 1989.`,
+    contentSnippet: `ASSISTANT DISTRICT PUBLIC PROSECUTOR (ADP / APO) OFFICIAL EXAMINATION PAPER (300 MARKS)
+
+Question 1: Scrutiny of Police Final Report / Charge-Sheet (60 Marks)
+A police report under Section 173(2) CrPC (now Section 193(3) BNSS) is placed before you as an Assistant Public Prosecutor for scrutiny. The case involves an offence under Section 304B/498A IPC (Sections 80/85 BNS). The seizure memo of dowry articles lacks independent punch witnesses, and the viscera examination report has not yet arrived from the Forensic Science Laboratory.
+(a) What are the statutory duties of a Public Prosecutor while scrutinizing the police report before submission to the Magistrate?
+(b) Can you advise further investigation under Section 173(8) CrPC (Section 193(9) BNSS), or should you forward the report as an incomplete charge-sheet?
+
+Question 2: Bail Opposition & Statutory Limitations (60 Marks)
+The accused is arrested with 250 grams of Heroin (Commercial Quantity) under Section 21(c) of the NDPS Act, 1985. The accused moves for regular bail under Section 439 CrPC (Section 483 BNSS), contending that there was non-compliance with the search protocol of Section 50 NDPS Act.
+TASK: Draft written objections on behalf of the State opposing the bail application, strictly applying the twin conditions under Section 37(1)(b) of the NDPS Act and citing State of Kerala v. Rajesh (2020).
+
+Question 3: Special Acts & Presumption of Culpable Mental State (60 Marks)
+Analyze the statutory presumptions under Section 8 of the Protection of Children from Sexual Offences (POCSO) Act, 2012 and Section 54 of the NDPS Act. Does the reverse burden of proof on the accused violate the constitutional presumption of innocence under Article 21?
+
+Question 4: Electronic Evidence Seizure & Chain of Custody (60 Marks)
+During a bribery sting under Section 7 of the Prevention of Corruption Act, the digital voice recorder and mobile phone containing WhatsApp conversations were seized.
+(a) What mandatory protocol under Section 105 BNSS must the investigating officer follow during seizure?
+(b) How should the Public Prosecutor establish the chain of custody and satisfy Section 63 BSA (erstwhile Section 65B IEA)?
+
+Question 5: Hostile Witnesses & Section 311 CrPC / Section 348 BNSS (60 Marks)
+In a murder trial, the sole eyewitness resiles from their statement recorded under Section 161 CrPC (Section 180 BNSS) and turns hostile.
+(a) What questions may the Public Prosecutor put to the hostile witness under Section 145/154 of the Evidence Act (Sections 148/157 BSA)?
+(b) Can the conviction of the accused be sustained on the basis of the un-hostile portion of the witness's testimony? Discuss with reference to Sat Paul v. Delhi Administration.`,
   },
   {
     title: 'Delhi Judicial Service (DJS) Mains 2023 - Civil Law II & Commercial Courts',
@@ -190,7 +207,7 @@ A instituted a suit for declaration of title and possession 14 years after being
     sectionCount: 10,
     metadata: { year: 2023, stage: 'PRELIMS', totalMarks: 200, questionCount: 10, subject: 'Preliminary Law Paper' },
     summary: 'Official DJS Prelims objective examination testing Section 138 NI Act, Arbitration Section 9 & 11, Specific Relief 2018 amendment, and Constitutional Law.',
-    contentSnippet: `DELHI JUDICIAL SERVICE PRELIMINARY EXAMINATION 2023 (SELECTED REPRESENTATIVE QUESTIONS):
+    contentSnippet: `DELHI JUDICIAL SERVICE PRELIMINARY EXAMINATION 2023 (OFFICIAL 10-QUESTION LAW SET):
 
 Q1. Under Section 138 of the Negotiable Instruments Act, 1881, the statutory notice demanding payment must be made within how many days of the receipt of information regarding dishonour of the cheque?
 [A] 15 days
@@ -220,7 +237,37 @@ Q5. Which Supreme Court bench decision settled that father coparcener does not n
 [A] Prakash v. Phulavati
 [B] Danamma v. Amar
 [C] Vineeta Sharma v. Rakesh Sharma
-[D] Mangammal v. T.B. Raju`,
+[D] Mangammal v. T.B. Raju
+
+Q6. Under Section 105 of the Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS), the process of search and seizure by police must be recorded through:
+[A] Audio-video electronic means including mobile phone
+[B] Written panchnama only
+[C] Video recording only if an Executive Magistrate is present
+[D] Physical photography at the discretion of the IO
+
+Q7. In which landmark case did the Supreme Court hold that Section 12A of the Commercial Courts Act, 2015 is mandatory and a suit filed without pre-institution mediation is liable to be rejected under Order VII Rule 11 CPC?
+[A] Patil Automation Pvt. Ltd. v. Rakheja Engineers Pvt. Ltd. (2022)
+[B] Ambalal Sarabhai Enterprises v. KS Infraspace
+[C] Vidya Drolia v. Durga Trading Corp.
+[D] ONGC v. Saw Pipes Ltd.
+
+Q8. Under Section 6 of the Specific Relief Act, 1963, a suit for possession of immovable property by a person dispossessed without due process of law must be brought within:
+[A] 3 months from the date of dispossession
+[B] 6 months from the date of dispossession
+[C] 1 year from the date of dispossession
+[D] 3 years from the date of dispossession
+
+Q9. What is the statutory limitation period for filing an application under Section 11(6) of the Arbitration and Conciliation Act, 1996 post the Supreme Court ruling in BSNL v. Nortel Networks (2021)?
+[A] 3 years from the date of default in appointment (Article 137 Limitation Act)
+[B] 30 days from the notice invoking arbitration
+[C] 1 year from the date of dispute
+[D] No limitation period applies
+
+Q10. Under Bharatiya Nyaya Sanhita, 2023, what is the maximum imprisonment for causing death by negligence under Section 106(1) in motor vehicle accidents?
+[A] 2 years
+[B] 5 years and fine
+[C] 7 years
+[D] 10 years`,
   },
   {
     title: 'UP PCS-J (Uttar Pradesh Judicial Service) Mains 2023 - Penal, Revenue and Local Laws (Paper V)',
@@ -273,7 +320,15 @@ TASK: Frame the appropriate issues for trial under Order XIV Rule 1 CPC, specify
 
 Question 2: Drafting Operative Criminal Judgment (40 Marks)
 Prosecution case: Accused 'Ramesh' intercepted victim 'Suresh' on 15.08.2021 at 9:00 PM, uttered filthy abuses, and caused grievous head injuries with an iron rod. Suresh's brother 'Mukesh' lodged the FIR (Ex. P-1) within 2 hours. Medical officer PW-3 proved the MLC report (Ex. P-3) showing a depressed skull fracture dangerous to life. Accused took the defense of total denial and alibi claiming he was in another village.
-TASK: Evaluate the evidence and draft a structured criminal judgment, covering Statement of Facts, Points for Determination, Analysis of Evidence, Findings, and Sentence Order under BNS/IPC.`,
+TASK: Evaluate the evidence and draft a structured criminal judgment, covering Statement of Facts, Points for Determination, Analysis of Evidence, Findings, and Sentence Order under BNS/IPC.
+
+Question 3: Framing of Criminal Charge (20 Marks)
+Facts: Accused 'A' and 'B' formed an unlawful assembly armed with lathis, assaulted 'V' causing simple injuries, and snatched V's gold chain worth Rs. 50,000.
+TASK: Draft formal charges under Chapter XVII CrPC / Chapter XVIII BNSS against both accused persons, stating the offences, particulars of time, place, and common object.
+
+Question 4: Drafting Civil Judgment for Eviction (20 Marks)
+Landlord 'L' sought eviction of tenant 'T' from a non-residential shop under Section 12(1)(f) of the MP Accommodation Control Act, 1961 for starting a readymade garments business for his major unemployed son.
+TASK: Analyze the evidence, evaluate alternative accommodation pleas, and draft the operative judgment decree.`,
   },
   {
     title: 'Bihar Judicial Service (BPSC-J) Mains 2021 - Law of Evidence & Procedure',
@@ -319,7 +374,25 @@ export class LegalScraperService {
           where: { orgId, title: item.title },
         });
 
-        if (existing) continue;
+        if (existing) {
+          const existingMeta = (existing.metadata as any) || {};
+          if (!existingMeta.paperContent || existingMeta.paperContent.length < item.contentSnippet.length) {
+            await prisma.legalDocumentAsset.update({
+              where: { id: existing.id },
+              data: {
+                summary: item.summary,
+                metadata: {
+                  ...existingMeta,
+                  paperContent: item.contentSnippet,
+                  fullText: item.contentSnippet,
+                  snippet: item.contentSnippet,
+                  ...(item as any).metadata,
+                },
+              },
+            });
+          }
+          continue;
+        }
 
         // Create formatted buffer for GCS upload
         const textPayload = `${item.title}\n\nAct: ${item.actName} | Category: ${item.category} | State: ${item.state}\nSource: ${item.sourceUrl}\n\nSUMMARY:\n${item.summary}\n\nKEY EXCERPTS / EXAMINATION QUESTIONS:\n${item.contentSnippet}\n`;
@@ -365,7 +438,9 @@ export class LegalScraperService {
             summary: item.summary,
             sectionCount: item.sectionCount,
             metadata: {
-              snippet: item.contentSnippet.substring(0, 500),
+              paperContent: item.contentSnippet,
+              fullText: item.contentSnippet,
+              snippet: item.contentSnippet,
               isSeeded: true,
               source: 'Public Domain / India Code / High Court / PSC',
               ...(item as any).metadata,

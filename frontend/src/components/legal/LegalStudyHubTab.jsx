@@ -587,7 +587,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       const res = await legalApi.solvePYQPaper({
         paperId: paper.id,
         paperTitle: paper.title,
-        paperContent: paper.summary || paper.textContent || (paper.metadata?.snippet) || '',
+        paperContent: paper.metadata?.paperContent || paper.metadata?.fullText || paper.metadata?.snippet || paper.textContent || paper.summary || '',
         state: paper.state || 'DELHI',
         examType: paper.targetExams || 'CIVIL_JUDGE',
         stage: stage,
@@ -1884,7 +1884,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           <div className="flex-1 overflow-hidden my-2">
             <ScrollArea className="h-[50vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
               <pre className="text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed select-text">
-                {selectedPyqPaper?.summary || selectedPyqPaper?.textContent || 'No text content available for this paper.'}
+                {selectedPyqPaper?.metadata?.paperContent || selectedPyqPaper?.metadata?.fullText || selectedPyqPaper?.metadata?.snippet || selectedPyqPaper?.textContent || selectedPyqPaper?.summary || 'No text content available for this paper.'}
               </pre>
             </ScrollArea>
           </div>
