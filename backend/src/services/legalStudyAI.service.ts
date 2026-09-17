@@ -3,7 +3,7 @@ import { GuardrailService } from './guardrail.service';
 import { logger } from '../utils/logger';
 
 export interface StudyPlanParams {
-  targetExam: 'JUDICIARY' | 'ADP' | 'BOTH';
+  targetExam: string; // e.g. "JUDICIARY", "HJS", "ADP", "BOTH", "JAG", "SEBI_LEGAL", "IBPS_SO_LAW", "UGC_NET_LAW", "CLAT_PG", "PSU_LEGAL"
   targetState: string; // e.g. "DELHI", "UP", "MP", "BIHAR", "RAJASTHAN"
   availableMonths: number; // e.g. 3, 6, 12
   dailyHours: number;
@@ -14,7 +14,7 @@ export interface EvaluateAnswerParams {
   question: string;
   userAnswer: string;
   subject?: string;
-  targetExam?: 'JUDICIARY' | 'ADP';
+  targetExam?: string;
   state?: string;
 }
 
@@ -30,20 +30,40 @@ export class LegalStudyAIService {
    * Generates a state-tailored, month-by-month study blueprint for Judicial Services or ADP aspirants.
    */
   static async generateStudyPlan(userId: string, params: StudyPlanParams) {
-    const examTitle = params.targetExam === 'ADP'
-      ? `Assistant District Public Prosecutor (ADP / APO / APP)`
-      : params.targetExam === 'JUDICIARY'
-      ? `State Judicial Service (Civil Judge / PCS-J)`
-      : `Judicial Services & Assistant Public Prosecutor Combined`;
+    const examMap: Record<string, string> = {
+      JUDICIARY: 'State Judicial Service (Civil Judge / PCS-J / JMFC)',
+      HJS: 'Higher Judicial Services (Direct District Judge / ADJ)',
+      ADP: 'Assistant Public Prosecutor (ADP / APO / APP / ADPO)',
+      BOTH: 'State Judicial Service & Public Prosecutor Combined Preparation',
+      JAG: 'Judge Advocate General (JAG - Indian Armed Forces Legal Branch)',
+      SEBI_LEGAL: 'SEBI Grade A Officer (Legal Stream - Securities & Capital Markets)',
+      IBPS_SO_LAW: 'IBPS SO / RBI Grade B (Bank Law Officer Scale I & II)',
+      UGC_NET_LAW: 'UGC-NET / JRF (Law - Assistant Professor & Research Fellowship)',
+      CLAT_PG: 'CLAT PG / AILET PG (LL.M Entrance & National PSU Recruitment)',
+      PSU_LEGAL: 'PSU In-House Law Officer (ONGC, IOCL, NTPC, PowerGrid Legal Counsel)',
+    };
+    const examTitle = examMap[params.targetExam] || params.targetExam;
 
-    const systemPrompt = `You are the Chief Academic Mentor for Judicial Services (Civil Judge / PCS-J) and Public Prosecutor (ADP / APO) examinations in India.
-Your mission is to formulate an exhaustive, highly disciplined, state-specific preparation roadmap.
+    const streamGuidance: Record<string, string> = {
+      HJS: 'Focus heavily on commercial courts, arbitration, complex civil/criminal trial procedure, judgment writing, and framing of issues/charges for practicing advocates.',
+      JAG: 'Include the Army Act 1950, Navy Act, Air Force Act, Court Martial proceedings, Military Law jurisprudence, and standard constitutional/criminal law.',
+      SEBI_LEGAL: 'Emphasize SEBI Act 1992, Companies Act 2013, Securities Contracts (Regulation) Act (SCRA), Depositories Act, Insider Trading regulations, and Takeover code.',
+      IBPS_SO_LAW: 'Focus on Banking Regulation Act 1949, RBI Act 1934, SARFAESI Act 2002, IBC 2016, Negotiable Instruments Act 1881, Recovery of Debts (DRT), and consumer protection.',
+      UGC_NET_LAW: 'Cover Jurisprudence, Constitutional & Administrative Law, Public International Law & IHL, Law of Crimes, Torts & Consumer Law, Commercial Law, Family Law, Environment & Human Rights, and IPR.',
+      CLAT_PG: 'Exhaustive focus on constitutional law, landmark Supreme Court constitutional bench rulings, jurisprudence, international law, and recent legal developments.',
+      PSU_LEGAL: 'Prioritize Contract Act, Arbitration & Conciliation Act 1996, Specific Relief, Labor & Industrial Laws, Companies Act, Environment protection, and corporate contract drafting.',
+    };
+    const extraGuidance = streamGuidance[params.targetExam] ? `SPECIALIZED STREAM SYLLABUS DIRECTIVE: ${streamGuidance[params.targetExam]}` : '';
 
-TARGET STATE: ${params.targetState.toUpperCase()}
+    const systemPrompt = `You are the Chief Academic Mentor for Judicial Services, Public Prosecutor, and Competitive Legal Examinations in India.
+Your mission is to formulate an exhaustive, highly disciplined, examination-specific preparation roadmap.
+
+TARGET STATE / JURISDICTION: ${params.targetState.toUpperCase()}
 TARGET EXAMINATION: ${examTitle}
 PREPARATION WINDOW: ${params.availableMonths} Months
 DAILY STUDY TIME: ${params.dailyHours} Hours/Day
 FOCUS STAGE: ${params.stageFocus}
+${extraGuidance}
 
 REQUIREMENTS:
 1. Provide a phase-wise breakdown (Foundational Phase $\rightarrow$ Bare Act Mastery & Procedural Laws $\rightarrow$ Mains Answer Writing & Local Laws $\rightarrow$ Mock Drills & Revision).

@@ -98,6 +98,19 @@ export const STATE_JUDICIARY_EXAMS = [
   { value: 'NAGALAND', label: 'Nagaland (Gauhati HC NJS - Customary Law & Civil Procedure)', stateName: 'Nagaland' },
 ];
 
+export const LEGAL_EXAM_STREAMS = [
+  { value: 'JUDICIARY', label: 'Judicial Magistrate / Civil Judge (Junior Division / PCS-J)', shortName: 'Civil Judge / PCS-J' },
+  { value: 'HJS', label: 'Higher Judicial Services (HJS / Direct District Judge)', shortName: 'Higher Judiciary (HJS)' },
+  { value: 'ADP', label: 'Assistant Public Prosecutor (ADP / APO / APP / ADPO)', shortName: 'Prosecutor (ADP / APO)' },
+  { value: 'BOTH', label: 'Dual Preparation (Civil Judge & Public Prosecutor)', shortName: 'Dual (Judge & Prosecutor)' },
+  { value: 'JAG', label: 'Judge Advocate General (JAG - Indian Armed Forces Legal Branch)', shortName: 'Army JAG Corps' },
+  { value: 'SEBI_LEGAL', label: 'SEBI Grade A Officer (Legal Stream - Securities & Corporate)', shortName: 'SEBI Legal Officer' },
+  { value: 'IBPS_SO_LAW', label: 'IBPS SO / RBI Grade B (Bank Law Officer Scale I & II)', shortName: 'Bank Law Officer' },
+  { value: 'UGC_NET_LAW', label: 'UGC-NET / JRF (Law - Assistant Professor & Academic Fellowship)', shortName: 'UGC-NET / JRF (Law)' },
+  { value: 'CLAT_PG', label: 'CLAT PG / AILET PG (LL.M Entrance & PSU Legal Recruitment)', shortName: 'CLAT PG / LL.M' },
+  { value: 'PSU_LEGAL', label: 'PSU In-House Law Officer (ONGC, IOCL, NTPC, BHEL, PowerGrid)', shortName: 'PSU Law Officer' },
+];
+
 export default function LegalStudyHubTab({ currentOrg, user }) {
   const [activeSubTab, setActiveSubTab] = useState('library'); // library, planner, transition, mains, drill
 
@@ -459,10 +472,12 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               onChange={(e) => setExamFilter(e.target.value)}
               className="bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1 text-xs text-slate-300 h-8 focus:outline-none"
             >
-              <option value="ALL">All Target Exams</option>
-              <option value="JUDICIARY">Judiciary (Civil Judge / PCS-J)</option>
-              <option value="ADP">ADP / Public Prosecutor (APO)</option>
-              <option value="BOTH">Combined Prep</option>
+              <option value="ALL">All Legal Streams</option>
+              {LEGAL_EXAM_STREAMS.map((e) => (
+                <option key={e.value} value={e.value}>
+                  {e.shortName}
+                </option>
+              ))}
             </select>
 
             <select
@@ -708,9 +723,11 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   onChange={(e) => setPlanExam(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200"
                 >
-                  <option value="JUDICIARY">Judicial Magistrate / Civil Judge (PCS-J)</option>
-                  <option value="ADP">Assistant Public Prosecutor (ADP / APO / APP)</option>
-                  <option value="BOTH">Dual Preparation (Judge & Prosecutor)</option>
+                  {LEGAL_EXAM_STREAMS.map((e) => (
+                    <option key={e.value} value={e.value}>
+                      {e.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1103,9 +1120,11 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   onChange={(e) => setUploadExam(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200"
                 >
-                  <option value="BOTH">Judiciary & ADP</option>
-                  <option value="JUDICIARY">Judiciary Only</option>
-                  <option value="ADP">ADP / Prosecutor Only</option>
+                  {LEGAL_EXAM_STREAMS.map((e) => (
+                    <option key={e.value} value={e.value}>
+                      {e.shortName}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
