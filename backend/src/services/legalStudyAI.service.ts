@@ -1,4 +1,5 @@
 import { callLLM } from '../routes/ai.routes';
+import { callQuizLLM } from './quizLLM.service';
 import { GuardrailService } from './guardrail.service';
 import { logger } from '../utils/logger';
 
@@ -270,7 +271,7 @@ Do not wrap in markdown code fence. Output ONLY valid raw JSON.`;
 
     const userMessage = `Generate ${count} ${difficulty} Prelims MCQs for ${params.actName} (${params.chapterOrTopic || 'Key Sections'}).`;
     const sessionKey = `legal-drill-${userId}-${Date.now()}`;
-    const llmResp = await callLLM(sessionKey, systemPrompt, userMessage);
+    const llmResp = await callQuizLLM(sessionKey, systemPrompt, userMessage);
 
     let questions: any[] = [];
     try {

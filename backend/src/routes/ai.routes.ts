@@ -5,6 +5,7 @@ import { authenticate } from '../middleware/auth';
 import { env } from '../config/env';
 import { logger } from '../utils/logger';
 import { GuardrailService } from '../services/guardrail.service';
+import { callQuizLLM } from '../services/quizLLM.service';
 
 import { canUserAccessChannel } from './channel.routes';
 
@@ -1289,7 +1290,7 @@ Format your output cleanly in Markdown with two distinct sections:
 
     const userPrompt = `Subject/Topic: ${subject || 'General Academic Studies'}\nTarget Question Count: ${numQuestions || 5}\n\nLesson Notes / Content:\n${notes}`;
 
-    const { text } = await callLLM(`quiz-${Date.now()}`, sys, userPrompt, env.FACULTY_LLM_PROVIDER, env.FACULTY_LLM_MODEL);
+    const { text } = await callQuizLLM(`quiz-${Date.now()}`, sys, userPrompt, env.FACULTY_LLM_PROVIDER, env.FACULTY_LLM_MODEL);
     res.json({ quiz: text || 'Failed to generate quiz.' });
   } catch (e: any) {
     logger.error('generate-quiz error:', e?.message);
@@ -1712,7 +1713,7 @@ OUTPUT RULES:
     let parsedQuestions: any[] = [];
 
     try {
-      const { text } = await callLLM(
+      const { text } = await callQuizLLM(
         `quiz-gen-${userId}-${Date.now()}`,
         sysPrompt,
         userPrompt,

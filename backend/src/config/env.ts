@@ -57,6 +57,10 @@ export const env = {
   AI_LEGAL_JWT_SECRET: process.env.AI_LEGAL_JWT_SECRET || '',
   AI_LEGAL_APP_URL: process.env.AI_LEGAL_APP_URL || 'http://localhost:5174',
   AI_LEGAL_BACKEND_URL: process.env.AI_LEGAL_BACKEND_URL || 'http://localhost:8080',
+  // Groq AI Configuration (Strictly for Quiz Generation)
+  GROQ_API_KEY: process.env.GROQ_API_KEY || '',
+  GROQ_QUIZ_MODEL: process.env.GROQ_QUIZ_MODEL || 'openai/gpt-oss-120b',
+  GROQ_QUIZ_BACKUP_MODEL: process.env.GROQ_QUIZ_BACKUP_MODEL || 'qwen/qwen3.8-27b',
 };
 
 export const isGoogleOAuthConfigured = () =>
