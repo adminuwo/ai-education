@@ -2022,12 +2022,19 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex-1 overflow-hidden my-2">
-            <ScrollArea className="h-[50vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+          <div className="flex-1 min-h-0 my-2">
+            <div
+              tabIndex={0}
+              className="max-h-[56vh] min-h-[160px] overflow-y-auto overflow-x-hidden pr-3.5 p-4 rounded-lg bg-slate-950/90 border border-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#64748b #0f172a',
+              }}
+            >
               <pre className="text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed select-text">
                 {selectedPyqPaper?.metadata?.paperContent || selectedPyqPaper?.metadata?.fullText || selectedPyqPaper?.metadata?.snippet || selectedPyqPaper?.textContent || selectedPyqPaper?.summary || 'No text content available for this paper.'}
               </pre>
-            </ScrollArea>
+            </div>
           </div>
 
           <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
@@ -2138,29 +2145,34 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 </div>
               </div>
             ) : pyqSolutionResult ? (
-              <ScrollArea className="h-[48vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
-                <div className="space-y-3">
-                  {/* Telemetry info header */}
-                  <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
-                    <span className="flex items-center gap-1.5 text-amber-400 font-medium">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      Verified AI Legal Engine ({pyqSolutionResult.model || 'Gemini 2.5 Pro'})
-                    </span>
-                    <div className="flex items-center gap-3 text-slate-400">
-                      {pyqSolutionResult.latencyMs && (
-                        <span>Latency: {(pyqSolutionResult.latencyMs / 1000).toFixed(1)}s</span>
-                      )}
-                      {pyqSolutionResult.tokens?.totalTokens && (
-                        <span>Tokens: {pyqSolutionResult.tokens.totalTokens}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="text-xs leading-relaxed text-slate-200">
-                    <FormattedMarkdown content={pyqSolutionResult.solution} />
+              <div
+                tabIndex={0}
+                className="max-h-[52vh] min-h-[200px] overflow-y-auto overflow-x-hidden pr-3.5 p-4 rounded-lg bg-slate-950/90 border border-slate-800 space-y-3 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#64748b #0f172a',
+                }}
+              >
+                {/* Telemetry info header */}
+                <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
+                  <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Verified AI Legal Engine ({pyqSolutionResult.model || 'Gemini 2.5 Pro'})
+                  </span>
+                  <div className="flex items-center gap-3 text-slate-400">
+                    {pyqSolutionResult.latencyMs && (
+                      <span>Latency: {(pyqSolutionResult.latencyMs / 1000).toFixed(1)}s</span>
+                    )}
+                    {pyqSolutionResult.tokens?.totalTokens && (
+                      <span>Tokens: {pyqSolutionResult.tokens.totalTokens}</span>
+                    )}
                   </div>
                 </div>
-              </ScrollArea>
+
+                <div className="text-xs leading-relaxed text-slate-200">
+                  <FormattedMarkdown content={pyqSolutionResult.solution} />
+                </div>
+              </div>
             ) : (
               <div className="h-[40vh] flex flex-col items-center justify-center text-slate-400 space-y-2 border border-dashed border-slate-800 rounded-lg">
                 <Bot className="w-8 h-8 text-slate-600" />
@@ -2525,8 +2537,15 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   )}
                 </div>
 
-                <div className="flex-1 overflow-hidden my-1">
-                  <ScrollArea className="max-h-[54vh] min-h-[160px] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+                <div className="flex-1 min-h-0 my-1">
+                  <div
+                    tabIndex={0}
+                    className="max-h-[56vh] min-h-[160px] overflow-y-auto overflow-x-hidden pr-3.5 p-4 rounded-lg bg-slate-950/90 border border-slate-800 text-xs text-slate-200 leading-relaxed select-text focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+                    style={{
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#64748b #0f172a',
+                    }}
+                  >
                     {docExplorationResult ? (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
@@ -2560,7 +2579,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                         />
                       </div>
                     )}
-                  </ScrollArea>
+                  </div>
                 </div>
 
                 <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
