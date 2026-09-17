@@ -104,7 +104,9 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
   };
 
   const featureBreakdown = telemetry?.featureBreakdown || [];
-  const students = telemetry?.students || [];
+  const students = (telemetry?.students || []).filter(
+    (s) => s.studentEmail && s.studentId && s.studentId !== 'N/A' && s.studentName !== 'Student'
+  );
 
   const filteredStudents = students.filter((s) => {
     const q = searchQuery.toLowerCase().trim();

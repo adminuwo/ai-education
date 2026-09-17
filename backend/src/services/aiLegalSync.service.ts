@@ -228,6 +228,8 @@ export async function getOrgSyncedStudentEmails(organizationSlug: string): Promi
     const db = client.db(env.AI_LEGAL_DB_NAME || 'AISA');
     const docs = await db.collection('organizations').find({
       organizationSlug: organizationSlug,
+      studentEmail: { $exists: true, $ne: '' },
+      type: { $ne: 'FEATURE_ADDON_REQUEST' },
     }).toArray();
     return new Set(docs.map((d) => (d.studentEmail || '').toLowerCase().trim()).filter(Boolean));
   } catch (err: any) {
@@ -367,6 +369,8 @@ export async function monthlyResetAiLegalPlan(targetOrgId?: string, forced: bool
           { organizationName: { $in: eligibleOrgNames } },
           { organizationSlug: { $in: eligibleOrgSlugs } },
         ],
+        studentEmail: { $exists: true, $ne: '' },
+        type: { $ne: 'FEATURE_ADDON_REQUEST' },
       })
       .toArray();
 
@@ -489,10 +493,12 @@ export async function getAiLegalOrgTelemetry(orgName: string, orgSlug: string, o
     const orgsCol = db.collection('organizations');
     const creditLogsCol = db.collection('creditlogs');
 
-    // 1. Fetch all students registered under this institution from organizations collection
+    // 1. Fetch all students/members registered under this institution from organizations collection
     const orgStudents = await orgsCol
       .find({
         $or: [{ organizationName: orgName }, { organizationSlug: orgSlug }],
+        studentEmail: { $exists: true, $ne: '' },
+        type: { $ne: 'FEATURE_ADDON_REQUEST' },
       })
       .sort({ syncedAt: -1 })
       .toArray();
@@ -598,7 +604,9 @@ export async function getAiLegalOrgTelemetry(orgName: string, orgSlug: string, o
       .sort((a, b) => b.count - a.count);
 
     // Build per-student telemetry table rows
-    const studentRows = orgStudents.map((orgStu) => {
+    const studentRows = orgStudents
+      .filter((orgStu) => Boolean(orgStu.studentEmail))
+      .map((orgStu) => {
       const emailKey = (orgStu.studentEmail || '').toLowerCase().trim();
       const user = userByEmail[emailKey];
       const uId = user ? String(user._id) : '';
