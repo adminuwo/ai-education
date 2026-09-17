@@ -238,6 +238,26 @@ router.post('/ai/evaluate-answer', async (req: AiLegalRequest, res, next) => {
 });
 
 /**
+ * POST /api/v1/legal/ai/generate-question
+ * Generates dynamic, realistic Judicial Mains Problem or Theoretical Questions.
+ */
+router.post('/ai/generate-question', async (req: AiLegalRequest, res, next) => {
+  try {
+    const { subject, topic, targetExam, targetState, questionType } = req.body;
+    const result = await LegalStudyAIService.generateMainsQuestion(req.user!.id, {
+      subject: subject || 'Criminal Law',
+      topic,
+      targetExam,
+      targetState,
+      questionType,
+    });
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/legal/ai/section-drill
  * Generates Bare Act Prelims MCQs and tricky conceptual questions.
  */

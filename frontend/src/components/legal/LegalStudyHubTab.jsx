@@ -22,7 +22,13 @@ import {
   ShieldCheck,
   ChevronRight,
   Plus,
-  Copy
+  Copy,
+  Shuffle,
+  Dices,
+  Lightbulb,
+  RotateCcw,
+  FileQuestion,
+  Eraser
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,18 +57,114 @@ const PRESET_TRANSITION_QUERIES = [
   { label: 'Acts Endangering Sovereignty', query: 'Sedition IPC 124A repeal vs BNS Section 152' },
 ];
 
-const SAMPLE_MAINS_QUESTIONS = [
+export const LEGAL_MAINS_SUBJECTS = [
+  { id: 'ALL', name: 'All Core Law Subjects' },
+  { id: 'CRIMINAL', name: 'Criminal Law & Procedure (BNS & BNSS 2023)' },
+  { id: 'CPC', name: 'Civil Procedure Code (CPC 1908) & SRA' },
+  { id: 'CONSTI', name: 'Constitutional & Administrative Law' },
+  { id: 'EVIDENCE', name: 'Law of Evidence (BSA 2023 / IEA)' },
+  { id: 'CONTRACT', name: 'Law of Contracts & Commercial Law' },
+  { id: 'PROPERTY', name: 'Transfer of Property Act (TPA 1882)' },
+  { id: 'FAMILY', name: 'Family Law (Hindu & Muslim Law)' },
+  { id: 'LOCAL', name: 'State Local Laws & Rent Control Acts' },
+];
+
+export const SAMPLE_MAINS_QUESTIONS = [
   {
-    subject: 'Criminal Law (BNS & BNSS)',
-    question: 'Discuss the statutory changes introduced in the Bharatiya Nyaya Sanhita, 2023 regarding the offence of murder by five or more persons acting in concert on grounds of caste, community, or religion. How does it alter the burden of proof and sentencing?',
+    subject: 'Criminal Law & Procedure (BNS & BNSS 2023)',
+    topic: 'Mob Lynching & Murder under BNS',
+    source: 'Delhi DJS & UP PCS-J 2024 Model',
+    marks: 20,
+    statutoryPointers: ['Section 103(2) BNS 2023', 'Common Intention Section 3(5) BNS', 'Burden of Proof Section 104 BSA'],
+    question: 'Discuss the statutory changes introduced in the Bharatiya Nyaya Sanhita, 2023 regarding the offence of murder by five or more persons acting in concert on grounds of caste, community, or religion (Mob Lynching). How does Section 103(2) alter the erstwhile requirements of Section 300/302 read with Section 149 of IPC, and what is the prescribed sentencing discretion?',
   },
   {
-    subject: 'Civil Procedure (CPC 1908)',
-    question: 'Explain the doctrine of Res Judicata under Section 11 of the Code of Civil Procedure, 1908. Distinguish between actual Res Judicata and Constructive Res Judicata with leading case illustrations.',
+    subject: 'Civil Procedure Code (CPC 1908) & SRA',
+    topic: 'Res Judicata & Explanation IV',
+    source: 'Delhi Judicial Service (DJS) Mains',
+    marks: 20,
+    statutoryPointers: ['Section 11 CPC', 'Explanation IV (Constructive Res Judicata)', 'Daryao v. State of UP', 'State of UP v. Nawab Hussain'],
+    question: 'Explain the doctrine of Res Judicata under Section 11 of the Code of Civil Procedure, 1908. Distinguish between actual Res Judicata and Constructive Res Judicata with leading case illustrations. Does constructive res judicata apply to writ petitions under Article 32 and Article 226 of the Constitution?',
   },
   {
-    subject: 'Constitutional Law',
-    question: 'Critically analyze the scope of Judicial Review of administrative actions under Articles 32 and 226 of the Constitution of India. What are the grounds on which a writ of Certiorari may be issued against a quasi-judicial body?',
+    subject: 'Constitutional & Administrative Law',
+    topic: 'Writ Jurisdiction & Certiorari Grounds',
+    source: 'UP PCS-J & Bihar BPSC-J',
+    marks: 20,
+    statutoryPointers: ['Articles 32 & 226', 'Writ of Certiorari', 'Errors of Law Apparent on Face', 'Syed Yakoob v. K.S. Radhakrishnan'],
+    question: 'Critically analyze the scope of Judicial Review of administrative actions under Articles 32 and 226 of the Constitution of India. What are the grounds on which a writ of Certiorari may be issued against a quasi-judicial body? Can the High Court substitute its own findings of fact for those of an administrative tribunal?',
+  },
+  {
+    subject: 'Law of Evidence (BSA 2023 / IEA)',
+    topic: 'Electronic Records & Certificate Mandatory Admissibility',
+    source: 'All-India Judicial Services 2024',
+    marks: 20,
+    statutoryPointers: ['Section 63 BSA 2023', 'Section 61 BSA', 'Arjun Panditrao Khotkar v. Kailash Kushanrao Gorantyal (2020)'],
+    question: 'How has the Bharatiya Sakshya Adhiniyam, 2023 revised the admissibility of electronic records in judicial proceedings? Examine the statutory requirements under Section 63 of BSA 2023 in light of the landmark Supreme Court ruling in Arjun Panditrao Khotkar. Is an electronic certificate mandatory when secondary digital evidence is produced from a seized phone or laptop?',
+  },
+  {
+    subject: 'Criminal Law & Procedure (BNS & BNSS 2023)',
+    topic: 'Police Custody & Staggered Remand Timeline',
+    source: 'Rajasthan RJS & Haryana HCS(JB)',
+    marks: 20,
+    statutoryPointers: ['Section 187 BNSS 2023 vs Section 167 CrPC', '15-day custody dispersal in 40/60 days', 'Default Bail Section 187(3)'],
+    question: 'Critically examine the provisions relating to detention in police custody and judicial remand under Section 187 of the Bharatiya Nagarik Suraksha Sanhita, 2023 compared to Section 167 of the erstwhile CrPC, 1973. Discuss whether the 15-day police custody can now be sought in staggered periods beyond the initial 15 days of arrest, and analyze its constitutional implications under Article 21.',
+  },
+  {
+    subject: 'Civil Procedure Code (CPC 1908) & SRA',
+    topic: 'Inherent Powers & Restitution Maxim',
+    source: 'Delhi DJS & Punjab PCS(JB)',
+    marks: 20,
+    statutoryPointers: ['Section 144 CPC (Restitution)', 'Section 151 CPC (Inherent Powers)', 'Kavita Trehan v. Balsara Hygiene', 'Actus curiae neminem gravabit'],
+    question: 'Explain the scope of Section 144 of the Code of Civil Procedure, 1908 regarding restitution. Can a civil court order restitution in exercise of its inherent powers under Section 151 CPC where a case does not strictly fall within the four corners of Section 144? Discuss the maxim "Actus curiae neminem gravabit" with case laws.',
+  },
+  {
+    subject: 'Law of Contracts & Commercial Law',
+    topic: 'Frustration of Contract vs Express Force Majeure',
+    source: 'UP PCS-J & MP Civil Judge',
+    marks: 20,
+    statutoryPointers: ['Section 56 Contract Act', 'Section 32 (Contingent Contracts)', 'Satyabrata Ghose v. Mugneeram Bangur', 'Energy Watchdog v. CERC (2017)'],
+    question: 'Discuss the doctrine of frustration of contract under Section 56 of the Indian Contract Act, 1872. Distinguish between statutory frustration by subsequent impossibility and the operation of an express Force Majeure clause under Section 32, with specific reference to Energy Watchdog v. CERC (2017).',
+  },
+  {
+    subject: 'Transfer of Property Act (TPA 1882)',
+    topic: 'Part Performance Shield vs Title Sword',
+    source: 'Bihar BPSC-J & MP CJ',
+    marks: 20,
+    statutoryPointers: ['Section 53A TPA 1882', 'Registration Act Section 17(1A)', 'Shield not sword doctrine', 'Shrimant Shamrao Suryavanshi v. Prahlad'],
+    question: 'Explain the essential elements required to invoke the defense of Part Performance under Section 53A of the Transfer of Property Act, 1882. What is the impact of the 2001 amendment to Section 17(1A) of the Registration Act on an unregistered agreement to sell? Can Section 53A be used as an offensive weapon to declare ownership title?',
+  },
+  {
+    subject: 'Criminal Law & Procedure (BNS & BNSS 2023)',
+    topic: 'Zero FIR & Statutory Arrest Safeguards',
+    source: 'Delhi DJS & Higher Judiciary (HJS)',
+    marks: 20,
+    statutoryPointers: ['Section 173 BNSS (Zero FIR)', 'Section 35 BNSS (Arrest)', 'Arnesh Kumar v. State of Bihar', 'Notice of Appearance'],
+    question: 'Analyze the statutory entrenchment of "Zero FIR" under Section 173 of the Bharatiya Nagarik Suraksha Sanhita, 2023. What are the legal duties of the officer-in-charge of a police station when information regarding a cognizable offence committed outside territorial limits is received? What safeguards are enacted for arrest of persons punishable with imprisonment up to 7 years?',
+  },
+  {
+    subject: 'Family Law (Hindu & Muslim Law)',
+    topic: 'Coparcenary Rights of Daughters Retroactivity',
+    source: 'UP PCS-J & Delhi DJS',
+    marks: 20,
+    statutoryPointers: ['Section 6 Hindu Succession Act 1956', 'Vineeta Sharma v. Rakesh Sharma (2020)', 'Coparcener by birth antecedent rights'],
+    question: 'Examine the nature and extent of coparcenary rights conferred upon daughters by the Hindu Succession (Amendment) Act, 2005. Discuss the landmark three-judge bench decision of the Supreme Court in Vineeta Sharma v. Rakesh Sharma (2020) regarding whether the father coparcener was required to be living as of September 9, 2005.',
+  },
+  {
+    subject: 'Civil Procedure Code (CPC 1908) & SRA',
+    topic: 'Mandatory Specific Performance & Readiness Pleading',
+    source: 'Delhi DJS & Rajasthan RJS',
+    marks: 20,
+    statutoryPointers: ['Section 10 SRA (2018 Amendment)', 'Section 16(c) SRA', 'Readiness & Willingness Continuous Proof', 'Kamal Kumar v. Premlata Joshi'],
+    question: 'Prior to the Specific Relief (Amendment) Act, 2018, specific performance of a contract was discretionary. Analyze the statutory shift brought by Section 10 making specific performance mandatory. Does the plaintiff still have to plead and prove continuous "readiness and willingness" under Section 16(c)? Discuss with recent precedents.',
+  },
+  {
+    subject: 'State Local Laws & Rent Control Acts',
+    topic: 'Bonafide Requirement for Eviction',
+    source: 'Delhi DJS & UP PCS-J',
+    marks: 20,
+    statutoryPointers: ['Delhi Rent Control Act Section 14(1)(e)', 'UP Urban Buildings Act Section 21(1)(a)', 'Satyawati Sharma v. Union of India', 'Comparative Hardship doctrine'],
+    question: 'Discuss the grounds of eviction on the premise of "bonafide requirement" of the landlord under the Delhi Rent Control Act, 1958 and the UP Urban Buildings (Regulation of Letting, Rent and Eviction) Act, 1972. How did the Supreme Court judgment in Satyawati Sharma v. Union of India eliminate the dichotomy between commercial and residential premises?',
   },
 ];
 
@@ -157,6 +259,16 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
   const [mainsSubject, setMainsSubject] = useState(SAMPLE_MAINS_QUESTIONS[0].subject);
   const [mainsEvaluation, setMainsEvaluation] = useState(null);
   const [evaluatingMains, setEvaluatingMains] = useState(false);
+  const [mainsSubjectFilter, setMainsSubjectFilter] = useState('ALL');
+  const [mainsTopicInput, setMainsTopicInput] = useState('');
+  const [mainsQuestionType, setMainsQuestionType] = useState('PROBLEM_BASED');
+  const [generatingQuestion, setGeneratingQuestion] = useState(false);
+  const [activeQuestionMeta, setActiveQuestionMeta] = useState({
+    topic: SAMPLE_MAINS_QUESTIONS[0].topic,
+    source: SAMPLE_MAINS_QUESTIONS[0].source,
+    marks: SAMPLE_MAINS_QUESTIONS[0].marks,
+    statutoryPointers: SAMPLE_MAINS_QUESTIONS[0].statutoryPointers,
+  });
 
   // Section Drill State
   const [drillAct, setDrillAct] = useState('Bharatiya Nyaya Sanhita (BNS) 2023');
@@ -285,6 +397,72 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       setLoadingTrans(false);
     }
   };
+
+  // Generate Fresh Mains Question on demand
+  const handleGenerateQuestion = async () => {
+    const subjectToSend = mainsSubjectFilter === 'ALL' ? 'Criminal Law & Procedure (BNS & BNSS 2023)' : mainsSubjectFilter;
+    setGeneratingQuestion(true);
+    try {
+      const res = await legalApi.generateMainsQuestion({
+        subject: subjectToSend,
+        topic: mainsTopicInput.trim() || undefined,
+        targetExam: planExam,
+        targetState: planState,
+        questionType: mainsQuestionType,
+      });
+      if (res && res.question) {
+        setMainsQuestion(res.question);
+        setMainsSubject(res.subject || subjectToSend);
+        setActiveQuestionMeta({
+          topic: res.topic || 'Substantive & Procedural Law',
+          source: `AI Generated (${res.targetState || planState} Judicial Standard)`,
+          marks: res.marks || 20,
+          suggestedTimeMinutes: res.suggestedTimeMinutes || 25,
+          statutoryPointers: res.statutoryPointers || [],
+          modelAnswerOutline: res.modelAnswerOutline,
+        });
+        setMainsEvaluation(null);
+        toast.success(`✨ Fresh ${mainsQuestionType === 'PROBLEM_BASED' ? 'Problem Scenario' : 'Mains Question'} Generated!`);
+      }
+    } catch (err) {
+      toast.error('Failed to generate question. Please try again.');
+    } finally {
+      setGeneratingQuestion(false);
+    }
+  };
+
+  const handleSelectSampleQuestion = (questionText) => {
+    const found = SAMPLE_MAINS_QUESTIONS.find((q) => q.question === questionText);
+    if (found) {
+      setMainsQuestion(found.question);
+      setMainsSubject(found.subject);
+      setActiveQuestionMeta({
+        topic: found.topic,
+        source: found.source,
+        marks: found.marks || 20,
+        statutoryPointers: found.statutoryPointers || [],
+      });
+      setMainsEvaluation(null);
+      toast.info(`Loaded: ${found.topic}`);
+    }
+  };
+
+  const handleRollRandomQuestion = () => {
+    const pool = mainsSubjectFilter === 'ALL'
+      ? SAMPLE_MAINS_QUESTIONS
+      : SAMPLE_MAINS_QUESTIONS.filter((q) => q.subject.toLowerCase().includes(mainsSubjectFilter.toLowerCase()));
+    const finalPool = pool.length > 0 ? pool : SAMPLE_MAINS_QUESTIONS;
+    const randomIdx = Math.floor(Math.random() * finalPool.length);
+    const sq = finalPool[randomIdx];
+    handleSelectSampleQuestion(sq.question);
+  };
+
+  const filteredQuestions = mainsSubjectFilter === 'ALL'
+    ? SAMPLE_MAINS_QUESTIONS
+    : SAMPLE_MAINS_QUESTIONS.filter((q) =>
+        q.subject.toLowerCase().includes(mainsSubjectFilter.toLowerCase()) ||
+        mainsSubjectFilter.toLowerCase().includes(q.subject.toLowerCase())
+      );
 
   // Evaluate Mains
   const handleEvaluateMains = async () => {
@@ -833,76 +1011,233 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
 
       {/* TAB 4: MAINS ANSWER WRITING EVALUATOR */}
       {activeSubTab === 'mains' && (
-        <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
-          {/* Question & Answer Input */}
-          <div className="w-full md:w-1/2 flex flex-col space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-slate-200">Judicial Mains Problem Question</label>
-                <select
-                  onChange={(e) => {
-                    const found = SAMPLE_MAINS_QUESTIONS.find((q) => q.question === e.target.value);
-                    if (found) {
-                      setMainsQuestion(found.question);
-                      setMainsSubject(found.subject);
-                    }
-                  }}
-                  className="bg-slate-950 border border-slate-700 rounded text-[11px] px-2 py-0.5 text-slate-300"
+        <div className="flex-1 flex flex-col space-y-3 min-h-0">
+          {/* Top Generator & Filter Toolbar */}
+          <div className="bg-slate-900/70 p-3 rounded-xl border border-slate-800 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                  <FileQuestion className="w-4 h-4" />
+                </span>
+                <div>
+                  <h4 className="text-xs font-bold text-white tracking-wide flex items-center gap-2">
+                    Judicial Mains Question Generator & Past-Year Bank
+                    <Badge variant="outline" className="text-[10px] bg-indigo-500/15 text-indigo-300 border-indigo-500/30 font-normal">
+                      Dynamic AI Paper Setter
+                    </Badge>
+                  </h4>
+                  <p className="text-[11px] text-slate-400">
+                    Generate authentic factual problem scenarios on demand, or load past-year questions across subjects.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleRollRandomQuestion}
+                  className="h-7 text-[11px] bg-slate-950 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800"
                 >
-                  <option value="">Load Sample Question...</option>
-                  {SAMPLE_MAINS_QUESTIONS.map((sq, i) => (
-                    <option key={i} value={sq.question}>{sq.subject}</option>
+                  <Dices className="w-3.5 h-3.5 mr-1 text-amber-400" /> Random PYQ
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleGenerateQuestion}
+                  disabled={generatingQuestion}
+                  className="h-7 text-[11px] bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-medium shadow-xs"
+                >
+                  {generatingQuestion ? (
+                    <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-3.5 h-3.5 mr-1" />
+                  )}
+                  {generatingQuestion ? 'Synthesizing Dispute...' : '✨ Generate New Problem Question'}
+                </Button>
+              </div>
+            </div>
+
+            {/* Filter / Generator Inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-slate-800/80">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                  Subject Stream
+                </label>
+                <select
+                  value={mainsSubjectFilter}
+                  onChange={(e) => setMainsSubjectFilter(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-xs text-slate-200"
+                >
+                  {LEGAL_MAINS_SUBJECTS.map((s) => (
+                    <option key={s.id} value={s.id === 'ALL' ? 'ALL' : s.name}>
+                      {s.name}
+                    </option>
                   ))}
                 </select>
               </div>
-              <Textarea
-                rows={3}
-                value={mainsQuestion}
-                onChange={(e) => setMainsQuestion(e.target.value)}
-                placeholder="Enter or paste the Mains problem statement or question..."
-                className="text-xs bg-slate-950 border-slate-700 resize-none"
-              />
-            </div>
 
-            <div className="flex-1 flex flex-col min-h-0">
-              <label className="text-xs font-semibold text-slate-200 mb-1.5">Candidate's Subjective Answer</label>
-              <Textarea
-                rows={10}
-                value={mainsAnswer}
-                onChange={(e) => setMainsAnswer(e.target.value)}
-                placeholder="Write or paste your subjective answer here. Include statutory sections (BNS/CPC), precedents, and legal reasoning..."
-                className="flex-1 text-xs bg-slate-950 border-slate-700 font-mono leading-relaxed"
-              />
-            </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                  Question Style
+                </label>
+                <select
+                  value={mainsQuestionType}
+                  onChange={(e) => setMainsQuestionType(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-xs text-slate-200"
+                >
+                  <option value="PROBLEM_BASED">Problem Scenario (Parties & Dispute Facts)</option>
+                  <option value="THEORETICAL">Doctrinal & Analytical Essay</option>
+                  <option value="JUDGMENT_WRITING">Judgment Writing & Charge Framing</option>
+                </select>
+              </div>
 
-            <Button
-              onClick={handleEvaluateMains}
-              disabled={evaluatingMains}
-              className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
-            >
-              {evaluatingMains ? <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Award className="w-3.5 h-3.5 mr-1.5" />}
-              Evaluate Under Judicial Rubric (20 Marks)
-            </Button>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                  Specific Topic / Section (Optional)
+                </label>
+                <Input
+                  placeholder="e.g. Res Judicata, Bail, Zero FIR..."
+                  value={mainsTopicInput}
+                  onChange={(e) => setMainsTopicInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleGenerateQuestion()}
+                  className="h-7 text-xs bg-slate-950 border-slate-700"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-1">
+                  Or Pick Curated PYQ ({filteredQuestions.length})
+                </label>
+                <select
+                  onChange={(e) => handleSelectSampleQuestion(e.target.value)}
+                  value={SAMPLE_MAINS_QUESTIONS.some((q) => q.question === mainsQuestion) ? mainsQuestion : ''}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-xs text-slate-200"
+                >
+                  <option value="">Select from Question Bank...</option>
+                  {filteredQuestions.map((sq, i) => (
+                    <option key={i} value={sq.question}>
+                      [{sq.source?.split('&')[0]?.trim() || 'PYQ'}] {sq.topic}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
-          {/* Evaluation Results */}
-          <ScrollArea className="w-full md:w-1/2 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
-            {evaluatingMains ? (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
-                <Award className="w-6 h-6 mb-2 animate-spin text-amber-500" />
-                Benchmarking against Judicial Service Mains standards (Issues, Sections, Rulings, Ratio)...
+          {/* Main Two-Column Layout */}
+          <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+            {/* Question & Answer Input Column */}
+            <div className="w-full md:w-1/2 flex flex-col space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-semibold text-slate-200">
+                      Judicial Mains Problem Question
+                    </label>
+                    {activeQuestionMeta?.marks && (
+                      <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-300 border-amber-500/30">
+                        {activeQuestionMeta.marks} Marks • {activeQuestionMeta.suggestedTimeMinutes || 25} Mins
+                      </Badge>
+                    )}
+                  </div>
+                  {activeQuestionMeta?.source && (
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {activeQuestionMeta.source}
+                    </span>
+                  )}
+                </div>
+
+                <Textarea
+                  rows={4}
+                  value={mainsQuestion}
+                  onChange={(e) => setMainsQuestion(e.target.value)}
+                  placeholder="Enter, paste, or generate a Mains problem statement or factual dispute..."
+                  className="text-xs bg-slate-950 border-slate-700 resize-none leading-relaxed font-sans"
+                />
+
+                {/* Key Evaluator Focus Pointers Chips */}
+                {activeQuestionMeta?.statutoryPointers?.length > 0 && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                      <Lightbulb className="w-3 h-3 text-amber-400" /> Focus Pointers:
+                    </span>
+                    {activeQuestionMeta.statutoryPointers.map((ptr, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800/80 text-amber-200/90 border border-slate-700/60"
+                      >
+                        {ptr}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : mainsEvaluation ? (
-              <div className="prose prose-invert max-w-none text-xs">
-                <FormattedMarkdown content={mainsEvaluation.evaluation} />
+
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-slate-200">
+                    Candidate's Subjective Answer
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {mainsAnswer.trim() ? mainsAnswer.trim().split(/\s+/).length : 0} words
+                    </span>
+                    {mainsAnswer && (
+                      <button
+                        onClick={() => setMainsAnswer('')}
+                        className="text-[10px] text-slate-400 hover:text-rose-300 flex items-center gap-0.5"
+                      >
+                        <Eraser className="w-3 h-3" /> Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <Textarea
+                  rows={10}
+                  value={mainsAnswer}
+                  onChange={(e) => setMainsAnswer(e.target.value)}
+                  placeholder="Write or paste your subjective answer here. Include statutory sections (BNS/CPC), precedents, legal issues, ratio decidendi, and concluding order..."
+                  className="flex-1 text-xs bg-slate-950 border-slate-700 font-mono leading-relaxed"
+                />
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500 text-xs">
-                <Award className="w-8 h-8 text-slate-700 mb-2" />
-                Submit your subjective legal answer to receive detailed score breakdown and a ranker model answer.
-              </div>
-            )}
-          </ScrollArea>
+
+              <Button
+                onClick={handleEvaluateMains}
+                disabled={evaluatingMains || !mainsQuestion.trim() || !mainsAnswer.trim()}
+                className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold shadow-xs"
+              >
+                {evaluatingMains ? (
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                ) : (
+                  <Award className="w-3.5 h-3.5 mr-1.5" />
+                )}
+                Evaluate Under Judicial Rubric (20 Marks)
+              </Button>
+            </div>
+
+            {/* Evaluation Results Column */}
+            <ScrollArea className="w-full md:w-1/2 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+              {evaluatingMains ? (
+                <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
+                  <Award className="w-7 h-7 mb-3 animate-spin text-amber-500" />
+                  <p className="font-medium text-slate-200">Benchmarking against Judicial Service Standards</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Analyzing issue spotting, Bare Act section accuracy, landmark precedents & ratio...</p>
+                </div>
+              ) : mainsEvaluation ? (
+                <div className="prose prose-invert max-w-none text-xs leading-relaxed">
+                  <FormattedMarkdown content={mainsEvaluation.evaluation} />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500 text-xs space-y-2">
+                  <Award className="w-8 h-8 text-slate-700" />
+                  <p className="text-slate-300 font-medium">Ready for Judicial Service Answer Evaluation</p>
+                  <p className="text-[11px] text-slate-400 max-w-xs">
+                    Select or generate a problem question above, draft your legal answer with sections & case laws, and evaluate it under the 20-mark official rubric.
+                  </p>
+                </div>
+              )}
+            </ScrollArea>
+          </div>
         </div>
       )}
 

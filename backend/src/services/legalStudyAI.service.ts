@@ -25,6 +25,14 @@ export interface SectionDrillParams {
   count?: number;
 }
 
+export interface GenerateMainsQuestionParams {
+  subject: string;
+  topic?: string;
+  targetExam?: string;
+  targetState?: string;
+  questionType?: 'PROBLEM_BASED' | 'THEORETICAL' | 'JUDGMENT_WRITING' | 'MIXED';
+}
+
 export class LegalStudyAIService {
   /**
    * Generates a state-tailored, month-by-month study blueprint for Judicial Services or ADP aspirants.
@@ -299,6 +307,81 @@ Do not wrap in markdown code fence. Output ONLY valid raw JSON.`;
       difficulty,
       totalQuestions: questions.length,
       questions,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Generates authentic, dynamic Judicial Mains Examination questions (problem-based or theoretical) on demand.
+   */
+  static async generateMainsQuestion(userId: string, params: GenerateMainsQuestionParams) {
+    const subject = params.subject || 'Law';
+    const topic = params.topic ? `Specific Topic/Doctrine: ${params.topic}` : 'High-yield Mains examination topics';
+    const exam = params.targetExam || 'State Judicial Services (Civil Judge / PCS-J)';
+    const state = params.targetState || 'General State Judiciary';
+    const qType = params.questionType || 'PROBLEM_BASED';
+
+    const systemPrompt = `You are a Senior Judicial Academy Paper Setter and former High Court Justice drafting questions for the ${exam} Mains Examination (${state}).
+Your task is to draft an authentic, challenging, high-yield Judicial Mains Examination question.
+
+SUBJECT: ${subject}
+${topic}
+QUESTION STYLE: ${qType} (e.g. realistic factual scenario dispute, complex statutory controversy, or judgment writing problem)
+
+REQUIREMENTS:
+1. Provide an authentic, high-standard Mains question:
+   - If PROBLEM_BASED: Present a realistic legal dispute with parties (e.g., A, B, and C), conflicting rights, procedural actions, or evidentiary admissibility, and ask the candidate to decide with reference to statutory provisions and leading case law.
+   - If THEORETICAL: Pose an analytical, multi-layered question examining statutory provisions, doctrines, landmark precedents, and constitutional/jurisprudential nuances.
+   - If JUDGMENT_WRITING: Provide brief prosecution/defense or plaintiff/defendant allegations, framed issues, and ask the candidate to frame charges or write the operative judgment.
+2. Ensure the question tests New Criminal Laws (BNS 2023, BNSS 2023, BSA 2023) if Criminal Law or Evidence is selected.
+3. Provide statutory pointers (the key sections, doctrines, or cases the examiner expects in a model answer).
+4. Output must be valid JSON conforming to this schema:
+{
+  "subject": "${subject}",
+  "topic": "Name of specific legal doctrine or topic",
+  "marks": 20,
+  "suggestedTimeMinutes": 25,
+  "question": "Full text of the question...",
+  "statutoryPointers": ["Section ...", "Doctrine of ...", "Landmark case ..."],
+  "modelAnswerOutline": "Brief 2-3 bullet point outline of expected reasoning"
+}
+Do NOT wrap in markdown code fence. Output ONLY valid raw JSON.`;
+
+    const userMessage = `Draft a new ${qType} Judicial Mains question for ${subject} (${topic}) for ${exam} in ${state}.`;
+    const sessionKey = `legal-mains-q-${userId}-${Date.now()}`;
+    const llmResp = await callLLM(sessionKey, systemPrompt, userMessage);
+
+    let parsed: any;
+    try {
+      const cleanJson = llmResp.text.replace(/```json/g, '').replace(/```/g, '').trim();
+      parsed = JSON.parse(cleanJson);
+    } catch {
+      logger.warn('[Legal Study AI] Fallback JSON parse for mains question generation.');
+      parsed = {
+        subject,
+        topic: params.topic || 'Substantive & Procedural Law',
+        marks: 20,
+        suggestedTimeMinutes: 25,
+        question: llmResp.text,
+        statutoryPointers: ['Relevant statutory provisions and leading Supreme Court precedents'],
+        modelAnswerOutline: 'Address the core controversy, cite the relevant section, apply precedents, and conclude with the legal decision.',
+      };
+    }
+
+    await GuardrailService.recordTokenUsage({
+      userId,
+      promptTokens: llmResp.promptTokens,
+      completionTokens: llmResp.completionTokens,
+      totalTokens: llmResp.totalTokens,
+      provider: llmResp.provider,
+      model: llmResp.model,
+      feature: 'LEGAL_MAINS_QUESTION_GEN',
+    });
+
+    return {
+      ...parsed,
+      targetExam: exam,
+      targetState: state,
       generatedAt: new Date().toISOString(),
     };
   }

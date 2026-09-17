@@ -383,6 +383,7 @@ export const legalApi = {
   runScraper: (data) => api.post('/legal/scraper/run', data).then((r) => r.data),
   getScraperJobs: () => api.get('/legal/scraper/jobs').then((r) => r.data),
   generateStudyPlan: (data) => api.post('/legal/ai/study-plan', data).then((r) => r.data),
+  generateMainsQuestion: (data) => api.post('/legal/ai/generate-question', data).then((r) => r.data),
   evaluateMainsAnswer: (data) => api.post('/legal/ai/evaluate-answer', data).then((r) => r.data),
   generateSectionDrill: (data) => api.post('/legal/ai/section-drill', data).then((r) => r.data),
   compareCriminalLaws: (data) => api.post('/legal/ai/law-transition', data).then((r) => r.data),
