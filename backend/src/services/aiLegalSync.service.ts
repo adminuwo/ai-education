@@ -47,6 +47,7 @@ export interface StudentSyncPayload {
   organizationSlug: string;
   className?: string;
   parentFullName?: string;
+  role?: string;
 }
 
 /**
@@ -191,6 +192,7 @@ export async function syncStudentToAiLegal(payload: StudentSyncPayload) {
           studentName: payload.studentName,
           studentId: payload.studentId,
           className: payload.className || 'General',
+          role: payload.role || 'STUDENT',
           plan: 'BASIC',
           status: 'active',
           syncedAt: new Date(),
@@ -201,7 +203,7 @@ export async function syncStudentToAiLegal(payload: StudentSyncPayload) {
       },
       { upsert: true }
     );
-    logger.info(`[AI-Legal Sync] Recorded student directly in organizations schema (${payload.organizationName} -> ${normalizedEmail}).`);
+    logger.info(`[AI-Legal Sync] Recorded member directly in organizations schema (${payload.organizationName} -> ${normalizedEmail}, role=${payload.role || 'STUDENT'}).`);
 
     return {
       success: true,
@@ -252,8 +254,12 @@ export async function bulkSyncOrgStudentsToAiLegal(orgId: string) {
       return { success: false, error: 'AI-Legal add-on is not enabled for this organization' };
     }
 
-    const students = await prisma.membership.findMany({
-      where: { orgId, role: 'STUDENT', isActive: true },
+    const members = await prisma.membership.findMany({
+      where: {
+        orgId,
+        role: { in: ['STUDENT', 'TEACHER', 'DEAN', 'HOD', 'DIRECTOR', 'PRINCIPAL', 'ADMIN', 'OWNER'] },
+        isActive: true,
+      },
       include: {
         user: { select: { id: true, fullName: true, email: true, phoneNumber: true } },
         team: { select: { id: true, name: true } },
@@ -261,43 +267,48 @@ export async function bulkSyncOrgStudentsToAiLegal(orgId: string) {
       },
     });
 
-    if (students.length === 0) {
-      return { success: true, totalStudents: 0, syncedCount: 0, alreadySyncedCount: 0 };
+    if (members.length === 0) {
+      return { success: true, totalMembers: 0, syncedCount: 0, alreadySyncedCount: 0 };
     }
 
     const syncedEmails = await getOrgSyncedStudentEmails(org.slug);
     let newlySyncedCount = 0;
 
-    for (const m of students) {
+    for (const m of members) {
       const email = (m.user.email || '').toLowerCase().trim();
       if (!syncedEmails.has(email)) {
-        const studentId = m.title?.match(/\[(.*?)\]/)?.[1] || `STU-${new Date().getFullYear()}-${m.user.id.substring(0, 4)}`;
+        const prefix = m.role === 'STUDENT' ? 'STU' : (m.role === 'DIRECTOR' ? 'DIR' : (['ADMIN', 'OWNER', 'PRINCIPAL'].includes(m.role) ? 'ADM' : 'FAC'));
+        const memberId = m.title?.match(/\[(.*?)\]/)?.[1] || `${prefix}-${new Date().getFullYear()}-${m.user.id.substring(0, 4)}`;
+        const rawPassword = m.role === 'STUDENT' ? 'Student@1234!' : 'Demo1234!';
         await syncStudentToAiLegal({
           studentName: m.user.fullName,
           studentEmail: email,
-          rawPassword: 'Student@1234!',
-          studentId,
+          rawPassword,
+          studentId: memberId,
           organizationName: org.name,
           organizationSlug: org.slug,
-          className: m.team?.name || m.department?.name || 'General',
+          className: m.team?.name || m.department?.name || (m.role === 'STUDENT' ? 'General' : m.role),
+          role: m.role,
         });
         newlySyncedCount++;
       }
     }
 
-    logger.info(`[AI-Legal Sync] Bulk sync complete for "${org.name}": ${newlySyncedCount} newly provisioned, ${syncedEmails.size} already active.`);
+    logger.info(`[AI-Legal Sync] Bulk sync complete for "${org.name}": ${newlySyncedCount} newly provisioned (students & faculty), ${syncedEmails.size} already active.`);
 
     return {
       success: true,
-      totalStudents: students.length,
+      totalMembers: members.length,
       syncedCount: newlySyncedCount,
       alreadySyncedCount: syncedEmails.size,
     };
   } catch (err: any) {
-    logger.error({ err: err?.message }, '[AI-Legal Sync] Bulk student sync error.');
+    logger.error({ err: err?.message }, '[AI-Legal Sync] Bulk member sync error.');
     return { success: false, error: err?.message };
   }
 }
+
+export const bulkSyncOrgMembersToAiLegal = bulkSyncOrgStudentsToAiLegal;
 
 /**
  * Monthly Automated Student Plan Reset:

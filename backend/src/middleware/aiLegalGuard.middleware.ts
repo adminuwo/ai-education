@@ -70,6 +70,24 @@ export async function requireAiLegalAddon(req: AiLegalRequest, res: Response, ne
       });
     }
 
+    // Role-based guardrail: Check if user's role is Accountant or Alumni
+    // AI-Legal is for law students, aspirants, and faculty/academic leadership; accountant & alumni are excluded.
+    if (!isSuperAdmin) {
+      const userMembership = await prisma.membership.findFirst({
+        where: { userId, orgId, isActive: true },
+        select: { role: true },
+      });
+
+      if (userMembership && ['ACCOUNTANT', 'ALUMNI'].includes(userMembership.role)) {
+        logger.warn(`[AI-Legal Guardrail Blocked] User with role "${userMembership.role}" attempted to access AI-Legal suite.`);
+        return res.status(403).json({
+          error: 'ROLE_RESTRICTED',
+          message: 'The AI-Legal Suite is designed for legal academics, faculty, and aspirants, and is not available for accountant or alumni roles.',
+          role: userMembership.role,
+        });
+      }
+    }
+
     req.aiLegalOrg = org;
     next();
   } catch (err: any) {

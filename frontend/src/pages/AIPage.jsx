@@ -69,6 +69,20 @@ const ALUMNI_PROMPTS = [
   { icon: MessageSquareText, label: 'Alumni Reunions & Campus Events 🏛️', prompt: 'Are there any upcoming campus reunions, alumni guest lectures, or homecoming events scheduled?' },
 ];
 
+const LEGAL_STUDENT_PROMPTS = [
+  { icon: Scale, label: '⚖️ Judicial Exam Blueprint (DJS / UP PCS-J)', prompt: 'Create a 30-day comprehensive study blueprint for Delhi Judicial Service (DJS) Prelims & Mains criminal law syllabus.' },
+  { icon: BookOpen, label: '📜 IPC to BNS Transition Map', prompt: 'Explain the key changes between IPC Section 302/304 and Bharatiya Nyaya Sanhita (BNS) Section 103, with new illustrations and legal impacts.' },
+  { icon: FileText, label: '✍️ Evaluate Judicial Mains Answer', prompt: 'Evaluate my legal reasoning for this Judicial Mains problem question: Issue identification, applicable statutory provisions under CrPC/BNSS, landmark precedents, and final conclusion.' },
+  { icon: Zap, label: '🎯 Bare Act Section Drill (MCQs)', prompt: 'Generate 5 high-yield Prelims MCQs testing tricky exceptions in Bharatiya Sakshya Adhiniyam (BSA) Section 23 to 27 with detailed statutory explanations.' },
+];
+
+const LEGAL_FACULTY_PROMPTS = [
+  { icon: Scale, label: '⚖️ Draft Judicial Exam Question Bank', prompt: 'Generate an advanced Judicial Services exam question paper (5 analytical Mains problem questions + 5 Bare Act Prelims MCQs) covering BNS vs IPC criminal jurisprudence with model answers and evaluation rubric.' },
+  { icon: BookOpen, label: '📜 Curate New Criminal Laws Lecture Notes', prompt: 'Prepare a 4-lecture modular syllabus and comparative notes on the procedural transition from CrPC 1973 to Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 for final-year law students.' },
+  { icon: FileText, label: '✍️ Mains Evaluation Rubric & Model Answer', prompt: 'Draft a comprehensive Judicial Mains model answer and 20-mark evaluation rubric for a moot court/exam problem involving digital evidence admissibility under Bharatiya Sakshya Adhiniyam (BSA).' },
+  { icon: Zap, label: '🎯 High-Yield Bare Act Drill for Class', prompt: 'Generate a high-yield 10-question Bare Act drill with tricky statutory exceptions and case citations on the Constitution of India (Articles 14, 19, 21, and 32) for law aspirants.' },
+];
+
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
 export default function AIPage() {
@@ -81,11 +95,20 @@ export default function AIPage() {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const scrollRef = useRef();
-  const hasAiLegal = Boolean(
+
+  const isStudent = currentOrg?.role === 'STUDENT' || user?.email?.includes('student');
+  const isParent = currentOrg?.role === 'PARENT' || user?.email?.includes('parent');
+  const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.includes('alumni') || currentOrg?.title?.includes('Alumni');
+  const isAccountant = currentOrg?.role === 'ACCOUNTANT' || user?.systemRole === 'ACCOUNTANT' || user?.email?.includes('accountant');
+  const isAdminOrDirector = ['DIRECTOR', 'PRINCIPAL', 'ADMIN', 'OWNER'].includes(currentOrg?.role) || user?.systemRole === 'SUPER_ADMIN' || user?.systemRole === 'ADMIN';
+
+  const orgHasAiLegal = Boolean(
     currentOrg?.hasAiLegal ||
     currentOrg?.addons?.includes('AI_LEGAL') ||
     /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
   );
+  // Faculty, Teachers, Deans, Directors, Admins, and Students get AI Legal, BUT Accountant and Alumni are strictly excluded
+  const hasAiLegal = Boolean(orgHasAiLegal && !isAccountant && !isAlumni);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') === 'legal' && hasAiLegal)
@@ -104,13 +127,9 @@ export default function AIPage() {
     }
   }, [searchParams, hasAiLegal]);
 
-  const isStudent = currentOrg?.role === 'STUDENT' || user?.email?.includes('student');
-  const isParent = currentOrg?.role === 'PARENT' || user?.email?.includes('parent');
-  const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.includes('alumni') || currentOrg?.title?.includes('Alumni');
-  const isAccountant = currentOrg?.role === 'ACCOUNTANT' || user?.systemRole === 'ACCOUNTANT' || user?.email?.includes('accountant');
-  const isAdminOrDirector = ['DIRECTOR', 'PRINCIPAL', 'ADMIN', 'OWNER'].includes(currentOrg?.role) || user?.systemRole === 'SUPER_ADMIN' || user?.systemRole === 'ADMIN';
-
-  const activePrompts = isStudent
+  const activePrompts = hasAiLegal
+    ? (isStudent ? LEGAL_STUDENT_PROMPTS : LEGAL_FACULTY_PROMPTS)
+    : isStudent
     ? STUDENT_PROMPTS
     : isParent
     ? PARENT_PROMPTS
@@ -584,6 +603,10 @@ export default function AIPage() {
               <div className="font-display font-semibold text-sm leading-tight">
                 {hasAiLegal && studentTab === 'legal'
                   ? 'Judicial Services & ADP Hub ⚖️'
+                  : hasAiLegal && isStudent
+                  ? 'Judicial & Law Study Buddy ⚖️'
+                  : hasAiLegal && !isStudent
+                  ? 'Judicial & Law Faculty Assistant ⚖️'
                   : isStudent
                   ? 'Study Buddy 🎒'
                   : isParent
@@ -599,6 +622,10 @@ export default function AIPage() {
               <div className="text-[11px] text-muted-foreground">
                 {hasAiLegal && studentTab === 'legal'
                   ? 'Bare Acts, open legal scraping vault, BNS/BNSS/BSA transition, and Mains answer evaluation'
+                  : hasAiLegal && isStudent
+                  ? 'Bare Acts, PYQs, exam blueprint, and 24/7 AI tutor for Judicial & ADP examination preparation'
+                  : hasAiLegal && !isStudent
+                  ? 'Legal pedagogy copilot: curriculum drafting, comparative BNS notes, question bank & Mains rubric generator'
                   : isStudent
                   ? 'Your 24/7 personal tutor for homework, daily quizzes, and study guidance'
                   : isParent

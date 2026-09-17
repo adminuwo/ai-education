@@ -130,13 +130,14 @@ router.get('/', async (req, res, next) => {
     });
     res.json(memberships.map((m) => {
       const addons = parseOrgAddons(m.organization.description);
+      const isExcluded = ['ACCOUNTANT', 'ALUMNI'].includes(m.role);
       return {
         id: m.organization.id,
         name: m.organization.name,
         slug: m.organization.slug,
         logoUrl: m.organization.logoUrl,
         description: m.organization.description,
-        hasAiLegal: addons.includes('AI_LEGAL'),
+        hasAiLegal: addons.includes('AI_LEGAL') && !isExcluded,
         addons,
         role: m.role,
       };
@@ -485,7 +486,8 @@ router.get('/:orgId', async (req, res, next) => {
     });
     if (!org) return res.status(404).json({ error: 'Organization not found' });
     const addons = parseOrgAddons(org.description);
-    res.json({ ...org, myRole, hasAiLegal: addons.includes('AI_LEGAL'), addons });
+    const isExcluded = ['ACCOUNTANT', 'ALUMNI'].includes(myRole);
+    res.json({ ...org, myRole, hasAiLegal: addons.includes('AI_LEGAL') && !isExcluded, addons });
   } catch (e) { next(e); }
 });
 

@@ -433,6 +433,42 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next)
     await prisma.user.update({ where: { id: user.id }, data: { lastSeenAt: new Date() } });
     await prisma.membership.updateMany({ where: { userId: user.id, isActive: false }, data: { isActive: true } }).catch(() => {});
     const tokens = await issueTokens({ id: user.id, email: user.email, systemRole: user.systemRole });
+
+    // Background asynchronous sync to AI-Legal for eligible students & faculty in AI_LEGAL organizations
+    setImmediate(async () => {
+      try {
+        const eligibleMembership = await prisma.membership.findFirst({
+          where: {
+            userId: user.id,
+            isActive: true,
+            role: { in: ['STUDENT', 'TEACHER', 'DEAN', 'HOD', 'DIRECTOR', 'PRINCIPAL', 'ADMIN', 'OWNER'] },
+            organization: {
+              description: { contains: 'AI_LEGAL' },
+            },
+          },
+          include: { organization: true, team: true, department: true },
+        });
+
+        if (eligibleMembership) {
+          const prefix = eligibleMembership.role === 'STUDENT' ? 'STU' : (eligibleMembership.role === 'DIRECTOR' ? 'DIR' : (['ADMIN', 'OWNER', 'PRINCIPAL'].includes(eligibleMembership.role) ? 'ADM' : 'FAC'));
+          const memberId = eligibleMembership.title?.match(/\[(.*?)\]/)?.[1] || `${prefix}-${new Date().getFullYear()}-${user.id.substring(0, 4)}`;
+          const rawPassword = eligibleMembership.role === 'STUDENT' ? 'Student@1234!' : 'Demo1234!';
+          await syncStudentToAiLegal({
+            studentName: user.fullName,
+            studentEmail: user.email,
+            rawPassword,
+            studentId: memberId,
+            organizationName: eligibleMembership.organization.name,
+            organizationSlug: eligibleMembership.organization.slug,
+            className: eligibleMembership.team?.name || eligibleMembership.department?.name || (eligibleMembership.role === 'STUDENT' ? 'General' : eligibleMembership.role),
+            role: eligibleMembership.role,
+          });
+        }
+      } catch (syncErr: any) {
+        // Silently catch background sync error
+      }
+    });
+
     res.json({
       user: { id: user.id, email: user.email, fullName: user.fullName, systemRole: user.systemRole, avatarUrl: user.avatarUrl },
       ...tokens,
@@ -525,7 +561,8 @@ router.get('/me', authenticate, async (req, res, next) => {
         const uniqueId = bracketMatch ? bracketMatch[1] : (rawCodeMatch ? rawCodeMatch[1].toUpperCase() : null);
         const directorId = m.role === 'DIRECTOR' ? (uniqueId || 'DIR-2026-7186') : null;
         const addons = parseOrgAddons(m.organization.description);
-        const hasAiLegal = addons.includes('AI_LEGAL');
+        const isExcludedRole = ['ACCOUNTANT', 'ALUMNI'].includes(m.role);
+        const hasAiLegal = addons.includes('AI_LEGAL') && !isExcludedRole;
         return {
           id: m.id,
           orgId: m.orgId,
