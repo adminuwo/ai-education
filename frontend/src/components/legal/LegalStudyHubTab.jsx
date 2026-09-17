@@ -247,6 +247,28 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
   const [uploadFile, setUploadFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
+  // In-App Library Document Viewer & Downloader State
+  const [selectedLibraryDoc, setSelectedLibraryDoc] = useState(null);
+  const [libraryDocModalOpen, setLibraryDocModalOpen] = useState(false);
+  const [downloadingDocId, setDownloadingDocId] = useState(null);
+
+  const handleDownloadDoc = async (doc) => {
+    if (!doc?.id) return;
+    try {
+      setDownloadingDocId(doc.id);
+      const cleanName = (doc.title || 'legal_document').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const isPdf = doc.mimeType?.includes('pdf') || doc.gcsKey?.endsWith('.pdf');
+      const filename = `${cleanName}${isPdf ? '.pdf' : '.txt'}`;
+      await legalApi.downloadAsset(doc.id, filename);
+      toast.success(`Downloaded "${doc.title}"`);
+    } catch (err) {
+      console.error('Download error', err);
+      toast.error('Failed to download document. Please try again.');
+    } finally {
+      setDownloadingDocId(null);
+    }
+  };
+
   // Planner State
   const [planState, setPlanState] = useState('DELHI');
   const [planExam, setPlanExam] = useState('JUDICIARY');
@@ -926,15 +948,31 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                             Source
                           </a>
                         )}
-                        <a
-                          href={item.signedUrl || item.publicUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded text-xs font-medium inline-flex items-center transition-colors"
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedLibraryDoc(item);
+                            setLibraryDocModalOpen(true);
+                          }}
+                          className="h-7 text-xs border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white px-2.5"
                         >
-                          <Download className="w-3 h-3 mr-1 text-amber-400" />
-                          View / Download
-                        </a>
+                          <Eye className="w-3 h-3 mr-1 text-amber-400" />
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleDownloadDoc(item)}
+                          disabled={downloadingDocId === item.id}
+                          className="h-7 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 text-xs font-medium inline-flex items-center transition-colors"
+                        >
+                          {downloadingDocId === item.id ? (
+                            <RefreshCw className="w-3 h-3 mr-1 animate-spin text-amber-400" />
+                          ) : (
+                            <Download className="w-3 h-3 mr-1 text-amber-400" />
+                          )}
+                          Download
+                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -1979,18 +2017,35 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
             >
               Close
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => {
-                setPyqModalOpen(false);
-                handleSolvePYQ(selectedPyqPaper);
-              }}
-              className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
-            >
-              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Ask AI to Solve this Paper
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={downloadingDocId === selectedPyqPaper?.id}
+                onClick={() => selectedPyqPaper && handleDownloadDoc(selectedPyqPaper)}
+                className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800"
+              >
+                {downloadingDocId === selectedPyqPaper?.id ? (
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin text-amber-400" />
+                ) : (
+                  <Download className="w-3.5 h-3.5 mr-1.5 text-amber-400" />
+                )}
+                Download Paper (.txt)
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  setPyqModalOpen(false);
+                  handleSolvePYQ(selectedPyqPaper);
+                }}
+                className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                Ask AI to Solve this Paper
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2272,6 +2327,104 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL 6: IN-APP LEGAL DOCUMENT VIEWER */}
+      <Dialog open={libraryDocModalOpen} onOpenChange={setLibraryDocModalOpen}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-slate-100 sm:max-w-3xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <Badge
+                variant="outline"
+                className={`text-[10px] font-semibold uppercase tracking-wider ${
+                  selectedLibraryDoc?.category === 'BARE_ACT'
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                    : selectedLibraryDoc?.category === 'PYQ'
+                    ? 'bg-purple-500/10 text-purple-300 border-purple-500/30'
+                    : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                }`}
+              >
+                {selectedLibraryDoc?.category?.replace('_', ' ') || 'DOCUMENT'}
+              </Badge>
+              {selectedLibraryDoc?.targetExams && (
+                <Badge variant="secondary" className="text-[10px] bg-slate-800 text-slate-300">
+                  {selectedLibraryDoc.targetExams}
+                </Badge>
+              )}
+              {selectedLibraryDoc?.state && selectedLibraryDoc.state !== 'ALL' && (
+                <Badge variant="secondary" className="text-[10px] bg-indigo-950/60 text-indigo-300 border border-indigo-800/40">
+                  {selectedLibraryDoc.state}
+                </Badge>
+              )}
+            </div>
+            <DialogTitle className="text-base font-semibold text-white leading-tight">
+              {selectedLibraryDoc?.title}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              {selectedLibraryDoc?.actName ? `Act: ${selectedLibraryDoc.actName}` : ''}
+              {selectedLibraryDoc?.sectionCount ? ` • ${selectedLibraryDoc.sectionCount} Sections` : ''}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-hidden my-2">
+            <ScrollArea className="h-[52vh] pr-3 rounded-lg bg-slate-950/80 border border-slate-800 p-4">
+              <pre className="text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed select-text">
+                {selectedLibraryDoc?.metadata?.paperContent ||
+                  selectedLibraryDoc?.metadata?.fullText ||
+                  selectedLibraryDoc?.metadata?.snippet ||
+                  selectedLibraryDoc?.summary ||
+                  'No text content preview available for this document.'}
+              </pre>
+            </ScrollArea>
+          </div>
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2 border-t border-slate-800">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setLibraryDocModalOpen(false)}
+              className="text-slate-400 text-xs"
+            >
+              Close
+            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const content =
+                    selectedLibraryDoc?.metadata?.paperContent ||
+                    selectedLibraryDoc?.metadata?.fullText ||
+                    selectedLibraryDoc?.metadata?.snippet ||
+                    selectedLibraryDoc?.summary ||
+                    '';
+                  navigator.clipboard.writeText(content);
+                  toast.success('Document text copied to clipboard!');
+                }}
+                className="text-xs border-slate-700 text-slate-200 hover:bg-slate-800"
+              >
+                <Copy className="w-3.5 h-3.5 mr-1.5" />
+                Copy Text
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                disabled={downloadingDocId === selectedLibraryDoc?.id}
+                onClick={() => selectedLibraryDoc && handleDownloadDoc(selectedLibraryDoc)}
+                className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium"
+              >
+                {downloadingDocId === selectedLibraryDoc?.id ? (
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                )}
+                Download File
+              </Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

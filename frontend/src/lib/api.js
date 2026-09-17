@@ -379,7 +379,19 @@ export const bugApi = {
 export const legalApi = {
   getLibrary: (params = {}) => api.get('/legal/library', { params }).then((r) => r.data),
   uploadAsset: (formData) => api.post('/legal/library/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((r) => r.data),
-  getDownloadUrl: (id) => api.get(`/legal/library/${id}/download`).then((r) => r.data),
+  getDownloadUrl: (id) => api.get(`/legal/library/${id}/download?json=true`).then((r) => r.data),
+  getAssetContent: (id) => api.get(`/legal/library/${id}/content`).then((r) => r.data),
+  downloadAsset: async (id, fileName = 'legal_document.txt') => {
+    const response = await api.get(`/legal/library/${id}/download`, { responseType: 'blob' });
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+  },
   runScraper: (data) => api.post('/legal/scraper/run', data).then((r) => r.data),
   getScraperJobs: () => api.get('/legal/scraper/jobs').then((r) => r.data),
   generateStudyPlan: (data) => api.post('/legal/ai/study-plan', data).then((r) => r.data),

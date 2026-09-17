@@ -6,6 +6,7 @@ import { requireAiLegalAddon, AiLegalRequest } from '../middleware/aiLegalGuard.
 import { LegalScraperService } from '../services/legalScraper.service';
 import { LegalStudyAIService } from '../services/legalStudyAI.service';
 import { GuardrailService } from '../services/guardrail.service';
+import { getGcsReadStream, getSignedDownloadUrl } from '../services/gcs.service';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -114,15 +115,118 @@ router.post('/library/upload', upload.single('file'), async (req: AiLegalRequest
 
 /**
  * GET /api/v1/legal/library/:id/download
- * Generates fresh presigned download URL for instant client-side preview/download.
+ * Streams legal document securely from GCS or database fallback without direct 403 access issues.
  */
 router.get('/library/:id/download', async (req: AiLegalRequest, res, next) => {
   try {
     const orgId = req.aiLegalOrg!.id;
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
-    const downloadUrl = await LegalScraperService.getFreshDownloadUrl(String(id), orgId);
-    res.json({ downloadUrl });
+    const asset = await prisma.legalDocumentAsset.findFirst({
+      where: { id: String(id), orgId },
+    });
+
+    if (!asset) {
+      return res.status(404).json({ error: 'Legal document asset not found' });
+    }
+
+    // If client specifically requests JSON signed url
+    if (req.query.json === 'true') {
+      const downloadUrl = await LegalScraperService.getFreshDownloadUrl(String(id), orgId);
+      return res.json({ downloadUrl, title: asset.title, mimeType: asset.mimeType });
+    }
+
+    const cleanTitle = (asset.title || 'legal_document').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const isPdf = asset.mimeType?.includes('pdf') || asset.gcsKey?.endsWith('.pdf');
+    const filename = `${cleanTitle}${isPdf ? '.pdf' : '.txt'}`;
+
+    // 1. If valid V4 signed URL with credentials is generated, redirect
+    if (asset.gcsKey) {
+      try {
+        const signedUrl = await getSignedDownloadUrl(asset.gcsKey, filename, 60);
+        if (signedUrl && (signedUrl.includes('X-Goog-Signature') || signedUrl.includes('GoogleAccessId'))) {
+          return res.redirect(signedUrl);
+        }
+      } catch (signErr) {
+        logger.warn(`Signed URL redirect skipped for legal document ${asset.gcsKey}`);
+      }
+
+      // 2. Stream directly from Google Cloud Storage via authorized backend client
+      try {
+        res.setHeader('Content-Type', asset.mimeType || (isPdf ? 'application/pdf' : 'text/plain; charset=utf-8'));
+        res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        const stream = getGcsReadStream(asset.gcsKey);
+        stream.on('error', (err) => {
+          logger.warn(`GCS stream error for legal asset ${asset.gcsKey}: ${err?.message}`);
+          if (!res.headersSent) {
+            const fallbackText = (asset.metadata as any)?.paperContent ||
+                                 (asset.metadata as any)?.fullText ||
+                                 (asset.metadata as any)?.snippet ||
+                                 asset.summary ||
+                                 asset.title;
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+            res.send(fallbackText);
+          }
+        });
+        return stream.pipe(res);
+      } catch (streamErr: any) {
+        logger.warn(`Could not pipe GCS stream for ${asset.gcsKey}: ${streamErr?.message}`);
+      }
+    }
+
+    // 3. Fallback: serve document text from database metadata
+    const textContent = (asset.metadata as any)?.paperContent ||
+                        (asset.metadata as any)?.fullText ||
+                        (asset.metadata as any)?.snippet ||
+                        asset.summary ||
+                        `=== ${asset.title} ===\n\nCategory: ${asset.category}\nAct: ${asset.actName || 'N/A'}\nState: ${asset.state || 'ALL'}\n\nSummary:\n${asset.summary || 'No summary available.'}`;
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+    return res.send(textContent);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * GET /api/v1/legal/library/:id/content
+ * Retrieves full textual content of any legal asset for in-app viewing.
+ */
+router.get('/library/:id/content', async (req: AiLegalRequest, res, next) => {
+  try {
+    const orgId = req.aiLegalOrg!.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const asset = await prisma.legalDocumentAsset.findFirst({
+      where: { id: String(id), orgId },
+    });
+
+    if (!asset) {
+      return res.status(404).json({ error: 'Legal document asset not found' });
+    }
+
+    const content = (asset.metadata as any)?.paperContent ||
+                    (asset.metadata as any)?.fullText ||
+                    (asset.metadata as any)?.snippet ||
+                    asset.summary ||
+                    '';
+
+    res.json({
+      id: asset.id,
+      title: asset.title,
+      actName: asset.actName,
+      category: asset.category,
+      state: asset.state,
+      targetExams: asset.targetExams,
+      sectionCount: asset.sectionCount,
+      summary: asset.summary,
+      content,
+      metadata: asset.metadata,
+      createdAt: asset.createdAt,
+    });
   } catch (err) {
     next(err);
   }
