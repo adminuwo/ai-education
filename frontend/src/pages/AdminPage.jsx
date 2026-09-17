@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Building2, Users, Layers, Plus, Mail, Trash2, Crown, ChevronRight, GraduationCap, UserCheck, Filter, Key, HeartHandshake, Pencil, Clock, Copy, CheckCircle2, UserX, BookOpen, Scale } from 'lucide-react';
+import { Building2, Users, Layers, Plus, Mail, Trash2, Crown, ChevronRight, GraduationCap, UserCheck, Filter, Key, HeartHandshake, Pencil, Clock, Copy, CheckCircle2, UserX, BookOpen, Scale, Briefcase } from 'lucide-react';
 import { connectSocket, getSocket } from '@/lib/socket';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -720,7 +720,7 @@ export default function AdminPage() {
                       <tr className="text-left text-muted-foreground">
                         <th className="px-4 py-2.5 font-medium">Alumni Graduate</th>
                         <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium">Alumni Designation</th>
+                        <th className="px-4 py-2.5 font-medium whitespace-nowrap">Alumni Designation</th>
                         <th className="px-4 py-2.5 font-medium">Status</th>
                         <th className="px-4 py-2.5 font-medium">Graduated</th>
                         <th className="px-4 py-2.5 font-medium text-right">Actions</th>
@@ -730,12 +730,18 @@ export default function AdminPage() {
                       {alumniMembers.map((m) => {
                         const canRemove = canRemoveMember(m);
                         const batchTag = m.title?.match(/\[(.*?)\]/)?.[1] || 'Alumni Network';
-                        const cleanDesignation = (m.title || 'Graduated Alumni')
+                        const rawClean = (m.title || 'Graduated Alumni')
                           .replace(/^Student\s*-\s*/i, '')
+                          .replace(/^Alumni\s*(?:Lead|Member|Network)?\s*[-·:]\s*/i, '')
                           .replace(/^Alumni\s*·\s*/i, '')
                           .replace(/\s*\(Roll:\s*.*?\)/gi, '')
                           .replace(/\s*\[Alumni.*?\]/gi, '')
-                          .trim() || 'Graduated Alumni';
+                          .trim();
+                        const cleanDesignation = rawClean || m.title || 'Graduated Alumni';
+                        const cleanName = (m.user?.fullName || m.user?.email || 'Alumni Member')
+                          .replace(/\s*\(Alumni\)/gi, '')
+                          .trim();
+
                         return (
                           <tr key={m.id} className="border-b border-border hover:bg-muted/30 transition-colors">
                             <td className="px-4 py-2.5">
@@ -747,7 +753,7 @@ export default function AdminPage() {
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="font-medium text-foreground">{m.user?.fullName || m.user?.email || 'Alumni Member'}</span>
+                                  <span className="font-medium text-foreground">{cleanName}</span>
                                   <Badge variant="outline" className="font-semibold text-[10px] px-2 py-0 h-4 bg-amber-500/10 text-amber-400 border-amber-500/30">
                                     🎓 {batchTag}
                                   </Badge>
@@ -756,9 +762,14 @@ export default function AdminPage() {
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground">{renderEmailCell(m.user)}</td>
                             <td className="px-4 py-2.5">
-                              <span className="text-xs font-medium text-amber-300/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                                {cleanDesignation}
-                              </span>
+                              <Badge
+                                variant="outline"
+                                className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-300/95 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/25 whitespace-nowrap"
+                                title={cleanDesignation}
+                              >
+                                <Briefcase className="h-3 w-3 text-amber-400 shrink-0" />
+                                <span>{cleanDesignation}</span>
+                              </Badge>
                             </td>
                             <td className="px-4 py-2.5">
                               <Badge variant="secondary" className="text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
