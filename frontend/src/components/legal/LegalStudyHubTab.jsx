@@ -1013,7 +1013,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
             <div>
               <h3 className="text-sm font-semibold text-white flex items-center">
                 <RefreshCw className="w-4 h-4 mr-2 text-amber-400" />
-                Criminal Laws Transformation Navigator (IPC/CrPC/IEA $\leftrightarrow$ BNS/BNSS/BSA)
+                Criminal Laws Transformation Navigator (IPC/CrPC/IEA ⇄ BNS/BNSS/BSA)
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 Instant statutory cross-referencing, procedural mandates, audio-video electronic recording, and judicial exam hotspots.

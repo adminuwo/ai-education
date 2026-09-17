@@ -86,7 +86,7 @@ FOCUS STAGE: ${params.stageFocus}
 ${extraGuidance}
 
 REQUIREMENTS:
-1. Provide a phase-wise breakdown (Foundational Phase $\rightarrow$ Bare Act Mastery & Procedural Laws $\rightarrow$ Mains Answer Writing & Local Laws $\rightarrow$ Mock Drills & Revision).
+1. Provide a phase-wise breakdown (Foundational Phase → Bare Act Mastery & Procedural Laws → Mains Answer Writing & Local Laws → Mock Drills & Revision).
 2. Detail state-specific local laws according to the selected state:
    - Delhi: Delhi Rent Control Act 1958, Commercial Courts Act 2015, High Court Rules.
    - Uttar Pradesh: UP Revenue Code 2006, UP Urban Buildings Act 1972, UP Municipalities Act.
