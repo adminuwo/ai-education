@@ -515,7 +515,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col space-y-4 pb-8">
       {/* Top Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/20 rounded-xl gap-3">
         <div className="flex items-center space-x-3">
@@ -1011,9 +1011,9 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
 
       {/* TAB 4: MAINS ANSWER WRITING EVALUATOR */}
       {activeSubTab === 'mains' && (
-        <div className="flex-1 flex flex-col space-y-3 min-h-0">
+        <div className="flex flex-col space-y-4">
           {/* Top Generator & Filter Toolbar */}
-          <div className="bg-slate-900/70 p-3 rounded-xl border border-slate-800 space-y-2.5">
+          <div className="bg-slate-900/70 p-3.5 rounded-xl border border-slate-800 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
@@ -1125,11 +1125,11 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           </div>
 
           {/* Main Two-Column Layout */}
-          <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
+          <div className="flex flex-col lg:flex-row gap-4 items-start">
             {/* Question & Answer Input Column */}
-            <div className="w-full md:w-1/2 flex flex-col space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
+            <div className="w-full lg:w-1/2 flex flex-col space-y-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <label className="text-xs font-semibold text-slate-200">
                       Judicial Mains Problem Question
@@ -1152,12 +1152,12 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   value={mainsQuestion}
                   onChange={(e) => setMainsQuestion(e.target.value)}
                   placeholder="Enter, paste, or generate a Mains problem statement or factual dispute..."
-                  className="text-xs bg-slate-950 border-slate-700 resize-none leading-relaxed font-sans"
+                  className="w-full text-xs bg-slate-950 border-slate-700 min-h-[90px] max-h-[160px] resize-y overflow-y-auto leading-relaxed font-sans"
                 />
 
                 {/* Key Evaluator Focus Pointers Chips */}
                 {activeQuestionMeta?.statutoryPointers?.length > 0 && (
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
                     <span className="text-[10px] text-slate-400 flex items-center gap-1">
                       <Lightbulb className="w-3 h-3 text-amber-400" /> Focus Pointers:
                     </span>
@@ -1173,8 +1173,8 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 )}
               </div>
 
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex items-center justify-between mb-1.5">
+              <div className="space-y-2 pt-1 border-t border-slate-800/60">
+                <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-slate-200">
                     Candidate's Subjective Answer
                   </label>
@@ -1193,18 +1193,18 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   </div>
                 </div>
                 <Textarea
-                  rows={10}
+                  rows={9}
                   value={mainsAnswer}
                   onChange={(e) => setMainsAnswer(e.target.value)}
                   placeholder="Write or paste your subjective answer here. Include statutory sections (BNS/CPC), precedents, legal issues, ratio decidendi, and concluding order..."
-                  className="flex-1 text-xs bg-slate-950 border-slate-700 font-mono leading-relaxed"
+                  className="w-full text-xs bg-slate-950 border-slate-700 font-mono leading-relaxed min-h-[190px] max-h-[380px] resize-y overflow-y-auto"
                 />
               </div>
 
               <Button
                 onClick={handleEvaluateMains}
                 disabled={evaluatingMains || !mainsQuestion.trim() || !mainsAnswer.trim()}
-                className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold shadow-xs"
+                className="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-semibold shadow-xs shrink-0 mt-1"
               >
                 {evaluatingMains ? (
                   <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
@@ -1216,7 +1216,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
             </div>
 
             {/* Evaluation Results Column */}
-            <ScrollArea className="w-full md:w-1/2 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+            <ScrollArea className="w-full lg:w-1/2 min-h-[520px] max-h-[700px] rounded-xl border border-slate-800 bg-slate-950/40 p-4">
               {evaluatingMains ? (
                 <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
                   <Award className="w-7 h-7 mb-3 animate-spin text-amber-500" />
