@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Scale,
   BookOpen,
@@ -218,6 +218,8 @@ export const LEGAL_EXAM_STREAMS = [
   { value: 'CLAT_PG', label: 'CLAT PG / AILET PG (LL.M Entrance & PSU Legal Recruitment)', shortName: 'CLAT PG / LL.M' },
   { value: 'PSU_LEGAL', label: 'PSU In-House Law Officer (ONGC, IOCL, NTPC, BHEL, PowerGrid)', shortName: 'PSU Law Officer' },
 ];
+
+export const AVAILABLE_EXAM_YEARS = Array.from({ length: 27 }, (_, i) => String(2026 - i)); // 2026 down to 2000
 
 export default function LegalStudyHubTab({ currentOrg, user }) {
   const [activeSubTab, setActiveSubTab] = useState('library'); // library, planner, transition, mains, drill
@@ -561,6 +563,16 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
     return correct;
   };
 
+  // Dynamic Year List for Filters (2000-2026 + any custom years in library)
+  const dynamicFilterYears = useMemo(() => {
+    const yrs = new Set(AVAILABLE_EXAM_YEARS);
+    pyqAssets.forEach((p) => {
+      const yr = p.metadata?.year || (p.title.match(/20\d\d|19\d\d/) ? p.title.match(/20\d\d|19\d\d/)[0] : null);
+      if (yr) yrs.add(String(yr));
+    });
+    return Array.from(yrs).sort((a, b) => Number(b) - Number(a));
+  }, [pyqAssets]);
+
   // PYQ Filtering
   const filteredPyqs = pyqAssets.filter((asset) => {
     if (pyqSearch.trim()) {
@@ -577,7 +589,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
       if (stage !== pyqStageFilter) return false;
     }
     if (pyqYearFilter !== 'ALL') {
-      const yr = String(asset.metadata?.year || '');
+      const yr = String(asset.metadata?.year || (asset.title.match(/20\d\d|19\d\d/) ? asset.title.match(/20\d\d|19\d\d/)[0] : ''));
       if (yr !== pyqYearFilter) return false;
     }
     return true;
@@ -1609,11 +1621,11 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                   className="w-1/2 bg-slate-950/80 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 h-8 focus:outline-none focus:border-amber-500"
                 >
                   <option value="ALL">All Years</option>
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
-                  <option value="2022">2022</option>
-                  <option value="2021">2021</option>
-                  <option value="2020">2020</option>
+                  {dynamicFilterYears.map((yr) => (
+                    <option key={yr} value={yr}>
+                      {yr}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -2169,19 +2181,38 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
 
               <div className="space-y-1.5">
                 <label className="text-[11px] font-medium text-slate-300">Examination Year</label>
-                <select
-                  value={discoverYear}
-                  onChange={(e) => setDiscoverYear(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
-                >
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
-                  <option value="2022">2022</option>
-                  <option value="2021">2021</option>
-                  <option value="2020">2020</option>
-                  <option value="2019">2019</option>
-                  <option value="2018">2018</option>
-                </select>
+                <div className="flex gap-1.5">
+                  <select
+                    value={AVAILABLE_EXAM_YEARS.includes(String(discoverYear)) ? String(discoverYear) : 'CUSTOM'}
+                    onChange={(e) => {
+                      if (e.target.value !== 'CUSTOM') {
+                        setDiscoverYear(e.target.value);
+                      } else {
+                        setDiscoverYear('');
+                      }
+                    }}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
+                  >
+                    {AVAILABLE_EXAM_YEARS.map((yr) => (
+                      <option key={yr} value={yr}>
+                        {yr}
+                      </option>
+                    ))}
+                    <option value="CUSTOM">Custom Year (Enter any year)...</option>
+                  </select>
+                  {(!AVAILABLE_EXAM_YEARS.includes(String(discoverYear)) || discoverYear === '') && (
+                    <Input
+                      type="number"
+                      min="1950"
+                      max="2035"
+                      placeholder="e.g. 1998"
+                      value={discoverYear}
+                      onChange={(e) => setDiscoverYear(e.target.value)}
+                      className="w-28 text-xs bg-slate-950 border-slate-700 h-[34px]"
+                      autoFocus
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
