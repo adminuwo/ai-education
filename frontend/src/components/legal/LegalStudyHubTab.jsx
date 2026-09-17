@@ -41,7 +41,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
   DialogContent,
@@ -877,7 +876,14 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           </div>
 
           {/* Document Assets Grid */}
-          <ScrollArea className="flex-1 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+          <div
+            tabIndex={0}
+            className="flex-1 min-h-[340px] max-h-[640px] overflow-y-auto overflow-x-hidden rounded-lg border border-slate-800 bg-slate-950/40 p-3 focus:outline-none focus:ring-1 focus:ring-amber-500/30 select-text [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-amber-500/80 hover:[&::-webkit-scrollbar-thumb]:bg-amber-400 [&::-webkit-scrollbar-thumb]:rounded-full"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#f59e0b #0f172a',
+            }}
+          >
             {loadingAssets ? (
               <div className="flex items-center justify-center h-48 text-slate-500 text-xs">
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin text-amber-500" />
@@ -1002,7 +1008,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       )}
 
@@ -1056,7 +1062,14 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           </div>
 
           {/* Results Box */}
-          <ScrollArea className="flex-1 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+          <div
+            tabIndex={0}
+            className="flex-1 min-h-[340px] max-h-[640px] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-800 bg-slate-950/40 p-4 focus:outline-none focus:ring-1 focus:ring-amber-500/30 select-text [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-amber-500/80 hover:[&::-webkit-scrollbar-thumb]:bg-amber-400 [&::-webkit-scrollbar-thumb]:rounded-full"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#f59e0b #0f172a',
+            }}
+          >
             {loadingTrans ? (
               <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs">
                 <RefreshCw className="w-5 h-5 mb-2 animate-spin text-amber-500" />
@@ -1072,7 +1085,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 Select a quick query chip above or type any section to view side-by-side statutory changes.
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       )}
 
@@ -1159,7 +1172,14 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           </div>
 
           {/* Results Area */}
-          <ScrollArea className="flex-1 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+          <div
+            tabIndex={0}
+            className="flex-1 min-h-[340px] max-h-[640px] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-800 bg-slate-950/40 p-4 focus:outline-none focus:ring-1 focus:ring-amber-500/30 select-text [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-amber-500/80 hover:[&::-webkit-scrollbar-thumb]:bg-amber-400 [&::-webkit-scrollbar-thumb]:rounded-full"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#f59e0b #0f172a',
+            }}
+          >
             {generatingPlan ? (
               <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
                 <Compass className="w-6 h-6 mb-2 animate-spin text-amber-500" />
@@ -1215,7 +1235,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 Select your target state and timeline on the left to generate a personalized examination blueprint.
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       )}
 
@@ -1426,27 +1446,86 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
             </div>
 
             {/* Evaluation Results Column */}
-            <ScrollArea className="w-full lg:w-1/2 min-h-[520px] max-h-[700px] rounded-xl border border-slate-800 bg-slate-950/40 p-4">
-              {evaluatingMains ? (
-                <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
-                  <Award className="w-7 h-7 mb-3 animate-spin text-amber-500" />
-                  <p className="font-medium text-slate-200">Benchmarking against Judicial Service Standards</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Analyzing issue spotting, Bare Act section accuracy, landmark precedents & ratio...</p>
+            <div className="w-full lg:w-1/2 flex flex-col bg-slate-900/60 rounded-xl border border-slate-800 overflow-hidden min-h-[520px]">
+              {/* Header with Title, Status & Quick Actions */}
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-800 bg-slate-950/70 shrink-0">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-semibold text-slate-200">
+                    Official Rubric Evaluation & Model Answer
+                  </span>
                 </div>
-              ) : mainsEvaluation ? (
-                <div className="prose prose-invert max-w-none text-xs leading-relaxed">
-                  <FormattedMarkdown content={mainsEvaluation.evaluation} />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500 text-xs space-y-2">
-                  <Award className="w-8 h-8 text-slate-700" />
-                  <p className="text-slate-300 font-medium">Ready for Judicial Service Answer Evaluation</p>
-                  <p className="text-[11px] text-slate-400 max-w-xs">
-                    Select or generate a problem question above, draft your legal answer with sections & case laws, and evaluate it under the 20-mark official rubric.
-                  </p>
-                </div>
-              )}
-            </ScrollArea>
+                {mainsEvaluation && (
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-300 border-amber-500/30 font-normal">
+                      Evaluated (20 Marks)
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        if (mainsEvaluation?.evaluation) {
+                          navigator.clipboard.writeText(mainsEvaluation.evaluation);
+                          toast.success('Copied full evaluation to clipboard!');
+                        }
+                      }}
+                      className="h-6 px-2 text-[11px] text-slate-400 hover:text-amber-300 hover:bg-slate-800/80 flex items-center gap-1 transition-colors"
+                      title="Copy full evaluation to clipboard"
+                    >
+                      <Copy className="w-3 h-3" /> Copy
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Scrollable Container with High-Visibility Amber Scrollbar */}
+              <div
+                id="mains-evaluation-scroll-container"
+                tabIndex={0}
+                className="flex-1 p-4 overflow-y-auto overflow-x-hidden min-h-[460px] max-h-[calc(100vh-250px)] lg:max-h-[640px] focus:outline-none focus:ring-1 focus:ring-amber-500/30 select-text [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-amber-500/80 hover:[&::-webkit-scrollbar-thumb]:bg-amber-400 [&::-webkit-scrollbar-thumb]:rounded-full"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#f59e0b #0f172a',
+                }}
+              >
+                {evaluatingMains ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs">
+                    <Award className="w-7 h-7 mb-3 animate-spin text-amber-500" />
+                    <p className="font-medium text-slate-200">Benchmarking against Judicial Service Standards</p>
+                    <p className="text-[11px] text-slate-400 mt-1">Analyzing issue spotting, Bare Act section accuracy, landmark precedents & ratio...</p>
+                  </div>
+                ) : mainsEvaluation ? (
+                  <div className="prose prose-invert max-w-none text-xs leading-relaxed space-y-3 pb-4">
+                    <FormattedMarkdown content={mainsEvaluation.evaluation} />
+
+                    {/* Visual End-of-Content Milestone & Navigation */}
+                    <div className="mt-8 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+                      <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> End of Model Answer & Rubric Breakdown
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const container = document.getElementById('mains-evaluation-scroll-container');
+                          if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="text-[11px] text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        Back to Top ↑
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-64 text-center text-slate-500 text-xs space-y-2">
+                    <Award className="w-8 h-8 text-slate-700" />
+                    <p className="text-slate-300 font-medium">Ready for Judicial Service Answer Evaluation</p>
+                    <p className="text-[11px] text-slate-400 max-w-xs">
+                      Select or generate a problem question above, draft your legal answer with sections & case laws, and evaluate it under the 20-mark official rubric.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1489,7 +1568,14 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
           </div>
 
           {/* Questions Stream */}
-          <ScrollArea className="flex-1 rounded-xl border border-slate-800 bg-slate-950/40 p-4">
+          <div
+            tabIndex={0}
+            className="flex-1 min-h-[340px] max-h-[640px] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-800 bg-slate-950/40 p-4 focus:outline-none focus:ring-1 focus:ring-amber-500/30 select-text [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950 [&::-webkit-scrollbar-thumb]:bg-amber-500/80 hover:[&::-webkit-scrollbar-thumb]:bg-amber-400 [&::-webkit-scrollbar-thumb]:rounded-full"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#f59e0b #0f172a',
+            }}
+          >
             {loadingDrill ? (
               <div className="flex items-center justify-center h-48 text-slate-400 text-xs">
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin text-amber-500" />
@@ -1589,7 +1675,7 @@ export default function LegalStudyHubTab({ currentOrg, user }) {
                 </div>
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       )}
 

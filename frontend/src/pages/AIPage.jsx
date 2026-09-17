@@ -705,7 +705,7 @@ export default function AIPage() {
 
       {/* Main View Area */}
       {studentTab === 'legal' && hasAiLegal ? (
-        <div className="flex-1 overflow-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 [scrollbar-width:thin] [scrollbar-color:#64748b_#090b0e] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-slate-950/60 [&::-webkit-scrollbar-thumb]:bg-slate-700 hover:[&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-thumb]:rounded-full">
           <LegalStudyHubTab currentOrg={currentOrg} user={user} />
         </div>
       ) : isStudent && studentTab === 'quiz' ? (
