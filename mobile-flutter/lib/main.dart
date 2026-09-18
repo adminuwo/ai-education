@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'constants/theme.dart';
 import 'screens/login_screen.dart';
 
-import '../services/api_service.dart';
+import 'services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

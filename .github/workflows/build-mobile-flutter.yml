@@ -60,14 +60,18 @@ jobs:
       - name: Configure Flutter Native Platform (v2 Embedding)
         working-directory: mobile-flutter
         run: |
-          flutter create . --org com.convee.education --project-name convee_education --platforms android
+          cp pubspec.yaml pubspec.yaml.bak
+          flutter create . --org com.ai.education --project-name ai_education --platforms android
+          cp pubspec.yaml.bak pubspec.yaml
+          rm -f pubspec.yaml.bak
           flutter pub get
-          echo ">>> Generating Convee branded launcher icons..."
+          echo ">>> Generating AI Education branded launcher icons..."
           dart run flutter_launcher_icons
-          echo ">>> Generating Convee dark splash screen..."
+          echo ">>> Generating AI Education dark splash screen..."
           dart run flutter_native_splash:create
           echo ">>> Setting official app name in AndroidManifest..."
-          sed -i 's/android:label="convee_education"/android:label="Convee Education"/g' android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="ai_education"/android:label="AI Education"/g' android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="convee_education"/android:label="AI Education"/g' android/app/src/main/AndroidManifest.xml
           echo ">>> Injecting INTERNET and ACCESS_NETWORK_STATE permissions into AndroidManifest..."
           python3 -c '
           path = "android/app/src/main/AndroidManifest.xml"
@@ -92,10 +96,10 @@ jobs:
           TARGET="${{ inputs.target }}"
           if [ "$TARGET" = "appbundle" ]; then
             echo ">>> Building Production Release AAB (Flutter 16 KB Aligned)..."
-            flutter build appbundle --release
+            flutter build appbundle --release -v
           else
             echo ">>> Building Standalone Release APK (Flutter 16 KB Aligned)..."
-            flutter build apk --release
+            flutter build apk --release -v
           fi
 
       - name: Verify 16 KB Page Alignment
@@ -117,7 +121,7 @@ jobs:
       - name: Upload Flutter Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ConveeEducation-Flutter-${{ inputs.target }}
+          name: AIEducation-Flutter-${{ inputs.target }}
           path: |
             mobile-flutter/build/app/outputs/flutter-apk/**/*.apk
             mobile-flutter/build/app/outputs/bundle/**/*.aab
