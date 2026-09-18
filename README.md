@@ -1,4 +1,4 @@
-# Convee Education
+# AI Education
 
 Unified digital campus collaboration platform for schools, colleges, and educational institutions.
 

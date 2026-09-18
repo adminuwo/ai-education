@@ -1,12 +1,12 @@
-# ☁️ Google Cloud Run Deployment Guide for Convee Platform
+# ☁️ Google Cloud Run Deployment Guide for AI Education Platform
 
-This guide provides complete, step-by-step instructions to deploy the **Convee Education & Collaboration Platform** to **Google Cloud Run (GCP)**.
+This guide provides complete, step-by-step instructions to deploy the **AI Education Platform** to **Google Cloud Run (GCP)**.
 
 ---
 
 ## 🏗️ Architecture Overview
 
-The Convee platform is deployed as 3 scalable, serverless microservices on Google Cloud Run:
+The AI Education platform is deployed as 3 scalable, serverless microservices on Google Cloud Run:
 
 ```
                   ┌────────────────────────┐
@@ -15,24 +15,24 @@ The Convee platform is deployed as 3 scalable, serverless microservices on Googl
                               │
               ┌───────────────┴───────────────┐
               ▼ (HTTPS)                       ▼ (API / WebSockets)
-    ┌──────────────────┐            ┌──────────────────┐
-    │ convee-frontend  │            │  convee-backend  │
-    │  (React + Nginx) │            │ (Node + Express) │
-    └──────────────────┘            └─────────┬────────┘
+    ┌──────────────────────┐        ┌──────────────────────┐
+    │ ai-education-frontend│        │ ai-education-backend │
+    │    (React + Nginx)   │        │   (Node + Express)   │
+    └──────────────────────┘        └─────────┬────────────┘
                                               │
                       ┌───────────────────────┼───────────────────────┐
                       ▼                       ▼                       ▼
-             ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-             │convee-llm-bridge│     │ Cloud SQL (PG)  │     │ Cloud Storage   │
-             │(FastAPI+Vertex) │     │   (Database)    │     │  (GCS Bucket)   │
-             └─────────────────┘     └─────────────────┘     └─────────────────┘
+             ┌─────────────────────┐ ┌─────────────────┐     ┌─────────────────┐
+             │ai-education-llm-brid│ │ Cloud SQL (PG)  │     │ Cloud Storage   │
+             │  (FastAPI+Vertex)   │ │   (Database)    │     │  (GCS Bucket)   │
+             └─────────────────────┘ └─────────────────┘     └─────────────────┘
 ```
 
 | Service Name | Stack | Purpose |
 | :--- | :--- | :--- |
-| **`convee-frontend`** | React 19, Tailwind CSS, Nginx (Alpine) | Responsive SPA web application with client-side routing & Gzip compression |
-| **`convee-backend`** | Node.js 20, Express, Prisma ORM, Socket.IO | Core REST API, realtime sockets, DB migrations, GCS file uploads |
-| **`convee-llm-bridge`** | Python 3.11, FastAPI, Google GenAI SDK | AI proxy routing student/parent queries to Vertex AI Gemini 2.5 Flash |
+| **`ai-education-frontend`** | React 19, Tailwind CSS, Nginx (Alpine) | Responsive SPA web application with client-side routing & Gzip compression |
+| **`ai-education-backend`** | Node.js 20, Express, Prisma ORM, Socket.IO | Core REST API, realtime sockets, DB migrations, GCS file uploads |
+| **`ai-education-llm-bridge`** | Python 3.11, FastAPI, Google GenAI SDK | AI proxy routing student/parent queries to Vertex AI Gemini 2.5 Flash |
 
 ---
 

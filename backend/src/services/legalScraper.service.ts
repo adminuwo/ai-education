@@ -1580,7 +1580,7 @@ Generate the full question paper now.`;
     const questionCount = cleanStage === 'PRELIMS' ? 10 : 5;
     const totalMarks = cleanStage === 'PRELIMS' ? 100 : (cleanExam === 'HJS' ? 200 : 100);
 
-    const textPayload = `${paperTitle}\n\nAct: ${actName} | Category: PYQ | State: ${cleanState}\nSource: State PSC & High Court Legal Repository\n\nSUMMARY:\nAuthentic ${stateDisplay} Judicial Service ${cleanStage} ${cleanYear} question paper for ${subjectDisplay}, ingested via Convee Autonomous Legal Discovery Agent.\n\nKEY EXCERPTS / EXAMINATION QUESTIONS:\n${generatedPaperText}\n`;
+    const textPayload = `${paperTitle}\n\nAct: ${actName} | Category: PYQ | State: ${cleanState}\nSource: State PSC & High Court Legal Repository\n\nSUMMARY:\nAuthentic ${stateDisplay} Judicial Service ${cleanStage} ${cleanYear} question paper for ${subjectDisplay}, ingested via AI Education Autonomous Legal Discovery Agent.\n\nKEY EXCERPTS / EXAMINATION QUESTIONS:\n${generatedPaperText}\n`;
     const buffer = Buffer.from(textPayload, 'utf-8');
     const uid = Math.random().toString(36).substring(2, 8);
     const cleanName = paperTitle.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 40);
@@ -1625,7 +1625,7 @@ Generate the full question paper now.`;
           snippet: generatedPaperText.substring(0, 800),
           isDiscovered: true,
           discoveredAt: new Date().toISOString(),
-          discoveryEngine: 'CONVEE_AUTONOMOUS_LEGAL_AGENT',
+          discoveryEngine: 'AI_EDUCATION_AUTONOMOUS_LEGAL_AGENT',
         },
       },
     });

@@ -51,13 +51,13 @@ export default function RegisterPage() {
         <div className="absolute -inset-1 rounded-2xl bg-cyan-500/25 blur-md pointer-events-none" />
         <img
           src="/logo192.png"
-          alt="Convee Education Logo"
+          alt="AI Education Logo"
           className={`relative ${size === 'lg' ? 'h-11 w-11' : size === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} rounded-xl object-contain shadow-md`}
         />
       </div>
       <div className="flex items-center font-bold tracking-tight">
-        <span className="text-white text-2xl">Convee</span>
-        <span className="ml-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent text-2xl font-extrabold">Education</span>
+        <span className="text-white text-2xl font-extrabold tracking-tight">AI</span>
+        <span className="ml-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight">Education</span>
       </div>
     </div>
   );
@@ -72,12 +72,12 @@ export default function RegisterPage() {
       {/* Subtle Neural Constellation Mesh Overlay */}
       <svg className="absolute inset-0 h-full w-full opacity-[0.06] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <pattern id="convee-mesh-reg" width="56" height="56" patternUnits="userSpaceOnUse">
+          <pattern id="ai-education-mesh-reg" width="56" height="56" patternUnits="userSpaceOnUse">
             <circle cx="28" cy="28" r="1.5" fill="#00F2FE" />
             <path d="M 0 28 L 56 28 M 28 0 L 28 56" stroke="#38BDF8" strokeWidth="0.6" strokeDasharray="3 7" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#convee-mesh-reg)" />
+        <rect width="100%" height="100%" fill="url(#ai-education-mesh-reg)" />
       </svg>
 
       <div className="relative z-10">
@@ -99,7 +99,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="relative z-10 flex items-center justify-between text-[11px] xl:text-xs text-slate-500 border-t border-slate-800/80 pt-3 xl:pt-4">
-        <span>Convee Education Platform · Institutional Portal</span>
+        <span>AI Education Platform · Institutional Portal</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /> Secure Registration</span>
       </div>
     </div>

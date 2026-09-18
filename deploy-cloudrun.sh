@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Convee Platform - 1-Click Google Cloud Run Deployment Script (Bash)
+# AI Education Platform - 1-Click Google Cloud Run Deployment Script (Bash)
 # ==============================================================================
 set -euo pipefail
 
@@ -12,7 +12,7 @@ BOLD='\033[1m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}${BOLD}=====================================================${NC}"
-echo -e "${BLUE}${BOLD}   🚀 Convee Platform - Google Cloud Run Deployment  ${NC}"
+echo -e "${BLUE}${BOLD}   🚀 AI Education Platform - Google Cloud Run Deployment  ${NC}"
 echo -e "${BLUE}${BOLD}=====================================================${NC}\n"
 
 # 1. Check prerequisites
@@ -34,10 +34,10 @@ fi
 read -rp "Enter GCP Region [asia-south1]: " REGION
 REGION=${REGION:-asia-south1}
 
-REPO_NAME="convee-docker-repo"
-LLM_SERVICE="convee-llm-bridge"
-BACKEND_SERVICE="convee-backend"
-FRONTEND_SERVICE="convee-frontend"
+REPO_NAME="ai-education-docker-repo"
+LLM_SERVICE="ai-education-llm-bridge"
+BACKEND_SERVICE="ai-education-backend"
+FRONTEND_SERVICE="ai-education-frontend"
 
 echo -e "\n${YELLOW}Setting gcloud project to ${PROJECT_ID}...${NC}"
 gcloud config set project "$PROJECT_ID"
@@ -60,7 +60,7 @@ if ! gcloud artifacts repositories describe "$REPO_NAME" --location="$REGION" &>
     gcloud artifacts repositories create "$REPO_NAME" \
         --repository-format=docker \
         --location="$REGION" \
-        --description="Convee Platform Docker Repository"
+        --description="AI Education Platform Docker Repository"
 fi
 
 # Configure Docker auth
@@ -182,7 +182,7 @@ echo -e "${GREEN}✅ Frontend deployed at:${NC} $FRONTEND_URL"
 # SUMMARY
 # ------------------------------------------------------------------------------
 echo -e "\n${GREEN}${BOLD}=====================================================${NC}"
-echo -e "${GREEN}${BOLD}   🎉 CONVEE PLATFORM DEPLOYED SUCCESSFULLY!         ${NC}"
+echo -e "${GREEN}${BOLD}   🎉 AI EDUCATION PLATFORM DEPLOYED SUCCESSFULLY!   ${NC}"
 echo -e "${GREEN}${BOLD}=====================================================${NC}"
 echo -e "🌐 ${BOLD}Frontend App:${NC}     $FRONTEND_URL"
 echo -e "⚙️  ${BOLD}Backend API Docs:${NC} $BACKEND_URL/api/docs"

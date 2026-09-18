@@ -5,7 +5,7 @@ import "@/index.css";
 import App from "@/App";
 
 if (typeof document !== "undefined") {
-  document.title = "Convee";
+  document.title = "AI Education";
   let link = document.querySelector("link[rel*='icon']") || document.createElement("link");
   link.type = "image/svg+xml";
   link.rel = "shortcut icon";

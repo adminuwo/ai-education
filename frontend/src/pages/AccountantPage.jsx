@@ -93,7 +93,7 @@ export default function AccountantPage() {
 
   // Tally Company Selection States
   const [selectedTallyCompany, setSelectedTallyCompany] = useState(() => {
-    return localStorage.getItem('tally_selected_company') || currentOrg?.name || 'Convee Education';
+    return localStorage.getItem('tally_selected_company') || currentOrg?.name || 'AI Education';
   });
   const [tallyCompanyOptions, setTallyCompanyOptions] = useState([]);
   const [loadingTallyCompanies, setLoadingTallyCompanies] = useState(false);
@@ -1389,7 +1389,7 @@ export default function AccountantPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Target Company:</span>
-                  <span className="font-semibold text-foreground truncate max-w-[150px]">{selectedTallyCompany || 'Convee Education'}</span>
+                  <span className="font-semibold text-foreground truncate max-w-[150px]">{selectedTallyCompany || 'AI Education'}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Sync Engine:</span>
@@ -2469,7 +2469,7 @@ export default function AccountantPage() {
                 <div className="text-[11px] text-muted-foreground flex items-center justify-between pt-1 border-t border-border">
                   <span>Sync Destination:</span>
                   <span className="font-bold text-teal-600 dark:text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/30">
-                    {selectedTallyCompany || 'Convee Education'}
+                    {selectedTallyCompany || 'AI Education'}
                   </span>
                 </div>
               </div>
@@ -2580,7 +2580,7 @@ export default function AccountantPage() {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Detect discrepancies between Convee database and Tally Prime vouchers with granular Push, Import, and Purge controls.
+                  Detect discrepancies between AI Education database and Tally Prime vouchers with granular Push, Import, and Purge controls.
                 </p>
               </div>
 
@@ -2611,7 +2611,7 @@ export default function AccountantPage() {
                       className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all disabled:opacity-50"
                     >
                       <DownloadCloud className="w-3.5 h-3.5" />
-                      Import All to Convee ({reconcileDiff.onlyInTally.length})
+                      Import All to AI Education ({reconcileDiff.onlyInTally.length})
                     </button>
                     <button
                       onClick={() => {
@@ -2640,7 +2640,7 @@ export default function AccountantPage() {
                 <div className="text-[11px] font-semibold text-muted-foreground uppercase">Tally Prime Status</div>
                 <div className="text-sm font-bold text-foreground flex items-center gap-1.5 mt-1">
                   <span className={`w-2 h-2 rounded-full ${reconcileDiff?.tallyConnected ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-                  {reconcileDiff?.tallyConnected ? `Online (${reconcileDiff.activeCompany || 'Convee'})` : 'Offline'}
+                  {reconcileDiff?.tallyConnected ? `Online (${reconcileDiff.activeCompany || 'AI Education'})` : 'Offline'}
                 </div>
               </div>
               <div className="bg-emerald-950/20 border border-emerald-500/30 p-3.5 rounded-xl">
@@ -2650,7 +2650,7 @@ export default function AccountantPage() {
                 </div>
               </div>
               <div className="bg-emerald-950/20 border border-emerald-500/30 p-3.5 rounded-xl">
-                <div className="text-[11px] font-semibold text-emerald-400 uppercase">Only in Convee (Pending Push)</div>
+                <div className="text-[11px] font-semibold text-emerald-400 uppercase">Only in AI Education (Pending Push)</div>
                 <div className="text-xl font-bold text-emerald-300 mt-0.5">
                   {reconcileDiff?.onlyInConveeCount || 0} Records
                 </div>
@@ -2679,16 +2679,16 @@ export default function AccountantPage() {
 
           {/* Two-Column Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column: Only in Convee Database */}
+            {/* Left Column: Only in AI Education Database */}
             <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                    Only in Convee Database ({reconcileDiff?.onlyInConvee?.length || 0})
+                    Only in AI Education Database ({reconcileDiff?.onlyInConvee?.length || 0})
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Records existing in Convee that are not yet created in Tally Prime.
+                    Records existing in AI Education that are not yet created in Tally Prime.
                   </p>
                 </div>
                 {reconcileDiff?.onlyInConvee?.length > 0 && (
@@ -2705,7 +2705,7 @@ export default function AccountantPage() {
               {reconcileDiff?.onlyInConvee?.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground text-xs">
                   <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2 opacity-60" />
-                  All Convee records are pushed to Tally Prime.
+                  All AI Education records are pushed to Tally Prime.
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
@@ -2742,8 +2742,8 @@ export default function AccountantPage() {
                           <button
                             onClick={() => {
                               askConfirmation({
-                                title: `Delete '${item.partyName}' from Convee?`,
-                                message: `Are you sure you want to delete this ${item.type.toLowerCase()} record from Convee database?`,
+                                title: `Delete '${item.partyName}' from AI Education?`,
+                                message: `Are you sure you want to delete this ${item.type.toLowerCase()} record from AI Education database?`,
                                 confirmText: 'Delete from Database',
                                 tallyImpact: false,
                                 onConfirm: () => handleReconcileAction('DELETE_FROM_CONVEE', item),
@@ -2751,7 +2751,7 @@ export default function AccountantPage() {
                             }}
                             disabled={isBusy || loadingDiff}
                             className="px-2.5 py-1 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 rounded-lg transition-all flex items-center gap-1"
-                            title="Remove this record from Convee database"
+                            title="Remove this record from AI Education database"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Delete
@@ -2881,7 +2881,7 @@ export default function AccountantPage() {
                             ) : (
                               <ArrowLeft className="w-3.5 h-3.5" />
                             )}
-                            Import to Convee
+                            Import to AI Education
                           </button>
                         </div>
                       </div>

@@ -34,7 +34,7 @@ function extractMemberId(title) {
 
 function renderEmailCell(u) {
   const email = u?.email;
-  if (!email || !email.includes('@') || email.startsWith('STU-') || email.startsWith('PAR-') || email.startsWith('stu-') || email.startsWith('par-') || email.endsWith('.convee.local')) {
+  if (!email || !email.includes('@') || email.startsWith('STU-') || email.startsWith('PAR-') || email.startsWith('stu-') || email.startsWith('par-') || email.endsWith('.convee.local') || email.endsWith('.ai-education.local')) {
     return <span className="text-muted-foreground/40 italic text-xs">No email set</span>;
   }
   return email;

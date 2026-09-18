@@ -149,7 +149,7 @@ function RequireRole({ allowedRoles = [], fallback, children }) {
 
 export default function App() {
   useEffect(() => {
-    document.title = 'Convee';
+    document.title = 'AI Education';
   }, []);
 
   return (

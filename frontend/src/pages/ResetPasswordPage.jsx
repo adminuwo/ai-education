@@ -46,13 +46,13 @@ export default function ResetPasswordPage() {
         <div className="absolute -inset-1 rounded-2xl bg-cyan-500/25 blur-md pointer-events-none" />
         <img
           src="/logo192.png"
-          alt="Convee Education Logo"
+          alt="AI Education Logo"
           className="relative h-10 w-10 rounded-xl object-contain shadow-md"
         />
       </div>
       <div className="flex items-center font-bold tracking-tight">
-        <span className="text-white text-2xl">Convee</span>
-        <span className="ml-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent text-2xl font-extrabold">Education</span>
+        <span className="text-white text-2xl font-extrabold tracking-tight">AI</span>
+        <span className="ml-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight">Education</span>
       </div>
     </div>
   );

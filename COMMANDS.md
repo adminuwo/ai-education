@@ -1,4 +1,4 @@
-# Convee Education - Master Build & Run Guide
+# AI Education - Master Build & Run Guide
 
 Comprehensive cheat-sheet for building, running, testing, and deploying all components across the **Backend**, **Web Frontend**, and **Mobile App**.
 
@@ -184,7 +184,7 @@ docker compose down
 
 ### Build Single Production Container
 ```powershell
-docker build -t convee-education:latest .
+docker build -t ai-education:latest .
 ```
 
 ---
@@ -197,8 +197,8 @@ docker build -t convee-education:latest .
 ```
 Or via gcloud CLI:
 ```powershell
-gcloud run deploy convee-education `
-  --image asia-south1-docker.pkg.dev/your-project/convee/backend:latest `
+gcloud run deploy ai-education `
+  --image asia-south1-docker.pkg.dev/your-project/ai-education/backend:latest `
   --region asia-south1 `
   --platform managed `
   --allow-unauthenticated

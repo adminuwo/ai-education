@@ -56,7 +56,7 @@ app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('tiny'));
-app.use(logsCreatorMiddleware('convee-backend'));
+app.use(logsCreatorMiddleware('ai-education-backend'));
 
 // Rate limit (5000 requests/min for general dev endpoints)
 const limiter = rateLimit({ windowMs: 60 * 1000, max: 5000, standardHeaders: true, legacyHeaders: false });
@@ -183,7 +183,7 @@ if (staticDir) {
   // If static files are not present (pure backend mode), provide clean root status
   app.get('/', (_req, res) => {
     res.json({
-      service: 'Convee Education Platform API',
+      service: 'AI Education Platform API',
       status: 'online',
       docs: '/api/docs',
       health: '/api/health',

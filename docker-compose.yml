@@ -1,5 +1,5 @@
 # ==============================================================================
-# Convee Platform - Local Multi-Container Stack (Docker Compose)
+# AI Education Platform - Local Multi-Container Stack (Docker Compose)
 # ==============================================================================
 # Usage:
 #   docker compose up --build
@@ -13,7 +13,7 @@ services:
   # ----------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
-    container_name: convee-postgres
+    container_name: ai-education-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -36,7 +36,7 @@ services:
     build:
       context: ./llm_bridge
       dockerfile: Dockerfile
-    container_name: convee-llm-bridge
+    container_name: ai-education-llm-bridge
     restart: unless-stopped
     ports:
       - "8002:8080"
@@ -59,7 +59,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: convee-backend
+    container_name: ai-education-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -89,7 +89,7 @@ services:
       dockerfile: Dockerfile
       args:
         REACT_APP_BACKEND_URL: http://localhost:8001
-    container_name: convee-frontend
+    container_name: ai-education-frontend
     restart: unless-stopped
     depends_on:
       - backend

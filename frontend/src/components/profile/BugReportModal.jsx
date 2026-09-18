@@ -157,7 +157,7 @@ export default function BugReportModal({ open, onOpenChange, onSuccess, defaultO
             <DialogTitle className="text-lg">Report a Bug or Crash</DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground">
-            Help us improve Convee. Provide details and screenshots of any unexpected error, UI glitch, or system crash.
+            Help us improve AI Education. Provide details and screenshots of any unexpected error, UI glitch, or system crash.
           </DialogDescription>
         </DialogHeader>
 

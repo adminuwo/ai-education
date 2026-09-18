@@ -1,5 +1,5 @@
 # ==============================================================================
-# Convee Platform - 1-Click Google Cloud Run Deployment Script (PowerShell)
+# AI Education Platform - 1-Click Google Cloud Run Deployment Script (PowerShell)
 # ==============================================================================
 [CmdletBinding()]
 param(
@@ -11,7 +11,7 @@ param(
 )
 
 Write-Host "=====================================================" -ForegroundColor Cyan
-Write-Host "   🚀 Convee Platform - Google Cloud Run Deployment  " -ForegroundColor Cyan
+Write-Host "   🚀 AI Education Platform - Google Cloud Run Deployment  " -ForegroundColor Cyan
 Write-Host "=====================================================" -ForegroundColor Cyan
 
 # 1. Check gcloud CLI
@@ -36,10 +36,10 @@ if (-not $ProjectId) {
 Write-Host "`nSetting gcloud active project to $ProjectId..." -ForegroundColor Yellow
 gcloud config set project $ProjectId
 
-$RepoName = "convee-docker-repo"
-$LlmService = "convee-llm-bridge"
-$BackendService = "convee-backend"
-$FrontendService = "convee-frontend"
+$RepoName = "ai-education-docker-repo"
+$LlmService = "ai-education-llm-bridge"
+$BackendService = "ai-education-backend"
+$FrontendService = "ai-education-frontend"
 
 # 2. Enable APIs
 Write-Host "`nEnabling required Google Cloud APIs..." -ForegroundColor Yellow
@@ -60,7 +60,7 @@ if (-not $repoExists) {
     gcloud artifacts repositories create $RepoName `
         --repository-format=docker `
         --location=$Region `
-        --description="Convee Platform Docker Repository"
+        --description="AI Education Platform Docker Repository"
 }
 
 # 4. IAM Permissions for Vertex AI & GCS
@@ -172,7 +172,7 @@ Write-Host "✅ Frontend deployed at: $frontendUrl" -ForegroundColor Green
 # SUMMARY
 # ------------------------------------------------------------------------------
 Write-Host "`n=====================================================" -ForegroundColor Green
-Write-Host "   🎉 CONVEE PLATFORM DEPLOYED SUCCESSFULLY!         " -ForegroundColor Green
+Write-Host "   🎉 AI EDUCATION PLATFORM DEPLOYED SUCCESSFULLY!   " -ForegroundColor Green
 Write-Host "=====================================================" -ForegroundColor Green
 Write-Host "🌐 Frontend App:     $frontendUrl"
 Write-Host "⚙️  Backend API Docs: $backendUrl/api/docs"

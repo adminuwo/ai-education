@@ -1,5 +1,5 @@
 {
-  "name": "collab-platform-backend",
+  "name": "ai-education-backend",
   "version": "1.0.0",
   "description": "Enterprise AI Collaboration Platform backend",
   "main": "dist/server.js",

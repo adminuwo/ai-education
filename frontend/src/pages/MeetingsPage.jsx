@@ -229,7 +229,7 @@ export default function MeetingsPage() {
         const api = new JitsiAPI(domain, {
           roomName: roomName,
           parentNode: jitsiContainerRef.current,
-          userInfo: { displayName: user?.fullName || 'Convee Member' },
+          userInfo: { displayName: user?.fullName || 'AI Education Member' },
           configOverwrite: {
             prejoinPageEnabled: false,
             enableClosePage: false,
@@ -327,7 +327,7 @@ export default function MeetingsPage() {
         const titleSlug = form.title.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').slice(0, 25) || 'meeting';
         const cleanOrgId = currentOrg.id.replace(/[^a-z0-9]/gi, '').toLowerCase().slice(0, 6);
         const randomHash = Math.random().toString(36).substring(2, 6);
-        const roomName = `convee_${titleSlug}_${cleanOrgId}_${randomHash}`;
+        const roomName = `aiedu_${titleSlug}_${cleanOrgId}_${randomHash}`;
         const jitsiDomain = process.env.REACT_APP_JITSI_DOMAIN || 'meet.element.io';
         finalUrl = `https://${jitsiDomain}/${roomName}`;
       }
@@ -338,7 +338,7 @@ export default function MeetingsPage() {
         description: form.description,
         startTime: new Date(form.startTime).toISOString(),
         endTime: new Date(form.endTime).toISOString(),
-        location: form.meetingType === 'INBUILT' ? 'In-Built Convee Video Call' : 'External Link',
+        location: form.meetingType === 'INBUILT' ? 'In-Built AI Education Video Call' : 'External Link',
         meetingUrl: finalUrl,
         attendeeIds: form.attendeeIds,
         departmentIds: form.departmentIds,
@@ -473,8 +473,8 @@ export default function MeetingsPage() {
     } catch {}
 
     let cleanRoom = rawRoom.toLowerCase().replace(/[^a-z0-9_]/g, '');
-    if (!cleanRoom.startsWith('convee_')) {
-      cleanRoom = `convee_${cleanRoom}_${meeting.id.replace(/[^a-z0-9]/gi, '').slice(0, 6)}`;
+    if (!cleanRoom.startsWith('convee_') && !cleanRoom.startsWith('aiedu_')) {
+      cleanRoom = `aiedu_${cleanRoom}_${meeting.id.replace(/[^a-z0-9]/gi, '').slice(0, 6)}`;
     }
 
     setCallNotesText(meeting.notes || '');
@@ -710,7 +710,7 @@ export default function MeetingsPage() {
                   <Video className="h-5 w-5 text-purple-400" />
                   <div>
                     <div className="text-sm font-semibold">In-Built Video Call</div>
-                    <div className="text-[11px] opacity-80">Jitsi HD Video call inside Convee</div>
+                    <div className="text-[11px] opacity-80">Jitsi HD Video call inside AI Education</div>
                   </div>
                 </button>
                 <button
@@ -1109,7 +1109,7 @@ export default function MeetingsPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground text-sm">{activeCall.title}</h3>
-                <p className="text-[11px] text-muted-foreground">Convee In-App HD Video Call · End-to-end encrypted</p>
+                <p className="text-[11px] text-muted-foreground">AI Education In-App HD Video Call · End-to-end encrypted</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

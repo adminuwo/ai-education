@@ -28,9 +28,9 @@ export async function sendVerificationEmail(
 
   const resend = getResend();
   const result = await resend.emails.send({
-    from: env.EMAIL_FROM || 'Convee <noreply@convee.app>',
+    from: env.EMAIL_FROM || 'AI Education <noreply@ai-education.app>',
     to,
-    subject: 'Verify your Convee account',
+    subject: 'Verify your AI Education account',
     html: `
 <!DOCTYPE html>
 <html>
@@ -46,7 +46,7 @@ export async function sendVerificationEmail(
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed,#4f46e5);padding:32px 40px;text-align:center;">
-              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;letter-spacing:-0.5px;">Convee</h1>
+              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;letter-spacing:-0.5px;">AI Education</h1>
               <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">AI-Powered Collaboration Platform</p>
             </td>
           </tr>
@@ -57,7 +57,7 @@ export async function sendVerificationEmail(
                 Welcome, ${fullName}! 👋
               </h2>
               <p style="margin:0 0 24px;color:#94a3b8;font-size:15px;line-height:1.6;">
-                Thanks for signing up for Convee. Please verify your email address to activate your account and start collaborating.
+                Thanks for signing up for AI Education. Please verify your email address to activate your account and start collaborating.
               </p>
               <div style="text-align:center;margin:32px 0;">
                 <a href="${verifyUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;text-decoration:none;padding:14px 36px;border-radius:10px;font-size:16px;font-weight:600;letter-spacing:0.3px;">
@@ -65,7 +65,7 @@ export async function sendVerificationEmail(
                 </a>
               </div>
               <p style="margin:24px 0 0;color:#64748b;font-size:13px;line-height:1.6;">
-                This link expires in <strong style="color:#94a3b8;">24 hours</strong>. If you didn't create a Convee account, you can safely ignore this email.
+                This link expires in <strong style="color:#94a3b8;">24 hours</strong>. If you didn't create an AI Education account, you can safely ignore this email.
               </p>
               <hr style="margin:28px 0;border:none;border-top:1px solid rgba(255,255,255,0.07);" />
               <p style="margin:0;color:#475569;font-size:12px;">
@@ -77,7 +77,7 @@ export async function sendVerificationEmail(
           <!-- Footer -->
           <tr>
             <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;">
-              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} Convee. All rights reserved.</p>
+              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} AI Education. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -108,9 +108,9 @@ export async function sendPasswordResetEmail(
 
   const resend = getResend();
   const result = await resend.emails.send({
-    from: env.EMAIL_FROM || 'Convee <noreply@convee.app>',
+    from: env.EMAIL_FROM || 'AI Education <noreply@ai-education.app>',
     to,
-    subject: 'Reset your Convee password',
+    subject: 'Reset your AI Education password',
     html: `
 <!DOCTYPE html>
 <html>
@@ -122,7 +122,7 @@ export async function sendPasswordResetEmail(
         <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(139,92,246,0.2);border-radius:16px;overflow:hidden;">
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed,#4f46e5);padding:32px 40px;text-align:center;">
-              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">Convee</h1>
+              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">AI Education</h1>
             </td>
           </tr>
           <tr>
@@ -143,7 +143,7 @@ export async function sendPasswordResetEmail(
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;">
-              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} Convee. All rights reserved.</p>
+              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} AI Education. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -213,9 +213,9 @@ export async function sendInviteCredentialsEmail(
 
   const resend = getResend();
   const result = await resend.emails.send({
-    from: env.EMAIL_FROM || 'Convee <noreply@convee.app>',
+    from: env.EMAIL_FROM || 'AI Education <noreply@ai-education.app>',
     to,
-    subject: `Your Login Credentials for ${orgName} - Convee Education`,
+    subject: `Your Login Credentials for ${orgName} - AI Education`,
     html: `
 <!DOCTYPE html>
 <html>
@@ -227,7 +227,7 @@ export async function sendInviteCredentialsEmail(
         <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(139,92,246,0.2);border-radius:16px;overflow:hidden;">
           <tr>
             <td style="background:linear-gradient(135deg,#7c3aed,#4f46e5);padding:32px 40px;text-align:center;">
-              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">Convee Education</h1>
+              <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">AI Education</h1>
               <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">Welcome to ${orgName}</p>
             </td>
           </tr>
@@ -246,7 +246,7 @@ export async function sendInviteCredentialsEmail(
 
               <div style="text-align:center;margin:32px 0;">
                 <a href="${loginUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;text-decoration:none;padding:14px 36px;border-radius:10px;font-size:16px;font-weight:600;">
-                  Sign In to Convee
+                  Sign In to AI Education
                 </a>
               </div>
               <p style="margin:16px 0 0;color:#64748b;font-size:12px;text-align:center;">
@@ -256,7 +256,7 @@ export async function sendInviteCredentialsEmail(
           </tr>
           <tr>
             <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;">
-              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} Convee. All rights reserved.</p>
+              <p style="margin:0;color:#334155;font-size:12px;">© ${new Date().getFullYear()} AI Education. All rights reserved.</p>
             </td>
           </tr>
         </table>

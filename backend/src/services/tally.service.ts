@@ -99,12 +99,12 @@ export async function getCompanyName(orgId?: string | null, overrideName?: strin
   const activeTallyCompany = await getActiveTallyCompanyFromLive();
   if (activeTallyCompany) return activeTallyCompany;
 
-  if (!orgId) return 'Convee';
+  if (!orgId) return 'AI Education';
   try {
     const org = await prisma.organization.findUnique({ where: { id: orgId } });
-    return org?.name || 'Convee';
+    return org?.name || 'AI Education';
   } catch {
-    return 'Convee';
+    return 'AI Education';
   }
 }
 

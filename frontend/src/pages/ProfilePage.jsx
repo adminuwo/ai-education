@@ -547,7 +547,7 @@ export default function ProfilePage() {
                 <CheckCircle2 className="h-8 w-8 text-muted-foreground/60 mx-auto mb-2" />
                 <p className="text-xs font-medium text-foreground">No bug reports submitted yet</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  If you run into any crash or unexpected behavior anywhere in Convee, click "Report an Issue" above.
+                  If you run into any crash or unexpected behavior anywhere in AI Education, click "Report an Issue" above.
                 </p>
               </div>
             ) : (

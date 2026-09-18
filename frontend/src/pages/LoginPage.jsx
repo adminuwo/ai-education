@@ -109,13 +109,13 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
         <div className="absolute -inset-1 rounded-2xl bg-emerald-500/20 blur-md pointer-events-none" />
         <img
           src="/logo192.png"
-          alt="Convee Education Logo"
+          alt="AI Education Logo"
           className={`relative ${size === 'lg' ? 'h-11 w-11' : size === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} rounded-xl object-contain shadow-md`}
         />
       </div>
       <div className="flex items-center font-bold tracking-tight">
-        <span className="text-white text-2xl">Convee</span>
-        <span className="ml-1.5 text-emerald-400 text-2xl font-extrabold">Education</span>
+        <span className="text-white text-2xl font-extrabold tracking-tight">AI</span>
+        <span className="ml-1.5 text-emerald-400 text-2xl font-extrabold tracking-tight">Education</span>
       </div>
     </div>
   );
@@ -129,11 +129,11 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       {/* Modern micro-dot grid overlay */}
       <svg className="absolute inset-0 h-full w-full opacity-[0.04] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <pattern id="convee-dot-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+          <pattern id="ai-education-dot-grid" width="32" height="32" patternUnits="userSpaceOnUse">
             <circle cx="2" cy="2" r="1" fill="#FFFFFF" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#convee-dot-grid)" />
+        <rect width="100%" height="100%" fill="url(#ai-education-dot-grid)" />
       </svg>
 
       <div className="relative z-10">
@@ -238,7 +238,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
       </div>
 
       <div className="relative z-10 flex items-center justify-between text-[11px] xl:text-xs text-slate-500 border-t border-slate-800/80 pt-3 xl:pt-4">
-        <span>Convee Education Platform · Institutional Portal</span>
+        <span>AI Education Platform · Institutional Portal</span>
         <span className="flex items-center gap-1.5 font-mono text-[11px]"><span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" /> SYSTEM READY</span>
       </div>
     </div>

@@ -1,5 +1,5 @@
 # ==============================================================================
-# Google Cloud Build Pipeline for Convee Platform
+# Google Cloud Build Pipeline for AI Education Platform
 # ==============================================================================
 # Usage:
 #   gcloud builds submit --config=cloudbuild.yaml \
@@ -8,10 +8,10 @@
 
 substitutions:
   _REGION: asia-south1
-  _REPO_NAME: convee-docker-repo
-  _LLM_SERVICE: convee-llm-bridge
-  _BACKEND_SERVICE: convee-backend
-  _FRONTEND_SERVICE: convee-frontend
+  _REPO_NAME: ai-education-docker-repo
+  _LLM_SERVICE: ai-education-llm-bridge
+  _BACKEND_SERVICE: ai-education-backend
+  _FRONTEND_SERVICE: ai-education-frontend
 
 steps:
   # ----------------------------------------------------------------------------
