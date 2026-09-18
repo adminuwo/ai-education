@@ -1503,7 +1503,7 @@ class _LegalStudyHubScreenState extends State<LegalStudyHubScreen> with SingleTi
   void _showStatuteExplorerModal(String statute, String section) {
     showModalBottomSheet(
       context: context,
-      isScrollable: true,
+      isScrollControlled: true,
       backgroundColor: ConveeColors.card,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
@@ -1606,7 +1606,7 @@ class _LegalStudyHubScreenState extends State<LegalStudyHubScreen> with SingleTi
 
     showModalBottomSheet(
       context: context,
-      isScrollable: true,
+      isScrollControlled: true,
       backgroundColor: ConveeColors.card,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
@@ -1684,7 +1684,7 @@ class _LegalStudyHubScreenState extends State<LegalStudyHubScreen> with SingleTi
   void _showAISolutionModal(dynamic paper, Map<String, dynamic>? solution) {
     showModalBottomSheet(
       context: context,
-      isScrollable: true,
+      isScrollControlled: true,
       backgroundColor: ConveeColors.card,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
