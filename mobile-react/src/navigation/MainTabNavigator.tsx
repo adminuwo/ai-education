@@ -84,7 +84,7 @@ export default function MainTabNavigator() {
         component={HomeScreen}
         options={{
           title: 'Home',
-          headerTitle: 'Convee Education',
+          headerTitle: 'AI Education',
           tabBarIcon: ({ color, size }) => <Home size={size - 2} color={color} />,
         }}
       />

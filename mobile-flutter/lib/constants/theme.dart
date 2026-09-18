@@ -24,7 +24,7 @@ class ConveeColors {
   static const Color destructive = Color(0xFFEF4444);
 }
 
-ThemeData get conVeeDarkTheme {
+ThemeData get aiEducationDarkTheme {
   return ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: ConveeColors.background,
@@ -49,3 +49,5 @@ ThemeData get conVeeDarkTheme {
     ),
   );
 }
+
+ThemeData get conVeeDarkTheme => aiEducationDarkTheme;

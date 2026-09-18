@@ -1,4 +1,4 @@
-# Firebase Test Lab Guide — Convee Education Mobile
+# Firebase Test Lab Guide — AI Education Mobile
 
 This directory contains automated testing scripts and configuration for running **Firebase Test Lab** across physical & virtual device matrices for both **Android (APK)** and **iOS (IPA)**.
 

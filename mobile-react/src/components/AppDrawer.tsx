@@ -195,7 +195,7 @@ export default function AppDrawer() {
       : []),
     {
       id: 'ai',
-      label: 'Convee AI Assistant',
+      label: 'AI Education Assistant',
       subtitle: 'Smart lesson & grading helper',
       icon: Sparkles,
       badge: 'AI',
@@ -265,7 +265,7 @@ export default function AppDrawer() {
                   resizeMode="contain"
                 />
                 <Text style={[styles.campusText, { color: colors.primary }]} numberOfLines={1}>
-                  {currentOrg?.name ? currentOrg.name.toUpperCase() : 'CONVEE EDUCATION'}
+                  {currentOrg?.name ? currentOrg.name.toUpperCase() : 'AI EDUCATION'}
                 </Text>
               </View>
               <TouchableOpacity
@@ -286,7 +286,7 @@ export default function AppDrawer() {
                   {displayName}
                 </Text>
                 <Text style={[styles.userEmail, { color: colors.textMuted }]} numberOfLines={1}>
-                  {user?.email || 'user@convee.edu'}
+                  {user?.email || 'user@aieducation.edu'}
                 </Text>
                 <View style={[styles.roleBadge, { backgroundColor: colors.emeraldLight }]}>
                   <Text style={[styles.roleText, { color: colors.emerald }]}>
@@ -375,7 +375,7 @@ export default function AppDrawer() {
               <Text style={[styles.logoutText, { color: colors.destructive }]}>Sign Out</Text>
             </TouchableOpacity>
             <Text style={[styles.versionText, { color: colors.textMuted }]}>
-              Convee Education • Mobile & Web v1.0.0
+              AI Education • Mobile & Web v1.0.0
             </Text>
           </View>
         </Animated.View>

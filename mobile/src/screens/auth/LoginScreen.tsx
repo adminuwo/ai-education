@@ -57,7 +57,7 @@ export default function LoginScreen() {
               style={{ width: 72, height: 72, borderRadius: 18, marginBottom: 12 }}
               resizeMode="contain"
             />
-            <Text style={[styles.brandTitle, { color: colors.text }]}>Convee Education</Text>
+            <Text style={[styles.brandTitle, { color: colors.text }]}>AI Education</Text>
             <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
               Digital Campus & Academic Portal
             </Text>

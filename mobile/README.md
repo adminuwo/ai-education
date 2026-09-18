@@ -1,6 +1,6 @@
-# Convee Education Mobile App
+# AI Education Mobile App
 
-React Native & Expo cross-platform mobile application for **Convee Education**, supporting Faculty, Students, and Parents.
+React Native & Expo cross-platform mobile application for **AI Education**, supporting Faculty, Students, and Parents.
 
 ---
 
@@ -8,7 +8,7 @@ React Native & Expo cross-platform mobile application for **Convee Education**, 
 
 ### 1. Install Dependencies
 ```bash
-cd "convee-education-mobile"
+cd "mobile"
 npm install
 ```
 

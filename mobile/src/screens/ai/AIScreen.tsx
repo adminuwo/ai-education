@@ -22,7 +22,7 @@ export default function AIScreen() {
   const [messages, setMessages] = useState<any[]>([
     {
       role: 'assistant',
-      content: 'Hello! I am your Convee AI Academic Assistant. How can I help you today? You can ask me to generate quizzes, summarize campus updates, or check homework progress.',
+      content: 'Hello! I am your AI Education Academic Assistant. How can I help you today? You can ask me to generate quizzes, summarize campus updates, or check homework progress.',
     },
   ]);
   const [inputText, setInputText] = useState('');
@@ -108,7 +108,7 @@ export default function AIScreen() {
                 {!isUser && (
                   <View style={styles.aiLabelRow}>
                     <Sparkles size={12} color={colors.purple} />
-                    <Text style={[styles.aiLabel, { color: colors.purple }]}>Convee AI</Text>
+                    <Text style={[styles.aiLabel, { color: colors.purple }]}>AI Education</Text>
                   </View>
                 )}
                 <Text style={[styles.msgText, { color: isUser ? '#ffffff' : colors.text }]}>
@@ -122,7 +122,7 @@ export default function AIScreen() {
         {loading && (
           <View style={styles.loadingBubble}>
             <ActivityIndicator size="small" color={colors.purple} />
-            <Text style={[styles.loadingText, { color: colors.textMuted }]}>Convee AI is thinking...</Text>
+            <Text style={[styles.loadingText, { color: colors.textMuted }]}>AI Education is thinking...</Text>
           </View>
         )}
       </ScrollView>

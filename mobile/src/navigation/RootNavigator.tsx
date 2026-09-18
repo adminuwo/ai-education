@@ -77,7 +77,7 @@ export default function RootNavigator() {
               component={AIScreen}
               options={{
                 headerShown: true,
-                title: 'Convee AI Assistant',
+                title: 'AI Education Assistant',
                 headerStyle: { backgroundColor: colors.card },
                 headerTintColor: colors.text,
               }}

@@ -1,5 +1,5 @@
 # ==============================================================================
-# Convee Education — Firebase Test Lab Automation Runner (PowerShell)
+# AI Education — Firebase Test Lab Automation Runner (PowerShell)
 # Usage:
 #   .\run-firebase-test.ps1 -Platform android -AppPath .\app-release.apk [-ProjectId "my-project"]
 #   .\run-firebase-test.ps1 -Platform ios -AppPath .\ConveeEducation-Firebase-Test.ipa [-ProjectId "my-project"]

@@ -83,7 +83,7 @@ export default function ProfileScreen() {
         <View style={styles.infoRow}>
           <Smartphone size={18} color={colors.textMuted} />
           <View style={{ flex: 1 }}>
-            <Text style={[styles.versionTitle, { color: colors.text }]}>Convee Education Mobile</Text>
+            <Text style={[styles.versionTitle, { color: colors.text }]}>AI Education Mobile</Text>
             <Text style={[styles.versionSub, { color: colors.textMuted }]}>Version 1.0.0 (Build 52)</Text>
           </View>
         </View>

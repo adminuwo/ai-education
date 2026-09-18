@@ -68,7 +68,7 @@ export default function MeetingsScreen({ navigation }: any) {
   }, [loadMeetings]);
 
   const handleJoinMeeting = async (meeting: any) => {
-    const url = meeting.meetingUrl?.trim() || `https://meet.jit.si/convee-${meeting.id}`;
+    const url = meeting.meetingUrl?.trim() || `https://meet.jit.si/aiedu-${meeting.id}`;
     try {
       const supported = await Linking.canOpenURL(url);
       if (supported) {
@@ -343,7 +343,7 @@ export default function MeetingsScreen({ navigation }: any) {
               </View>
 
               <Text style={[styles.label, { color: colors.textSecondary, marginTop: 12 }]}>
-                Custom Meeting URL (Leave empty for Convee Jitsi Room)
+                Custom Meeting URL (Leave empty for AI Education Jitsi Room)
               </Text>
               <TextInput
                 value={customUrl}

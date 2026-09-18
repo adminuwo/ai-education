@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Convee Education — Firebase Test Lab Automation Runner
+# AI Education — Firebase Test Lab Automation Runner
 # Usage:
 #   ./run-firebase-test.sh android <path-to-apk> [gcp-project-id]
 #   ./run-firebase-test.sh ios <path-to-ipa> [gcp-project-id]

@@ -247,7 +247,7 @@ export default function AnalyticsScreen({ navigation }: any) {
               <View>
                 <Text style={[styles.bannerTitle, { color: colors.text }]}>Campus Academic Analytics</Text>
                 <Text style={[styles.bannerSub, { color: colors.textMuted }]}>
-                  {currentOrg?.name || 'Convee Academy'} • Real-Time Metrics
+                  {currentOrg?.name || 'AI Education Academy'} • Real-Time Metrics
                 </Text>
               </View>
               <View style={[styles.healthBadge, { backgroundColor: colors.emeraldLight }]}>

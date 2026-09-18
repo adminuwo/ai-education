@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Convee Education',
+                  'AI Education',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

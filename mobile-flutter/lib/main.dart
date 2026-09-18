@@ -7,18 +7,18 @@ import '../services/api_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiService.init();
-  runApp(const ConveeEducationApp());
+  runApp(const AiEducationApp());
 }
 
-class ConveeEducationApp extends StatelessWidget {
-  const ConveeEducationApp({super.key});
+class AiEducationApp extends StatelessWidget {
+  const AiEducationApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Convee Education',
+      title: 'AI Education',
       debugShowCheckedModeBanner: false,
-      theme: conVeeDarkTheme,
+      theme: aiEducationDarkTheme,
       home: const LoginScreen(),
     );
   }
