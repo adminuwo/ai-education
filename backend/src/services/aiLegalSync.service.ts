@@ -64,7 +64,7 @@ export async function syncStudentToAiLegal(payload: StudentSyncPayload) {
       return { success: false, reason: 'Missing student email' };
     }
 
-    const rawPassword = payload.rawPassword || 'Student@1234!';
+    const rawPassword = payload.rawPassword || 'Demo1234!';
     let backendCreated = false;
 
     // 1. Direct Backend API Call for Native Account Creation
@@ -281,7 +281,7 @@ export async function bulkSyncOrgStudentsToAiLegal(orgId: string) {
       if (!syncedEmails.has(email)) {
         const prefix = m.role === 'STUDENT' ? 'STU' : (m.role === 'DIRECTOR' ? 'DIR' : (['ADMIN', 'OWNER', 'PRINCIPAL'].includes(m.role) ? 'ADM' : 'FAC'));
         const memberId = m.title?.match(/\[(.*?)\]/)?.[1] || `${prefix}-${new Date().getFullYear()}-${m.user.id.substring(0, 4)}`;
-        const rawPassword = m.role === 'STUDENT' ? 'Student@1234!' : 'Demo1234!';
+        const rawPassword = 'Demo1234!';
         await syncStudentToAiLegal({
           studentName: m.user.fullName,
           studentEmail: email,

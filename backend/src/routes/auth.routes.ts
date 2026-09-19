@@ -452,7 +452,7 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next)
         if (eligibleMembership) {
           const prefix = eligibleMembership.role === 'STUDENT' ? 'STU' : (eligibleMembership.role === 'DIRECTOR' ? 'DIR' : (['ADMIN', 'OWNER', 'PRINCIPAL'].includes(eligibleMembership.role) ? 'ADM' : 'FAC'));
           const memberId = eligibleMembership.title?.match(/\[(.*?)\]/)?.[1] || `${prefix}-${new Date().getFullYear()}-${user.id.substring(0, 4)}`;
-          const rawPassword = eligibleMembership.role === 'STUDENT' ? 'Student@1234!' : 'Demo1234!';
+          const rawPassword = 'Demo1234!';
           await syncStudentToAiLegal({
             studentName: user.fullName,
             studentEmail: user.email,
