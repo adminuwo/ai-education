@@ -254,26 +254,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleResetToDefaultAiLegalPassword = async () => {
-    if (!window.confirm('Reset your AI-Legal password to the default institutional password ("Demo1234!")?')) {
-      return;
-    }
-    setAiLegalSaving(true);
-    try {
-      const res = await userApi.setAiLegalPassword({
-        newPassword: 'Demo1234!',
-      });
-      toast.success(res?.message || 'AI-Legal password reset to Demo1234!');
-      setAiLegalForm({ newPassword: '', confirmPassword: '' });
-      const statusRes = await userApi.getAiLegalStatus();
-      setAiLegalStatus(statusRes);
-    } catch (err) {
-      toast.error(err?.response?.data?.error || 'Failed to reset AI-Legal password');
-    } finally {
-      setAiLegalSaving(false);
-    }
-  };
-
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-6">
       <div>
@@ -636,7 +616,7 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-1">
+              <div className="pt-1">
                 <Button
                   type="submit"
                   disabled={aiLegalSaving || !aiLegalForm.newPassword}
@@ -644,17 +624,6 @@ export default function ProfilePage() {
                 >
                   {aiLegalSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
                   {aiLegalSaving ? t('profile.saving', 'Saving…') : t('profile.updateAiLegalPass', 'Update AI-Legal Password')}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={aiLegalSaving}
-                  onClick={handleResetToDefaultAiLegalPassword}
-                  className="text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:text-purple-200"
-                >
-                  {t('profile.resetDefaultPass', 'Reset to Institutional Default (Demo1234!)')}
                 </Button>
               </div>
             </form>
