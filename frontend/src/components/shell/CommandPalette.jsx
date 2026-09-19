@@ -3,6 +3,7 @@ import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, C
 import { useNavigate } from 'react-router-dom';
 import { searchApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Home,
   Hash,
@@ -24,6 +25,7 @@ import {
 export function CommandPalette({ open, setOpen }) {
   const navigate = useNavigate();
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const [q, setQ] = useState('');
   const [results, setResults] = useState(null);
 
@@ -41,71 +43,71 @@ export function CommandPalette({ open, setOpen }) {
   const navItems = useMemo(() => {
     if (isAccountant) {
       return [
-        { label: 'Financial Sync (Tally)', path: '/app/accountant', icon: Landmark },
-        { label: 'AI Assistant', path: '/app/ai', icon: Sparkles },
-        { label: 'My Payslips', path: '/app/my-payslips', icon: CreditCard },
-        { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+        { label: t('nav.accountant', 'Financial Sync (Tally)'), path: '/app/accountant', icon: Landmark },
+        { label: t('nav.ai', 'AI Assistant'), path: '/app/ai', icon: Sparkles },
+        { label: t('nav.myPayslips', 'My Payslips'), path: '/app/my-payslips', icon: CreditCard },
+        { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
       ];
     }
     if (isParent) {
       return [
-        { label: 'Parent Portal', path: '/app/parent', icon: Users },
-        { label: 'Homework & Assignments', path: '/app/homework', icon: BookOpen },
-        { label: 'AI Assistant', path: '/app/ai', icon: Sparkles },
-        { label: 'Meetings', path: '/app/meetings', icon: Calendar },
-        { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+        { label: t('nav.parent', 'Parent Portal'), path: '/app/parent', icon: Users },
+        { label: t('nav.homework', 'Homework & Assignments'), path: '/app/homework', icon: BookOpen },
+        { label: t('nav.ai', 'AI Assistant'), path: '/app/ai', icon: Sparkles },
+        { label: t('nav.meetings', 'Meetings'), path: '/app/meetings', icon: Calendar },
+        { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
       ];
     }
     if (isStudent) {
       return [
-        { label: 'Home', path: '/app/home', icon: Home },
-        { label: 'Homework & Submissions', path: '/app/homework', icon: BookOpen },
-        { label: 'Timetable', path: '/app/timetable', icon: Clock },
-        { label: 'Study Buddy (AI & Daily Quiz)', path: '/app/ai', icon: Sparkles },
-        { label: 'Meetings', path: '/app/meetings', icon: Calendar },
-        { label: 'Files', path: '/app/files', icon: FolderOpen },
-        { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+        { label: t('nav.home', 'Home'), path: '/app/home', icon: Home },
+        { label: t('nav.homework', 'Homework & Submissions'), path: '/app/homework', icon: BookOpen },
+        { label: t('nav.timetable', 'Timetable'), path: '/app/timetable', icon: Clock },
+        { label: t('topbar.studyBuddy', 'Study Buddy (AI & Daily Quiz)'), path: '/app/ai', icon: Sparkles },
+        { label: t('nav.meetings', 'Meetings'), path: '/app/meetings', icon: Calendar },
+        { label: t('nav.files', 'Files'), path: '/app/files', icon: FolderOpen },
+        { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
       ];
     }
     if (isTeacher) {
       return [
-        { label: 'Home', path: '/app/home', icon: Home },
-        { label: 'Tasks', path: '/app/tasks', icon: ListTodo },
-        { label: 'Classroom', path: '/app/classroom', icon: BookOpen },
-        { label: 'Homework & Assignments', path: '/app/homework', icon: BookOpen },
-        { label: 'Timetable', path: '/app/timetable', icon: Clock },
-        { label: 'AI Assistant', path: '/app/ai', icon: Sparkles },
-        { label: 'Meetings', path: '/app/meetings', icon: Calendar },
-        { label: 'Files', path: '/app/files', icon: FolderOpen },
-        { label: 'My Payslips', path: '/app/my-payslips', icon: CreditCard },
-        { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+        { label: t('nav.home', 'Home'), path: '/app/home', icon: Home },
+        { label: t('nav.tasks', 'Tasks'), path: '/app/tasks', icon: ListTodo },
+        { label: t('nav.classroom', 'Classroom'), path: '/app/classroom', icon: BookOpen },
+        { label: t('nav.homework', 'Homework & Assignments'), path: '/app/homework', icon: BookOpen },
+        { label: t('nav.timetable', 'Timetable'), path: '/app/timetable', icon: Clock },
+        { label: t('nav.ai', 'AI Assistant'), path: '/app/ai', icon: Sparkles },
+        { label: t('nav.meetings', 'Meetings'), path: '/app/meetings', icon: Calendar },
+        { label: t('nav.files', 'Files'), path: '/app/files', icon: FolderOpen },
+        { label: t('nav.myPayslips', 'My Payslips'), path: '/app/my-payslips', icon: CreditCard },
+        { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
       ];
     }
     if (isLeadership) {
       return [
-        { label: 'Home', path: '/app/home', icon: Home },
-        { label: 'Tasks', path: '/app/tasks', icon: ListTodo },
-        { label: 'Financial Sync (Tally)', path: '/app/accountant', icon: Landmark },
-        { label: 'Fee Collection Status', path: '/app/fee-status', icon: CreditCard },
-        { label: 'Admin Console', path: '/app/admin', icon: ShieldCheck },
-        { label: 'Analytics', path: '/app/analytics', icon: BarChart3 },
-        { label: 'Departments & Classes', path: '/app/department', icon: Users },
-        { label: 'Classroom', path: '/app/classroom', icon: BookOpen },
-        { label: 'Timetable', path: '/app/timetable', icon: Clock },
-        { label: 'AI Assistant', path: '/app/ai', icon: Sparkles },
-        { label: 'Meetings', path: '/app/meetings', icon: Calendar },
-        { label: 'Files', path: '/app/files', icon: FolderOpen },
-        { label: 'Role Permissions', path: '/app/role-permissions', icon: ShieldCheck },
-        { label: 'Student ID Generator', path: '/app/student-id-generator', icon: UserIcon },
-        { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+        { label: t('nav.home', 'Home'), path: '/app/home', icon: Home },
+        { label: t('nav.tasks', 'Tasks'), path: '/app/tasks', icon: ListTodo },
+        { label: t('nav.accountant', 'Financial Sync (Tally)'), path: '/app/accountant', icon: Landmark },
+        { label: t('nav.feeStatus', 'Fee Collection Status'), path: '/app/fee-status', icon: CreditCard },
+        { label: t('nav.admin', 'Admin Console'), path: '/app/admin', icon: ShieldCheck },
+        { label: t('nav.analytics', 'Analytics'), path: '/app/analytics', icon: BarChart3 },
+        { label: t('nav.department', 'Departments & Classes'), path: '/app/department', icon: Users },
+        { label: t('nav.classroom', 'Classroom'), path: '/app/classroom', icon: BookOpen },
+        { label: t('nav.timetable', 'Timetable'), path: '/app/timetable', icon: Clock },
+        { label: t('nav.ai', 'AI Assistant'), path: '/app/ai', icon: Sparkles },
+        { label: t('nav.meetings', 'Meetings'), path: '/app/meetings', icon: Calendar },
+        { label: t('nav.files', 'Files'), path: '/app/files', icon: FolderOpen },
+        { label: t('nav.rolePermissions', 'Role Permissions'), path: '/app/role-permissions', icon: ShieldCheck },
+        { label: t('nav.studentIdGenerator', 'Student ID Generator'), path: '/app/student-id-generator', icon: UserIcon },
+        { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
       ];
     }
     return [
-      { label: 'Home', path: '/app/home', icon: Home },
-      { label: 'AI Assistant', path: '/app/ai', icon: Sparkles },
-      { label: 'My Profile', path: '/app/profile', icon: UserIcon },
+      { label: t('nav.home', 'Home'), path: '/app/home', icon: Home },
+      { label: t('nav.ai', 'AI Assistant'), path: '/app/ai', icon: Sparkles },
+      { label: t('topbar.profile', 'My Profile'), path: '/app/profile', icon: UserIcon },
     ];
-  }, [isAccountant, isParent, isStudent, isTeacher, isLeadership]);
+  }, [isAccountant, isParent, isStudent, isTeacher, isLeadership, t]);
 
   useEffect(() => {
     if (!q || q.length < 2) {
@@ -132,11 +134,11 @@ export function CommandPalette({ open, setOpen }) {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen} data-testid="command-palette">
-      <CommandInput placeholder="Search users, messages, tasks, files, channels…" value={q} onValueChange={setQ} />
+      <CommandInput placeholder={t('command.searchPlaceholder', 'Search users, messages, tasks, files, channels…')} value={q} onValueChange={setQ} />
       <CommandList>
-        <CommandEmpty>{q.length < 2 ? 'Type to search…' : 'No results found.'}</CommandEmpty>
+        <CommandEmpty>{q.length < 2 ? t('command.typeToSearch', 'Type to search…') : t('command.noResults', 'No results found.')}</CommandEmpty>
         {(!q || q.length < 2) && (
-          <CommandGroup heading="Navigate">
+          <CommandGroup heading={t('command.navigate', 'Navigate')}>
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -148,7 +150,7 @@ export function CommandPalette({ open, setOpen }) {
           </CommandGroup>
         )}
         {results?.users?.length > 0 && (
-          <CommandGroup heading="People">
+          <CommandGroup heading={t('command.people', 'People')}>
             {results.users.map((u) => (
               <CommandItem key={u.id} onSelect={() => go(`/app/profile?user=${u.id}`)}>
                 <UserIcon className="h-4 w-4 mr-2" /> {u.fullName} <span className="ml-auto text-xs text-muted-foreground">{u.email}</span>
@@ -157,7 +159,7 @@ export function CommandPalette({ open, setOpen }) {
           </CommandGroup>
         )}
         {!isAccountant && results?.channels?.length > 0 && (
-          <CommandGroup heading="Channels">
+          <CommandGroup heading={t('command.channels', 'Channels')}>
             {results.channels.map((c) => (
               <CommandItem key={c.id} onSelect={() => go(`/app/channels/${c.id}`)}>
                 <Hash className="h-4 w-4 mr-2" /> {c.name}
@@ -166,7 +168,7 @@ export function CommandPalette({ open, setOpen }) {
           </CommandGroup>
         )}
         {results?.messages?.length > 0 && (
-          <CommandGroup heading="Messages">
+          <CommandGroup heading={t('command.messages', 'Messages')}>
             {results.messages.map((m) => (
               <CommandItem key={m.id} onSelect={() => go(`/app/channels/${m.channelId}`)}>
                 <MessageSquare className="h-4 w-4 mr-2" /> <span className="truncate">{m.content}</span>
@@ -175,10 +177,10 @@ export function CommandPalette({ open, setOpen }) {
           </CommandGroup>
         )}
         {!isAccountant && !isStudent && !isParent && results?.tasks?.length > 0 && (
-          <CommandGroup heading="Tasks">
-            {results.tasks.map((t) => (
-              <CommandItem key={t.id} onSelect={() => go(`/app/tasks/${t.id}`)}>
-                <ListTodo className="h-4 w-4 mr-2" /> {t.title}
+          <CommandGroup heading={t('command.tasks', 'Tasks')}>
+            {results.tasks.map((tItem) => (
+              <CommandItem key={tItem.id} onSelect={() => go(`/app/tasks/${tItem.id}`)}>
+                <ListTodo className="h-4 w-4 mr-2" /> {tItem.title}
               </CommandItem>
             ))}
           </CommandGroup>

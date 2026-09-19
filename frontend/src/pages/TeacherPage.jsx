@@ -18,12 +18,14 @@ import { motion } from 'framer-motion';
 import ClassAcademicAnalytics from '@/components/classroom/ClassAcademicAnalytics';
 import HODExamManager from '@/components/classroom/HODExamManager';
 import ClassTeacherGradingMatrix from '@/components/classroom/ClassTeacherGradingMatrix';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function initials(n) {
   return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase();
 }
 
 export default function TeacherPage() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'students';
@@ -213,10 +215,10 @@ export default function TeacherPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold font-display tracking-tight flex items-center gap-2">
-                Classroom Dashboard
+                {t('classroom.title', 'Classroom Dashboard')}
               </h1>
               <p className="text-xs text-muted-foreground">
-                Manage your class students, assigned class sections, and class projects.
+                {t('classroom.description', 'Manage your class students, assigned class sections, and class projects.')}
               </p>
             </div>
           </div>
@@ -224,7 +226,7 @@ export default function TeacherPage() {
 
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/30 font-semibold">
-            <UserCheck className="h-3.5 w-3.5 mr-1" /> {currentOrg?.role || 'TEACHER'}
+            <UserCheck className="h-3.5 w-3.5 mr-1" /> {t(`roles.${(currentOrg?.role || 'teacher').toLowerCase()}`, currentOrg?.role || 'TEACHER')}
           </Badge>
         </div>
       </div>
@@ -234,23 +236,23 @@ export default function TeacherPage() {
         <TabsList className="grid w-full grid-cols-5 max-w-2xl bg-muted/50 p-1 rounded-lg">
           <TabsTrigger value="exams" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-exams">
             <GraduationCap className="h-3.5 w-3.5 text-purple-500" />
-            <span>Exams & Marks</span>
+            <span>{t('classroom.examsAndMarks', 'Exams & Marks')}</span>
           </TabsTrigger>
           <TabsTrigger value="students" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-students">
             <UserCheck className="h-3.5 w-3.5 text-emerald-500" />
-            <span>Class Students</span>
+            <span>{t('classroom.classStudents', 'Class Students')}</span>
           </TabsTrigger>
           <TabsTrigger value="analytics" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-analytics">
             <BarChart3 className="h-3.5 w-3.5 text-emerald-500" />
-            <span>Class Analytics</span>
+            <span>{t('classroom.classAnalytics', 'Class Analytics')}</span>
           </TabsTrigger>
           <TabsTrigger value="structures" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-structures">
             <Building2 className="h-3.5 w-3.5 text-indigo-500" />
-            <span>My Classes</span>
+            <span>{t('classroom.myClasses', 'My Classes')}</span>
           </TabsTrigger>
           <TabsTrigger value="projects" className="text-xs font-semibold flex items-center gap-1.5" data-testid="tab-projects">
             <FolderGit2 className="h-3.5 w-3.5 text-amber-500" />
-            <span>My Projects</span>
+            <span>{t('classroom.myProjects', 'My Projects')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -268,7 +270,7 @@ export default function TeacherPage() {
                     className="text-xs font-semibold gap-1.5 h-8"
                   >
                     <GraduationCap className="h-4 w-4" />
-                    Department Exam Manager (HOD)
+                    {t('classroom.hodExamManager', 'Department Exam Manager (HOD)')}
                   </Button>
                   <Button
                     variant={examSubTab === 'classTeacher' ? 'default' : 'ghost'}
@@ -277,11 +279,11 @@ export default function TeacherPage() {
                     className="text-xs font-semibold gap-1.5 h-8"
                   >
                     <FileText className="h-4 w-4" />
-                    Class Teacher Marks Submission
+                    {t('classroom.classTeacherMarks', 'Class Teacher Marks Submission')}
                   </Button>
                 </div>
                 <Badge variant="outline" className="text-[11px] font-normal text-muted-foreground hidden sm:inline-flex">
-                  {examSubTab === 'hod' ? 'HOD / Dean Scheduling & Defaulters View' : 'Class Teacher Scorecard Entry View'}
+                  {examSubTab === 'hod' ? t('classroom.hodSubnavBadge', 'HOD / Dean Scheduling & Defaulters View') : t('classroom.classTeacherSubnavBadge', 'Class Teacher Scorecard Entry View')}
                 </Badge>
               </div>
 
@@ -320,28 +322,28 @@ export default function TeacherPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5 text-emerald-500" /> {activeClassTeam?.name} Students
+                      <GraduationCap className="h-5 w-5 text-emerald-500" /> {t('classroom.classStudentsTitle', `${activeClassTeam?.name} Students`, { className: activeClassTeam?.name })}
                     </CardTitle>
                     <Badge variant="secondary" className="text-[10px] bg-amber-500/10 text-amber-500 border border-amber-500/30">
-                      <Crown className="h-3 w-3 mr-1" /> Class Teacher
+                      <Crown className="h-3 w-3 mr-1" /> {t('classroom.classTeacherBadge', 'Class Teacher')}
                     </Badge>
                   </div>
                   <CardDescription className="text-xs">
-                    {activeClassTeam?.deptName} Wing · Showing all students enrolled in your class section
+                    {t('classroom.classTeacherSubtitle', `${activeClassTeam?.deptName} Wing · Showing all students enrolled in your class section`, { deptName: activeClassTeam?.deptName })}
                   </CardDescription>
                 </div>
 
                 {myClassTeacherTeams.length > 1 && (
                   <div className="w-full sm:w-64">
-                    <Label className="text-[11px] font-semibold text-muted-foreground block mb-1">Select Class Section</Label>
+                    <Label className="text-[11px] font-semibold text-muted-foreground block mb-1">{t('classroom.selectClassSection', 'Select Class Section')}</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                       <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="Select Class" />
+                        <SelectValue placeholder={t('classroom.selectClassPlaceholder', 'Select Class')} />
                       </SelectTrigger>
                       <SelectContent>
-                        {myClassTeacherTeams.map((t) => (
-                          <SelectItem key={t.id} value={t.id}>
-                            {t.name} ({t.deptName})
+                        {myClassTeacherTeams.map((tItem) => (
+                          <SelectItem key={tItem.id} value={tItem.id}>
+                            {tItem.name} ({tItem.deptName})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -357,15 +359,13 @@ export default function TeacherPage() {
                     <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <div className="font-bold flex items-center gap-2">
-                        <span>Low Monthly Attendance Alert (&lt;75%)</span>
+                        <span>{t('classroom.lowAttendanceAlert', 'Low Monthly Attendance Alert (<75%)')}</span>
                         <Badge variant="destructive" className="text-[10px] px-1.5 py-0 rounded-full font-bold">
-                          {attendanceStats.lowAttendanceCount} Student(s)
+                          {t('classroom.studentsCount', `${attendanceStats.lowAttendanceCount} Student(s)`, { count: attendanceStats.lowAttendanceCount })}
                         </Badge>
                       </div>
                       <div className="text-[11px] mt-0.5 text-amber-600 dark:text-amber-400">
-                        The following student(s) fall below 75% monthly attendance: {' '}
-                        <strong>{attendanceStats.lowAttendanceAlerts.map(a => `${a.studentName} (${a.percentage}%)`).join(', ')}</strong>.
-                        Notification alerts sent to HODs and Principal.
+                        {t('classroom.lowAttendanceDesc', 'The following student(s) fall below 75% monthly attendance: Notification alerts sent to HODs and Principal.')}
                       </div>
                     </div>
                   </div>
@@ -377,7 +377,7 @@ export default function TeacherPage() {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       type="text"
-                      placeholder="Search students by name or email..."
+                      placeholder={t('classroom.searchStudentsPlaceholder', 'Search students by name or email...')}
                       value={studentSearch}
                       onChange={(e) => setStudentSearch(e.target.value)}
                       className="pl-9 h-9 text-xs"
@@ -389,7 +389,7 @@ export default function TeacherPage() {
                     disabled={savingAttendance || classStudents.length === 0}
                     className="w-full sm:w-auto h-9 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm"
                   >
-                    <CalendarCheck className="h-4 w-4 mr-1.5" /> Log Today's Attendance ({classStudents.length} Students)
+                    <CalendarCheck className="h-4 w-4 mr-1.5" /> {t('classroom.logAttendanceBtn', `Log Today's Attendance (${classStudents.length} Students)`, { count: classStudents.length })}
                   </Button>
                 </div>
 
@@ -398,10 +398,10 @@ export default function TeacherPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/30">
                       <tr className="text-left text-muted-foreground text-xs font-semibold">
-                        <th className="px-4 py-2.5">Student Name</th>
-                        <th className="px-4 py-2.5">Email</th>
-                        <th className="px-4 py-2.5 text-center">Today's Attendance Status</th>
-                        <th className="px-4 py-2.5 text-right">Monthly Stat</th>
+                        <th className="px-4 py-2.5">{t('classroom.studentName', 'Student Name')}</th>
+                        <th className="px-4 py-2.5">{t('classroom.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 text-center">{t('classroom.todayAttendanceStatus', "Today's Attendance Status")}</th>
+                        <th className="px-4 py-2.5 text-right">{t('classroom.monthlyStat', 'Monthly Stat')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -434,10 +434,10 @@ export default function TeacherPage() {
                             <td className="px-4 py-2.5">
                               <div className="flex items-center justify-center gap-1">
                                 {[
-                                  { key: 'PRESENT', label: 'Present', color: 'bg-emerald-500 text-white' },
-                                  { key: 'ABSENT', label: 'Absent', color: 'bg-red-500 text-white' },
-                                  { key: 'LATE', label: 'Late', color: 'bg-amber-500 text-white' },
-                                  { key: 'EXCUSED', label: 'Excused', color: 'bg-emerald-500 text-white' },
+                                  { key: 'PRESENT', label: t('classroom.present', 'Present'), color: 'bg-emerald-500 text-white' },
+                                  { key: 'ABSENT', label: t('classroom.absent', 'Absent'), color: 'bg-red-500 text-white' },
+                                  { key: 'LATE', label: t('classroom.late', 'Late'), color: 'bg-amber-500 text-white' },
+                                  { key: 'EXCUSED', label: t('classroom.excused', 'Excused'), color: 'bg-emerald-500 text-white' },
                                 ].map((st) => {
                                   const isSelected = currentStatus === st.key;
                                   return (
@@ -468,7 +468,7 @@ export default function TeacherPage() {
                       {classStudents.length === 0 && (
                         <tr>
                           <td colSpan={4} className="text-center py-8 text-xs text-muted-foreground">
-                            No student accounts found in this class section.
+                            {t('classroom.noStudentsInClass', 'No student accounts found in this class section.')}
                           </td>
                         </tr>
                       )}
@@ -483,9 +483,9 @@ export default function TeacherPage() {
                 <div className="h-12 w-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto">
                   <GraduationCap className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-semibold">No Class Teacher Assignment</h3>
+                <h3 className="text-base font-semibold">{t('classroom.noClassTeacherAssignment', 'No Class Teacher Assignment')}</h3>
                 <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                  You are currently not assigned as the <strong>Class Teacher</strong> for any class section. When assigned by an HOD or Administrator, your class student directory will appear here.
+                  {t('classroom.noClassTeacherDesc', 'You are currently not assigned as the Class Teacher for any class section. When assigned by an HOD or Administrator, your class student directory will appear here.')}
                 </p>
               </CardContent>
             </Card>
@@ -497,47 +497,47 @@ export default function TeacherPage() {
           <Card className="border-border">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-emerald-500" /> Assigned Classes & Sections
+                <Building2 className="h-4 w-4 text-emerald-500" /> {t('classroom.assignedClasses', 'Assigned Classes & Sections')}
               </CardTitle>
               <CardDescription className="text-xs">
-                Classes and academic sections you teach or lead.
+                {t('classroom.assignedClassesDesc', 'Classes and academic sections you teach or lead.')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {myAssignedTeams.map((t) => {
-                  const isMyClassTeacher = t.managerId === user?.id;
-                  const memberCount = (t.memberships || []).length || (t._count?.memberships) || 0;
+                {myAssignedTeams.map((tItem) => {
+                  const isMyClassTeacher = tItem.managerId === user?.id;
+                  const memberCount = (tItem.memberships || []).length || (tItem._count?.memberships) || 0;
                   return (
                     <div
-                      key={t.id}
-                      onClick={() => navigate(`/app/teams/${t.id}`)}
+                      key={tItem.id}
+                      onClick={() => navigate(`/app/teams/${tItem.id}`)}
                       className="group rounded-lg border border-border p-4 hover:border-primary/50 hover:bg-muted/30 transition-all cursor-pointer flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between">
                           <div className="font-semibold text-base group-hover:text-primary transition-colors flex items-center gap-2">
-                            {t.name}
+                            {tItem.name}
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                         </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">{t.deptName} Wing</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">{tItem.deptName} {t('classroom.wing', 'Wing')}</div>
 
                         {isMyClassTeacher ? (
                           <Badge variant="outline" className="mt-2.5 text-[10px] bg-amber-500/10 text-amber-500 border-amber-500/30 font-semibold flex items-center gap-1 w-max">
-                            <Crown className="h-3 w-3" /> Class Teacher (You)
+                            <Crown className="h-3 w-3" /> {t('classroom.classTeacherYou', 'Class Teacher (You)')}
                           </Badge>
                         ) : (
                           <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                            <span>Class Teacher:</span>
-                            <span className="font-medium text-foreground">{t.manager?.fullName || t.manager?.email || 'Unassigned'}</span>
+                            <span>{t('classroom.classTeacherLabel', 'Class Teacher:')}</span>
+                            <span className="font-medium text-foreground">{tItem.manager?.fullName || tItem.manager?.email || t('classroom.unassigned', 'Unassigned')}</span>
                           </div>
                         )}
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{memberCount} members</span>
-                        <span className="text-primary font-medium text-[11px] group-hover:underline">View class channel &rarr;</span>
+                        <span>{t('classroom.membersCount', `${memberCount} members`, { count: memberCount })}</span>
+                        <span className="text-primary font-medium text-[11px] group-hover:underline">{t('classroom.viewClassChannel', 'View class channel →')}</span>
                       </div>
                     </div>
                   );
@@ -545,7 +545,7 @@ export default function TeacherPage() {
 
                 {myAssignedTeams.length === 0 && (
                   <div className="col-span-full text-center py-10 text-xs text-muted-foreground">
-                    No assigned classes or sections found for your account.
+                    {t('classroom.noAssignedClasses', 'No assigned classes or sections found for your account.')}
                   </div>
                 )}
               </div>
@@ -558,10 +558,10 @@ export default function TeacherPage() {
           <Card className="border-border">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <FolderGit2 className="h-4 w-4 text-purple-500" /> Assigned Projects
+                <FolderGit2 className="h-4 w-4 text-purple-500" /> {t('classroom.assignedProjects', 'Assigned Projects')}
               </CardTitle>
               <CardDescription className="text-xs">
-                Academic and department projects assigned to you or your class sections.
+                {t('classroom.assignedProjectsDesc', 'Academic and department projects assigned to you or your class sections.')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -588,8 +588,8 @@ export default function TeacherPage() {
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{p._count?.tasks || 0} tasks</span>
-                        <span className="text-primary font-medium text-[11px] group-hover:underline">View workforce & details &rarr;</span>
+                        <span>{t('classroom.tasksCount', `${p._count?.tasks || 0} tasks`, { count: p._count?.tasks || 0 })}</span>
+                        <span className="text-primary font-medium text-[11px] group-hover:underline">{t('classroom.viewWorkforce', 'View workforce & details →')}</span>
                       </div>
                     </div>
                   );
@@ -597,7 +597,7 @@ export default function TeacherPage() {
 
                 {myAssignedProjects.length === 0 && (
                   <div className="col-span-full text-center py-10 text-xs text-muted-foreground">
-                    No assigned projects found for your account or classes.
+                    {t('classroom.noAssignedProjects', 'No assigned projects found for your account or classes.')}
                   </div>
                 )}
               </div>

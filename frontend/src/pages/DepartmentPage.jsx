@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrgData } from '@/contexts/OrgDataContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { orgApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import DepartmentAcademicAnalytics from '@/components/department/DepartmentAcade
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
 export default function DepartmentPage() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'members';
@@ -302,17 +304,17 @@ export default function DepartmentPage() {
       <div>
         <h1 className="font-display text-2xl font-semibold flex items-center gap-2">
           <Building2 className="h-6 w-6 text-primary" />
-          Department Panel
+          {t('department.title', 'Department Panel')}
         </h1>
-        <p className="text-muted-foreground">Manage members, classes, and projects in your department</p>
+        <p className="text-muted-foreground">{t('department.subtitle', 'Manage members, classes, and projects in your department')}</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setSearchParams({ tab: v })}>
         <TabsList>
-          <TabsTrigger value="members"><Users className="h-3.5 w-3.5 mr-1" /> Department Members</TabsTrigger>
-          <TabsTrigger value="structure"><Layers className="h-3.5 w-3.5 mr-1" /> Classes & Sections</TabsTrigger>
-          <TabsTrigger value="projects"><Building2 className="h-3.5 w-3.5 mr-1" /> Projects</TabsTrigger>
-          <TabsTrigger value="analytics"><BarChart3 className="h-3.5 w-3.5 mr-1" /> Academic Analytics</TabsTrigger>
+          <TabsTrigger value="members"><Users className="h-3.5 w-3.5 mr-1" /> {t('department.membersTab', 'Department Members')}</TabsTrigger>
+          <TabsTrigger value="structure"><Layers className="h-3.5 w-3.5 mr-1" /> {t('department.structureTab', 'Classes & Sections')}</TabsTrigger>
+          <TabsTrigger value="projects"><Building2 className="h-3.5 w-3.5 mr-1" /> {t('department.projectsTab', 'Projects')}</TabsTrigger>
+          <TabsTrigger value="analytics"><BarChart3 className="h-3.5 w-3.5 mr-1" /> {t('department.analyticsTab', 'Academic Analytics')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="members">
@@ -329,7 +331,7 @@ export default function DepartmentPage() {
                   }`}
                 >
                   <UserCheck className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Faculty & Staff</span>
+                  <span>{t('department.facultyAndStaff', 'Faculty & Staff')}</span>
                   <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{facultyMembers.length}</Badge>
                 </button>
                 <button
@@ -342,13 +344,13 @@ export default function DepartmentPage() {
                   }`}
                 >
                   <GraduationCap className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Students Directory</span>
+                  <span>{t('department.studentsDirectory', 'Students Directory')}</span>
                   <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{displayMembers.filter((m) => m.role === 'STUDENT').length}</Badge>
                 </button>
               </div>
 
               <Button size="sm" onClick={() => setInvite({ ...invite, open: true })} data-testid="invite-member-btn">
-                <Mail className="h-4 w-4 mr-1" /> Invite Member
+                <Mail className="h-4 w-4 mr-1" /> {t('department.inviteMember', 'Invite Member')}
               </Button>
             </CardHeader>
             <CardContent className="pt-4">

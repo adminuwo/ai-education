@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrgData } from '@/contexts/OrgDataContext';
 import { channelApi, orgApi } from '@/lib/api';
 import { connectSocket, getSocket } from '@/lib/socket';
@@ -44,6 +45,7 @@ export function Sidebar({ onNavigate }) {
   const params = useParams();
   const { user, memberships, currentOrg, switchOrg, logout, refresh } = useAuth();
   const { theme, toggle } = useTheme();
+  const { t } = useLanguage();
   
   const {
     departments,
@@ -230,10 +232,10 @@ export function Sidebar({ onNavigate }) {
     return true;
   }).map((it) => {
     if (isStudent && it.key === 'ai') {
-      return { ...it, label: 'Study Buddy' };
+      return { ...it, translationKey: 'studyBuddy', label: 'Study Buddy' };
     }
     if (isAlumni && it.key === 'ai') {
-      return { ...it, label: 'Career Mentor' };
+      return { ...it, translationKey: 'careerMentor', label: 'Career Mentor' };
     }
     return it;
   });
@@ -418,13 +420,13 @@ export function Sidebar({ onNavigate }) {
               )}
               <div className="flex-1 min-w-0 text-left">
                 <div className="text-sm font-semibold truncate font-display">{currentOrg?.name}</div>
-                <div className="text-xs text-muted-foreground truncate">{currentOrg?.role}</div>
+                <div className="text-xs text-muted-foreground truncate">{t(`roles.${(currentOrg?.role || '').toLowerCase()}`, currentOrg?.role)}</div>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-64" align="start">
-            <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('sidebar.workspaces', 'Workspaces')}</DropdownMenuLabel>
             {memberships.map((m) => (
               <DropdownMenuItem key={m.orgId} onClick={() => switchOrg(m.orgId)} data-testid={`workspace-item-${m.organization.slug}`}>
                 {m.organization.logoUrl ? (
@@ -437,14 +439,14 @@ export function Sidebar({ onNavigate }) {
                   <Building2 className="h-4 w-4 mr-2 shrink-0" />
                 )}
                 <div className="flex-1 truncate">{m.organization.name}</div>
-                <Badge variant="secondary" className="ml-2 text-[10px]">{m.role}</Badge>
+                <Badge variant="secondary" className="ml-2 text-[10px]">{t(`roles.${(m.role || '').toLowerCase()}`, m.role)}</Badge>
               </DropdownMenuItem>
             ))}
             {(currentOrg?.role === 'DIRECTOR' || currentOrg?.role === 'OWNER') && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
-                  <Settings className="h-4 w-4 mr-2" /> Institution Logo & Settings
+                  <Settings className="h-4 w-4 mr-2" /> {t('nav.institutionSettings', 'Institution Logo & Settings')}
                 </DropdownMenuItem>
               </>
             )}
@@ -456,21 +458,29 @@ export function Sidebar({ onNavigate }) {
         <div className="pl-2 pr-3.5 py-2">
           {/* Primary nav */}
           <div className="space-y-0.5">
-            {navItems.map((it) => (
-              <button
-                key={it.key}
-                onClick={() => go(it.path)}
-                className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-                  active(it.path)
-                    ? 'bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active))] font-medium'
-                    : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-                data-testid={`nav-${it.key}`}
-              >
-                <it.icon className="h-4 w-4" />
-                {it.label}
-              </button>
-            ))}
+            {navItems.map((it) => {
+              const navKeyMap = {
+                'my-payslips': 'myPayslips',
+                'fee-status': 'feeStatus',
+              };
+              const translationKey = it.translationKey || navKeyMap[it.key] || it.key;
+              const displayLabel = t(`nav.${translationKey}`, it.label);
+              return (
+                <button
+                  key={it.key}
+                  onClick={() => go(it.path)}
+                  className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                    active(it.path)
+                      ? 'bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active))] font-medium'
+                      : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                  data-testid={`nav-${it.key}`}
+                >
+                  <it.icon className="h-4 w-4" />
+                  {displayLabel}
+                </button>
+              );
+            })}
             {!isAccountant && isFullAccessRole ? (
               <>
                 <button
@@ -482,7 +492,7 @@ export function Sidebar({ onNavigate }) {
                   }`}
                   data-testid="nav-admin"
                 >
-                  <Shield className="h-4 w-4" /> Admin
+                  <Shield className="h-4 w-4" /> {t('nav.admin', 'Admin')}
                 </button>
                 <button
                   onClick={() => go('/app/student-id-generator')}
@@ -493,7 +503,7 @@ export function Sidebar({ onNavigate }) {
                   }`}
                   data-testid="nav-student-id-generator"
                 >
-                  <Key className="h-4 w-4 text-amber-400" /> Student ID Generator
+                  <Key className="h-4 w-4 text-amber-400" /> {t('nav.studentIdGenerator', 'Student ID Generator')}
                 </button>
               </>
             ) : (!isAccountant && ['DEAN', 'HOD'].includes(currentOrg?.role)) ? (
@@ -506,7 +516,7 @@ export function Sidebar({ onNavigate }) {
                 }`}
                 data-testid="nav-department"
               >
-                <Building2 className="h-4 w-4" /> Department
+                <Building2 className="h-4 w-4" /> {t('nav.department', 'Department')}
               </button>
             ) : null}
             {!isAccountant && ['TEACHER', 'HOD', 'DEAN', 'PRINCIPAL', 'ADMIN', 'DIRECTOR', 'OWNER'].includes(currentOrg?.role) && currentOrg?.role !== 'STUDENT' && (
@@ -519,7 +529,7 @@ export function Sidebar({ onNavigate }) {
                 }`}
                 data-testid="nav-classroom"
               >
-                <GraduationCap className="h-4 w-4 text-emerald-500" /> Classroom
+                <GraduationCap className="h-4 w-4 text-emerald-500" /> {t('nav.classroom', 'Classroom')}
               </button>
             )}
             {!isAccountant && isOwner && (
@@ -532,7 +542,7 @@ export function Sidebar({ onNavigate }) {
                 }`}
                 data-testid="nav-role-permissions"
               >
-                <ShieldCheck className="h-4 w-4 text-amber-500" /> Role Permissions
+                <ShieldCheck className="h-4 w-4 text-amber-500" /> {t('nav.rolePermissions', 'Role Permissions')}
               </button>
             )}
             {user?.systemRole === 'SUPER_ADMIN' && (
@@ -546,7 +556,7 @@ export function Sidebar({ onNavigate }) {
                 data-testid="nav-super-admin"
               >
                 <ShieldAlert className="h-4 w-4 text-amber-500" />
-                <span>Command Hub</span>
+                <span>{t('topbar.commandHub', 'Command Hub')}</span>
               </button>
             )}
           </div>          {/* Classes / School Wings group */}
@@ -555,13 +565,13 @@ export function Sidebar({ onNavigate }) {
               <div className="flex items-center gap-1 px-2 py-1">
                 <button onClick={() => setOpenGroups({ ...openGroups, classes: !openGroups.classes })} className="flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground tracking-wide hover:text-foreground">
                   {openGroups.classes ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  <span>Classes</span>
+                  <span>{t('nav.classes', 'Classes')}</span>
                 </button>
                 {isManagerPlus && (
                   <button
                     onClick={() => navigate('/app/admin?tab=structure')}
                     className="h-5 w-5 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-all shrink-0 ml-1"
-                    title="Manage Classes & Sections"
+                    title={t('topbar.manageClassesTitle', 'Manage Classes & Sections')}
                     data-testid="new-class-btn"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -685,7 +695,7 @@ export function Sidebar({ onNavigate }) {
                                                   const uId = m.userId || m.user?.id || m.id;
                                                   const fullName = m.user?.fullName || m.user?.email || 'User';
                                                   const hasRoleInName = /\([^)]+\)$/.test(fullName);
-                                                  const roleLabel = (!hasRoleInName && m.role && m.role !== 'MEMBER') ? ` (${m.role.charAt(0) + m.role.slice(1).toLowerCase()})` : '';
+                                                  const roleLabel = (!hasRoleInName && m.role && m.role !== 'MEMBER') ? ` (${t(`roles.${m.role.toLowerCase()}`, m.role.charAt(0) + m.role.slice(1).toLowerCase())})` : '';
                                                   return (
                                                     <div key={uId} className="flex items-center gap-1.5 px-1 py-0.5 text-[11px] text-muted-foreground truncate min-w-0" title={`${fullName}${roleLabel}`}>
                                                       <Avatar className="h-3.5 w-3.5 shrink-0">
@@ -714,7 +724,7 @@ export function Sidebar({ onNavigate }) {
                     );
                   })}
 
-                  {displayDepartments.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">No assigned classes found</div>}
+                  {displayDepartments.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">{t('sidebar.noAssignedClasses', 'No assigned classes found')}</div>}
                 </div>
               )}
             </div>
@@ -726,13 +736,13 @@ export function Sidebar({ onNavigate }) {
               <div className="flex items-center gap-1 px-2 py-1">
                 <button onClick={() => setOpenGroups({ ...openGroups, projects: !openGroups.projects })} className="flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground tracking-wide hover:text-foreground">
                   {openGroups.projects ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  <span>Projects</span>
+                  <span>{t('nav.projects', 'Projects')}</span>
                 </button>
                 {isManagerPlus && (
                   <button
                     onClick={() => navigate('/app/admin?tab=projects')}
                     className="h-5 w-5 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-all shrink-0 ml-1"
-                    title="Manage Projects"
+                    title={t('topbar.manageProjectsTitle', 'Manage Projects')}
                     data-testid="new-project-btn"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -770,7 +780,7 @@ export function Sidebar({ onNavigate }) {
                           </button>
                         );
                       })}
-                      {projects.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">No assigned projects</div>}
+                      {projects.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">{t('sidebar.noAssignedProjects', 'No assigned projects')}</div>}
                     </>
                   )}
                 </div>
@@ -784,13 +794,13 @@ export function Sidebar({ onNavigate }) {
               <div className="flex items-center gap-1 px-2 py-1">
                 <button onClick={() => setOpenGroups({ ...openGroups, channels: !openGroups.channels })} className="flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground tracking-wide hover:text-foreground">
                   {openGroups.channels ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  <span>Announcements & Channels</span>
+                  <span>{t('nav.channels', 'Announcements & Channels')}</span>
                 </button>
                 {!isParent && (
                   <button
                     onClick={() => { refreshOrgData(); setNewCh({ open: true, name: '', type: 'PUBLIC', memberIds: [] }); }}
                     className="h-5 w-5 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-all shrink-0 ml-1"
-                    title="Create Channel"
+                    title={t('topbar.createChannelTitle', 'Create Channel')}
                     data-testid="new-channel-btn"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -842,7 +852,7 @@ export function Sidebar({ onNavigate }) {
                           </button>
                         );
                       })}
-                      {standardChannels.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">No channels yet</div>}
+                      {standardChannels.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">{t('sidebar.noChannelsYet', 'No channels yet')}</div>}
                     </>
                   )}
                 </div>
@@ -856,12 +866,12 @@ export function Sidebar({ onNavigate }) {
               <div className="flex items-center gap-1 px-2 py-1">
                 <button onClick={() => setOpenGroups({ ...openGroups, dms: !openGroups.dms })} className="flex items-center gap-1 text-xs font-medium uppercase text-muted-foreground tracking-wide hover:text-foreground">
                   {openGroups.dms ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  <span>Direct messages</span>
+                  <span>{t('nav.directMessages', 'Direct Messages')}</span>
                 </button>
                 <button
                   onClick={() => { refreshOrgData(); setNewDm({ open: true, targetUserId: '' }); }}
                   className="h-5 w-5 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-all shrink-0 ml-1"
-                  title="New Direct Message"
+                  title={t('topbar.newDmTitle', 'New Direct Message')}
                   data-testid="new-dm-btn"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -911,7 +921,7 @@ export function Sidebar({ onNavigate }) {
                           </button>
                         );
                       })}
-                      {chDMs.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">No direct messages</div>}
+                      {chDMs.length === 0 && <div className="px-2 py-1 text-xs text-muted-foreground">{t('sidebar.noDirectMessages', 'No direct messages')}</div>}
                     </>
                   )}
                 </div>
@@ -945,10 +955,10 @@ export function Sidebar({ onNavigate }) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => go('/app/profile')}><UserIcon className="h-4 w-4 mr-2" /> Profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={toggle}>{theme === 'dark' ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />} {theme === 'dark' ? 'Light mode' : 'Dark mode'}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => go('/app/profile')}><UserIcon className="h-4 w-4 mr-2" /> {t('topbar.profile', 'Profile')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={toggle}>{theme === 'dark' ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />} {theme === 'dark' ? t('topbar.switchToLight', 'Light mode') : t('topbar.switchToDark', 'Dark mode')}</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout} className="text-destructive"><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout} className="text-destructive"><LogOut className="h-4 w-4 mr-2" /> {t('topbar.logout', 'Sign out')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon" onClick={toggle} data-testid="theme-toggle" className="h-7 w-7 shrink-0">
@@ -960,26 +970,26 @@ export function Sidebar({ onNavigate }) {
       {/* New Channel Dialog */}
       <Dialog open={newCh.open} onOpenChange={(o) => setNewCh({ ...newCh, open: o })}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Create channel</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('sidebar.createChannel', 'Create channel')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label>Name</Label>
+              <Label>{t('sidebar.channelName', 'Channel Name')}</Label>
               <Input value={newCh.name} onChange={(e) => setNewCh({ ...newCh, name: e.target.value })} placeholder="design-team" data-testid="new-channel-name" />
             </div>
             <div>
-              <Label>Type</Label>
+              <Label>{t('sidebar.channelType', 'Channel Type')}</Label>
               <Select value={newCh.type} onValueChange={(v) => setNewCh({ ...newCh, type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PUBLIC">Public</SelectItem>
-                  <SelectItem value="PRIVATE">Private</SelectItem>
-                  <SelectItem value="ANNOUNCEMENT">Announcement</SelectItem>
+                  <SelectItem value="PUBLIC">{t('sidebar.public', 'Public')}</SelectItem>
+                  <SelectItem value="PRIVATE">{t('sidebar.private', 'Private')}</SelectItem>
+                  <SelectItem value="ANNOUNCEMENT">{t('sidebar.announcement', 'Announcement')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {newCh.type === 'PRIVATE' && (
               <div>
-                <Label>Add Members</Label>
+                <Label>{t('sidebar.addMembers', 'Add Members')}</Label>
                 <div className="max-h-40 overflow-y-auto space-y-1 mt-1 border rounded-md p-1">
                   {orgMembers
                     .filter((m) => m.userId !== user?.id)
@@ -1013,15 +1023,15 @@ export function Sidebar({ onNavigate }) {
                       );
                     })}
                   {orgMembers.filter((m) => m.userId !== user?.id).length === 0 && (
-                    <div className="px-2 py-1.5 text-xs text-muted-foreground">No other members in workspace</div>
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground">{t('sidebar.noOtherMembers', 'No other members in workspace')}</div>
                   )}
                 </div>
               </div>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNewCh({ ...newCh, open: false })}>Cancel</Button>
-            <Button onClick={createChannel} disabled={!newCh.name} data-testid="create-channel-submit">Create</Button>
+            <Button variant="outline" onClick={() => setNewCh({ ...newCh, open: false })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button onClick={createChannel} disabled={!newCh.name} data-testid="create-channel-submit">{t('common.create', 'Create')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1029,9 +1039,9 @@ export function Sidebar({ onNavigate }) {
       {/* New DM Dialog */}
       <Dialog open={newDm.open} onOpenChange={(o) => setNewDm({ ...newDm, open: o })}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>New Direct Message</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('sidebar.newDirectMessage', 'New Direct Message')}</DialogTitle></DialogHeader>
           <div className="space-y-3 py-2">
-            <Label>Select a team member</Label>
+            <Label>{t('sidebar.selectTeamMember', 'Select a team member')}</Label>
             <div className="max-h-60 overflow-y-auto space-y-1 pr-1 border rounded-md p-1">
               {orgMembers
                 .filter((m) => m.userId !== user?.id)
@@ -1051,16 +1061,16 @@ export function Sidebar({ onNavigate }) {
                       <div className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{m.user?.fullName}</div>
                       <div className="text-xs text-muted-foreground truncate">{m.user?.email}</div>
                     </div>
-                    <Badge variant="outline" className="text-[10px]">{m.role}</Badge>
+                    <Badge variant="outline" className="text-[10px]">{t(`roles.${(m.role || '').toLowerCase()}`, m.role)}</Badge>
                   </button>
                 ))}
               {orgMembers.filter((m) => m.userId !== user?.id).length === 0 && (
-                <div className="p-3 text-center text-xs text-muted-foreground">No other members in this workspace</div>
+                <div className="p-3 text-center text-xs text-muted-foreground">{t('sidebar.noOtherMembers', 'No other members in this workspace')}</div>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNewDm({ ...newDm, open: false })}>Cancel</Button>
+            <Button variant="outline" onClick={() => setNewDm({ ...newDm, open: false })}>{t('common.cancel', 'Cancel')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

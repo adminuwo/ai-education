@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { Users, LayoutList, BarChart3, TrendingUp, CheckCircle2 } from 'lucide-react';
 import CustomTooltip from '@/components/CustomTooltip';
 import AiLegalTelemetryCard from '@/components/admin/AiLegalTelemetryCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const STATUS_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--muted-foreground))'];
 
@@ -18,6 +19,7 @@ function initials(n) {
 }
 
 export default function AnalyticsPage() {
+  const { t } = useLanguage();
   const { currentOrg } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,10 +59,10 @@ export default function AnalyticsPage() {
       <div>
         <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold mb-2">
           <TrendingUp className="h-3.5 w-3.5" />
-          <span>Institutional Intelligence</span>
+          <span>{t('analytics.institutionalIntelligence', 'Institutional Intelligence')}</span>
         </div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Campus & Academic Analytics</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Institutional performance, workload distribution, and verified staff research telemetry</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t('analytics.pageTitle', 'Campus & Academic Analytics')}</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">{t('analytics.pageSubtitle', 'Institutional performance, workload distribution, and verified staff research telemetry')}</p>
       </div>
 
       {/* AI-Legal Academic Research & Feature Telemetry Dashboard */}
@@ -76,8 +78,42 @@ export default function AnalyticsPage() {
         <Card className="glass-card-highlight border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center justify-between">
-              <span>Communication activity (last 7d)</span>
-              <span className="text-xs text-muted-foreground font-normal">Daily Messages</span>
+              <span>{t('analytics.commActivity', 'Communication activity (last 7d)')}</span>
+              <span className="text-xs text-muted-foreground font-normal">{t('analytics.dailyMessages', 'Daily Messages')}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-64 pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data?.messagesPerDay || []} margin={{ top: 10, right: 10, left: -20, bottom: 10 }}>
+                <defs>
+                  <linearGradient id="msgLineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#00F2FE" />
+                    <stop offset="100%" stopColor="#3B82F6" />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" vertical={false} />
+                <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  name="Messages"
+                  stroke="url(#msgLineGrad)"
+                  strokeWidth={2.5}
+                  dot={{ fill: '#00F2FE', r: 3, strokeWidth: 1, stroke: '#070B14' }}
+                  activeDot={{ r: 5, fill: '#00F2FE', stroke: '#fff', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card-highlight border-border">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center justify-between">
+              <span>{t('analytics.taskCompletionStatus', 'Task completion status')}</span>
+              <span className="text-xs text-muted-foreground font-normal">{t('analytics.orgTasks', 'Org Tasks')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="h-64 pt-2">

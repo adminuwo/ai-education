@@ -21,6 +21,7 @@ import OrgRenameModal from '@/components/org/OrgRenameModal';
 import AcademicPromotionModal from '@/components/admin/AcademicPromotionModal';
 import AiLegalFeatureRequestModal from '@/components/admin/AiLegalFeatureRequestModal';
 import AiLegalFeatureRequestsTab from '@/components/admin/AiLegalFeatureRequestsTab';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
@@ -41,6 +42,7 @@ function renderEmailCell(u) {
 }
 
 export default function AdminPage() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'members';
@@ -340,7 +342,7 @@ export default function AdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-semibold flex items-center gap-2">
-            Admin
+            {t('admin.title', 'Admin')}
             {isCurrentUserOwner && (
               <Button variant="outline" size="sm" onClick={() => setRenameModalOpen(true)} className="h-8 gap-1.5 text-xs">
                 {currentOrg?.logoUrl ? (
@@ -348,7 +350,7 @@ export default function AdminPage() {
                 ) : (
                   <Building2 className="h-3.5 w-3.5" />
                 )}
-                Institution Logo & Settings
+                {t('admin.institutionLogoSettings', 'Institution Logo & Settings')}
               </Button>
             )}
             {(Boolean(
@@ -364,26 +366,26 @@ export default function AdminPage() {
                 data-testid="request-ai-legal-feature-btn"
               >
                 <Scale className="h-3.5 w-3.5 text-purple-500" />
-                Request AI-Legal Feature
+                {t('admin.requestAiLegalFeature', 'Request AI-Legal Feature')}
               </Button>
             )}
           </h1>
-          <p className="text-muted-foreground">Manage members, departments, teams, and projects for {currentOrg?.name}</p>
+          <p className="text-muted-foreground">{t('admin.manageDescription', 'Manage members, departments, teams, and projects for {{name}}', { name: currentOrg?.name })}</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setSearchParams({ tab: v })}>
         <TabsList>
-          <TabsTrigger value="members"><Users className="h-3.5 w-3.5 mr-1" /> Members</TabsTrigger>
-          <TabsTrigger value="structure"><Layers className="h-3.5 w-3.5 mr-1" /> Structure</TabsTrigger>
-          <TabsTrigger value="projects"><Building2 className="h-3.5 w-3.5 mr-1" /> Projects</TabsTrigger>
+          <TabsTrigger value="members"><Users className="h-3.5 w-3.5 mr-1" /> {t('admin.members', 'Members')}</TabsTrigger>
+          <TabsTrigger value="structure"><Layers className="h-3.5 w-3.5 mr-1" /> {t('admin.structure', 'Structure')}</TabsTrigger>
+          <TabsTrigger value="projects"><Building2 className="h-3.5 w-3.5 mr-1" /> {t('admin.projects', 'Projects')}</TabsTrigger>
           {(Boolean(
             currentOrg?.hasAiLegal ||
             currentOrg?.addons?.includes('AI_LEGAL') ||
             /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(currentOrg?.description || '')
           )) && (
             <TabsTrigger value="feature-requests">
-              <Scale className="h-3.5 w-3.5 mr-1 text-purple-500" /> AI-Legal Requests
+              <Scale className="h-3.5 w-3.5 mr-1 text-purple-500" /> {t('admin.aiLegalRequests', 'AI-Legal Requests')}
             </TabsTrigger>
           )}
         </TabsList>
@@ -403,7 +405,7 @@ export default function AdminPage() {
                   }`}
                 >
                   <UserCheck className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                  <span>Faculty & Staff</span>
+                  <span>{t('admin.facultyAndStaff', 'Faculty & Staff')}</span>
                   <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'faculty' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-200' : 'bg-muted text-muted-foreground'}`}>
                     {facultyMembers.length}
                   </span>
@@ -418,7 +420,7 @@ export default function AdminPage() {
                   }`}
                 >
                   <BookOpen className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                  <span>Enrolled Students</span>
+                  <span>{t('admin.enrolledStudents', 'Enrolled Students')}</span>
                   <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'students' ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-200' : 'bg-muted text-muted-foreground'}`}>
                     {members.filter((m) => m.role === 'STUDENT' && m.role !== 'ALUMNI' && !m.title?.includes('Alumni')).length}
                   </span>
@@ -433,7 +435,7 @@ export default function AdminPage() {
                   }`}
                 >
                   <UserX className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                  <span>Unassigned</span>
+                  <span>{t('admin.unassigned', 'Unassigned')}</span>
                   <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'unassigned' ? 'bg-rose-500/20 text-rose-700 dark:text-rose-200' : 'bg-muted text-muted-foreground'}`}>
                     {unassignedMembers.length}
                   </span>
@@ -448,7 +450,7 @@ export default function AdminPage() {
                   }`}
                 >
                   <GraduationCap className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                  <span>Alumni</span>
+                  <span>{t('admin.alumni', 'Alumni')}</span>
                   <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'alumni' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-200' : 'bg-muted text-muted-foreground'}`}>
                     {alumniMembers.length}
                   </span>
@@ -463,7 +465,7 @@ export default function AdminPage() {
                   }`}
                 >
                   <Users className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                  <span>Parents / Guardians</span>
+                  <span>{t('admin.parentsAndGuardians', 'Parents / Guardians')}</span>
                   <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${memberSubTab === 'parents' ? 'bg-purple-500/20 text-purple-700 dark:text-purple-200' : 'bg-muted text-muted-foreground'}`}>
                     {parentMembers.length}
                   </span>
@@ -480,7 +482,7 @@ export default function AdminPage() {
                       className="border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 font-semibold shadow-sm h-8 px-3 text-xs"
                       onClick={() => setPromotionModalOpen(true)}
                     >
-                      <GraduationCap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" /> Academic Promotion
+                      <GraduationCap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" /> {t('admin.academicPromotion', 'Academic Promotion')}
                     </Button>
                     <Button
                       size="sm"
@@ -488,7 +490,7 @@ export default function AdminPage() {
                       className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300 font-semibold shadow-sm h-8 px-3 text-xs"
                       onClick={() => navigate('/app/student-id-generator')}
                     >
-                      <Key className="h-3.5 w-3.5 mr-1.5 text-amber-400" /> ID Generator
+                      <Key className="h-3.5 w-3.5 mr-1.5 text-amber-400" /> {t('admin.idGenerator', 'ID Generator')}
                     </Button>
                   </>
                 )}
@@ -500,11 +502,11 @@ export default function AdminPage() {
                     onClick={() => setTransferFlow({ open: true, step: 1, targetEmail: '', verifyEmail: '', targetMember: null, loading: false })}
                     data-testid="transfer-ownership-header-btn"
                   >
-                    <Crown className="h-3.5 w-3.5 mr-1.5" /> Transfer Owner
+                    <Crown className="h-3.5 w-3.5 mr-1.5" /> {t('admin.transferOwner', 'Transfer Owner')}
                   </Button>
                 )}
                 <Button size="sm" className="h-8 px-3.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm" onClick={() => setInvite({ ...invite, open: true })} data-testid="invite-member-btn">
-                  <Mail className="h-3.5 w-3.5 mr-1.5" /> Invite Member
+                  <Mail className="h-3.5 w-3.5 mr-1.5" /> {t('admin.inviteMember', 'Invite Member')}
                 </Button>
               </div>
             </CardHeader>
@@ -515,11 +517,11 @@ export default function AdminPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/20">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2.5 font-medium">Faculty Name</th>
-                        <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium">Role / Position</th>
-                        <th className="px-4 py-2.5 font-medium">Joined</th>
-                        <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.facultyName', 'Faculty Name')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.rolePosition', 'Role / Position')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.joined', 'Joined')}</th>
+                        <th className="px-4 py-2.5 font-medium text-right">{t('admin.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -553,14 +555,14 @@ export default function AdminPage() {
                                   variant="secondary"
                                   className="text-[10px] uppercase font-bold tracking-wide bg-amber-500/10 text-amber-500 border border-amber-500/30 font-extrabold"
                                 >
-                                  DIRECTOR
+                                  {t('roles.director', 'DIRECTOR')}
                                 </Badge>
                               ) : (m.role === 'ACCOUNTANT' || m.user?.systemRole === 'ACCOUNTANT') ? (
                                 <Badge
                                   variant="secondary"
                                   className="text-[10px] uppercase font-bold tracking-wide bg-teal-500/10 text-teal-400 border border-teal-500/30 font-extrabold"
                                 >
-                                  ACCOUNTANT
+                                  {t('roles.accountant', 'ACCOUNTANT')}
                                 </Badge>
                               ) : canEdit ? (
                                 <Select value={m.role} onValueChange={(r) => handleRoleChange(m.id, r)}>
@@ -569,7 +571,7 @@ export default function AdminPage() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     {Array.from(new Set([m.role, ...assignableRoles])).map((r) => (
-                                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                                      <SelectItem key={r} value={r}>{t(`roles.${r.toLowerCase()}`, r)}</SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
@@ -578,7 +580,7 @@ export default function AdminPage() {
                                   variant="secondary"
                                   className="text-[10px] uppercase font-bold tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-extrabold"
                                 >
-                                  {m.role}
+                                  {t(`roles.${m.role.toLowerCase()}`, m.role)}
                                 </Badge>
                               )}
                             </td>
@@ -590,7 +592,7 @@ export default function AdminPage() {
                                   variant="ghost"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                   onClick={() => setRemoveDialog({ open: true, member: m })}
-                                  title="Remove member"
+                                  title={t('admin.removeMemberTooltip', 'Remove member')}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -602,7 +604,7 @@ export default function AdminPage() {
                       {facultyMembers.length === 0 && (
                         <tr>
                           <td colSpan={5} className="text-center py-8 text-xs text-muted-foreground">
-                            No faculty or staff members in this department yet.
+                            {t('admin.noFacultyFound', 'No faculty or staff members in this department yet.')}
                           </td>
                         </tr>
                       )}
@@ -614,11 +616,11 @@ export default function AdminPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/20">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2.5 font-medium">Student Name</th>
-                        <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium">Assign Class Section</th>
-                        <th className="px-4 py-2.5 font-medium">Joined</th>
-                        <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.studentName', 'Student Name')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.assignClassSection', 'Assign Class Section')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.joined', 'Joined')}</th>
+                        <th className="px-4 py-2.5 font-medium text-right">{t('admin.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -643,15 +645,15 @@ export default function AdminPage() {
                                   )}
                                   {m.aiLegalStatus === 'SYNCED' ? (
                                     <Badge className="font-sans text-[10px] px-1.5 py-0 h-4 bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 gap-1 font-semibold">
-                                      <Scale className="h-2.5 w-2.5" /> AI-Legal Active
+                                      <Scale className="h-2.5 w-2.5" /> {t('admin.aiLegalActive', 'AI-Legal Active')}
                                     </Badge>
                                   ) : m.aiLegalStatus === 'PENDING' ? (
                                     <Badge className="font-sans text-[10px] px-1.5 py-0 h-4 bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 gap-1 font-semibold">
-                                      ⏳ AI-Legal Pending
+                                      ⏳ {t('admin.aiLegalPending', 'AI-Legal Pending')}
                                     </Badge>
                                   ) : m.aiLegalStatus === 'NOT_INCLUDED' ? (
                                     <Badge variant="outline" className="font-sans text-[10px] px-1.5 py-0 h-4 text-muted-foreground opacity-60">
-                                      ○ No AI-Legal
+                                      ○ {t('admin.noAiLegal', 'No AI-Legal')}
                                     </Badge>
                                   ) : null}
                                 </div>
@@ -678,7 +680,7 @@ export default function AdminPage() {
                                 }}
                                 className="bg-background border border-input rounded-lg px-2.5 py-1 text-xs text-foreground focus:outline-none focus:border-primary cursor-pointer font-medium"
                               >
-                                <option value="" disabled>Assign to Section...</option>
+                                <option value="" disabled>{t('admin.assignToSection', 'Assign to Section...')}</option>
                                 {allTeams.map((t) => (
                                   <option key={t.id} value={t.id}>
                                     {t.deptName ? `${t.deptName} - ${t.name}` : t.name}
@@ -694,7 +696,7 @@ export default function AdminPage() {
                                   variant="ghost"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                   onClick={() => setRemoveDialog({ open: true, member: m })}
-                                  title="Remove student"
+                                  title={t('admin.removeStudentTitle', 'Remove student')}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -706,7 +708,7 @@ export default function AdminPage() {
                       {unassignedMembers.length === 0 && (
                         <tr>
                           <td colSpan={5} className="text-center py-8 text-xs text-muted-foreground">
-                            No unassigned students in this workspace. All students belong to a class section!
+                            {t('admin.noUnassignedStudents', 'No unassigned students in this workspace. All students belong to a class section!')}
                           </td>
                         </tr>
                       )}
@@ -718,12 +720,12 @@ export default function AdminPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/20">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2.5 font-medium">Alumni Graduate</th>
-                        <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium whitespace-nowrap">Alumni Designation</th>
-                        <th className="px-4 py-2.5 font-medium">Status</th>
-                        <th className="px-4 py-2.5 font-medium">Graduated</th>
-                        <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.alumniGraduate', 'Alumni Graduate')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 font-medium whitespace-nowrap">{t('admin.alumniDesignation', 'Alumni Designation')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.status', 'Status')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.graduated', 'Graduated')}</th>
+                        <th className="px-4 py-2.5 font-medium text-right">{t('admin.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -772,8 +774,8 @@ export default function AdminPage() {
                               </Badge>
                             </td>
                             <td className="px-4 py-2.5">
-                              <Badge variant="secondary" className="text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                                Graduated
+                              <Badge variant="secondary" className="text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                {t('admin.graduated', 'Graduated')}
                               </Badge>
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground text-xs">{new Date(m.joinedAt).toLocaleDateString()}</td>
@@ -784,7 +786,7 @@ export default function AdminPage() {
                                   variant="ghost"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                   onClick={() => setRemoveDialog({ open: true, member: m })}
-                                  title="Remove alumni"
+                                  title={t('admin.removeAlumniTitle', 'Remove alumni')}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -796,7 +798,7 @@ export default function AdminPage() {
                       {alumniMembers.length === 0 && (
                         <tr>
                           <td colSpan={6} className="text-center py-8 text-xs text-muted-foreground">
-                            No graduated alumni members yet in this institution.
+                            {t('admin.noAlumniFound', 'No graduated alumni members yet in this institution.')}
                           </td>
                         </tr>
                       )}
@@ -808,11 +810,11 @@ export default function AdminPage() {
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/20">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2.5 font-medium">Parent / Guardian Name</th>
-                        <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium">Role Tag</th>
-                        <th className="px-4 py-2.5 font-medium">Joined</th>
-                        <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.parentGuardianName', 'Parent / Guardian Name')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.roleTag', 'Role Tag')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.joined', 'Joined')}</th>
+                        <th className="px-4 py-2.5 font-medium text-right">{t('admin.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -841,7 +843,7 @@ export default function AdminPage() {
                             <td className="px-4 py-2.5 text-muted-foreground">{renderEmailCell(m.user)}</td>
                             <td className="px-4 py-2.5">
                               <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-wide bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                                PARENT
+                                {t('roles.parent', 'PARENT')}
                               </Badge>
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground text-xs">{new Date(m.joinedAt).toLocaleDateString()}</td>
@@ -852,7 +854,7 @@ export default function AdminPage() {
                                   variant="ghost"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                   onClick={() => setRemoveDialog({ open: true, member: m })}
-                                  title="Remove parent"
+                                  title={t('admin.removeParentTitle', 'Remove parent')}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -864,7 +866,7 @@ export default function AdminPage() {
                       {parentMembers.length === 0 && (
                         <tr>
                           <td colSpan={5} className="text-center py-8 text-xs text-muted-foreground">
-                            No parent/guardian accounts registered in this workspace yet.
+                            {t('admin.noParentsFound', 'No parent/guardian accounts registered in this workspace yet.')}
                           </td>
                         </tr>
                       )}
@@ -876,7 +878,7 @@ export default function AdminPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-muted/20 p-2.5 rounded-lg border border-border">
                     <div className="flex items-center gap-2">
                       <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-                      <Label className="text-xs font-medium text-muted-foreground">School Wing:</Label>
+                      <Label className="text-xs font-medium text-muted-foreground">{t('admin.schoolWingFilterLabel', 'School Wing:')}</Label>
                       <Select
                         value={studentWingFilter}
                         onValueChange={(val) => {
@@ -885,10 +887,10 @@ export default function AdminPage() {
                         }}
                       >
                         <SelectTrigger className="h-8 w-48 text-xs font-medium">
-                          <SelectValue placeholder="All School Wings" />
+                          <SelectValue placeholder={t('admin.allSchoolWings', 'All School Wings')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ALL">All School Wings ({departments.length})</SelectItem>
+                          <SelectItem value="ALL">{t('admin.allSchoolWings', 'All School Wings')} ({departments.length})</SelectItem>
                           {departments.map((d) => (
                             <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                           ))}
@@ -897,13 +899,13 @@ export default function AdminPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Label className="text-xs font-medium text-muted-foreground">Class & Section:</Label>
+                      <Label className="text-xs font-medium text-muted-foreground">{t('admin.classSectionFilterLabel', 'Class & Section:')}</Label>
                       <Select value={studentClassFilter} onValueChange={(val) => setStudentClassFilter(val)}>
                         <SelectTrigger className="h-8 w-52 text-xs font-medium">
-                          <SelectValue placeholder="All Classes" />
+                          <SelectValue placeholder={t('admin.allClasses', 'All Classes')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ALL">All Classes & Sections ({availableClassesForFilter.length})</SelectItem>
+                          <SelectItem value="ALL">{t('admin.allClassesAndSections', 'All Classes & Sections')} ({availableClassesForFilter.length})</SelectItem>
                           {availableClassesForFilter.map((c) => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                           ))}
@@ -912,20 +914,20 @@ export default function AdminPage() {
                     </div>
 
                     <div className="ml-auto text-xs text-muted-foreground">
-                      Showing <strong>{studentMembers.length}</strong> student(s)
+                      {t('admin.showingStudentsCount', 'Showing {{count}} student(s)', { count: studentMembers.length })}
                     </div>
                   </div>
 
                   <table className="w-full text-sm">
                     <thead className="border-b border-border bg-muted/20">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2.5 font-medium">Student Name</th>
-                        <th className="px-4 py-2.5 font-medium">Email</th>
-                        <th className="px-4 py-2.5 font-medium">School Wing</th>
-                        <th className="px-4 py-2.5 font-medium">Class & Section</th>
-                        <th className="px-4 py-2.5 font-medium">Role</th>
-                        <th className="px-4 py-2.5 font-medium">Joined</th>
-                        <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.studentName', 'Student Name')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.email', 'Email')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.schoolWing', 'School Wing')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.classSection', 'Class & Section')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.role', 'Role')}</th>
+                        <th className="px-4 py-2.5 font-medium">{t('admin.joined', 'Joined')}</th>
+                        <th className="px-4 py-2.5 font-medium text-right">{t('admin.actions', 'Actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -961,7 +963,7 @@ export default function AdminPage() {
                             <td className="px-4 py-2.5 font-mono text-xs font-semibold text-foreground/80">{className}</td>
                             <td className="px-4 py-2.5">
                               <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-wide bg-emerald-500/10 text-emerald-500">
-                                {m.role}
+                                {t(`roles.${m.role.toLowerCase()}`, m.role)}
                               </Badge>
                             </td>
                             <td className="px-4 py-2.5 text-muted-foreground text-xs">{new Date(m.joinedAt).toLocaleDateString()}</td>
@@ -972,7 +974,7 @@ export default function AdminPage() {
                                   variant="ghost"
                                   className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                                   onClick={() => setRemoveDialog({ open: true, member: m })}
-                                  title="Remove student"
+                                  title={t('admin.removeStudentTitle', 'Remove student')}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -984,7 +986,7 @@ export default function AdminPage() {
                       {studentMembers.length === 0 && (
                         <tr>
                           <td colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
-                            No students found matching the selected filters.
+                            {t('admin.noStudentsMatchingFilter', 'No students found matching the selected filters.')}
                           </td>
                         </tr>
                       )}
@@ -1000,14 +1002,14 @@ export default function AdminPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <div>
-                <CardTitle className="text-base">School Wings & Classes with Sections</CardTitle>
-                <CardDescription className="text-xs text-muted-foreground mt-0.5">Manage school divisions (Wings) and assigned class sections.</CardDescription>
+                <CardTitle className="text-base">{t('admin.schoolWingsAndClasses', 'School Wings & Classes with Sections')}</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground mt-0.5">{t('admin.manageSchoolDivisionsDesc', 'Manage school divisions (Wings) and assigned class sections.')}</CardDescription>
               </div>
               <div className="flex gap-2">
                 {isFullAdmin && (
-                  <Button size="sm" onClick={() => setNewDept({ ...newDept, open: true })}><Plus className="h-4 w-4 mr-1" /> School Wing</Button>
+                  <Button size="sm" onClick={() => setNewDept({ ...newDept, open: true })}><Plus className="h-4 w-4 mr-1" /> {t('admin.schoolWingBtn', 'School Wing')}</Button>
                 )}
-                <Button size="sm" variant="outline" onClick={() => setNewTeam({ ...newTeam, open: true })}><Plus className="h-4 w-4 mr-1" /> Class & Section</Button>
+                <Button size="sm" variant="outline" onClick={() => setNewTeam({ ...newTeam, open: true })}><Plus className="h-4 w-4 mr-1" /> {t('admin.classAndSectionBtn', 'Class & Section')}</Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -1017,14 +1019,14 @@ export default function AdminPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="font-semibold text-sm flex flex-wrap items-center gap-2">
                         <span>{d.name}</span>
-                        <Badge variant="secondary" className="text-[10px] uppercase">WING</Badge>
+                        <Badge variant="secondary" className="text-[10px] uppercase">{t('admin.wingBadge', 'WING')}</Badge>
                         {d.headUser ? (
                           <Badge variant="outline" className="text-[10px] font-medium bg-amber-500/10 text-amber-500 border-amber-500/30 flex items-center gap-1">
-                            <Crown className="h-3 w-3" /> HOD: {d.headUser.fullName || d.headUser.email}
+                            <Crown className="h-3 w-3" /> {t('roles.hod', 'HOD')}: {d.headUser.fullName || d.headUser.email}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="text-[10px] text-muted-foreground border-dashed">
-                            No HOD Assigned
+                            {t('admin.noHodAssigned', 'No HOD Assigned')}
                           </Badge>
                         )}
                       </div>
@@ -1042,27 +1044,27 @@ export default function AdminPage() {
                           }}
                         >
                           <SelectTrigger className="h-7 w-44 text-xs">
-                            <SelectValue placeholder="Assign HOD" />
+                            <SelectValue placeholder={t('admin.assignHod', 'Assign HOD')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="unassigned">No HOD Assigned</SelectItem>
+                            <SelectItem value="unassigned">{t('admin.noHodAssigned', 'No HOD Assigned')}</SelectItem>
                             {facultyMembers
                               .filter((fm) => ['HOD', 'DEAN'].includes(fm.role))
                               .map((fm) => (
                                 <SelectItem key={fm.user?.id || fm.userId} value={fm.user?.id || fm.userId}>
-                                  {fm.user?.fullName || fm.user?.email} ({fm.role})
+                                  {fm.user?.fullName || fm.user?.email} ({t(`roles.${fm.role.toLowerCase()}`, fm.role)})
                                 </SelectItem>
                               ))}
                           </SelectContent>
                         </Select>
-                        <span className="text-xs text-muted-foreground">{d._count?.memberships || 0} members · {d._count?.teams || 0} classes</span>
+                        <span className="text-xs text-muted-foreground">{d._count?.memberships || 0} {t('common.members', 'members')} · {d._count?.teams || 0} {t('admin.classesCount', 'classes')}</span>
                         {isCurrentUserOwner && (
                           <Button
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                             onClick={(e) => { e.stopPropagation(); setDeleteDeptDialog({ open: true, dept: d }); }}
-                            title="Delete School Wing"
+                            title={t('admin.deleteSchoolWingTooltip', 'Delete School Wing')}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -1071,26 +1073,26 @@ export default function AdminPage() {
                     </div>
                     {d.teams.length > 0 && (
                       <div className="mt-2 pl-3 border-l border-border space-y-1">
-                        {d.teams.map((t) => (
+                        {d.teams.map((tItem) => (
                           <div
-                            key={t.id}
-                            onClick={() => navigate(`/app/teams/${t.id}`)}
+                            key={tItem.id}
+                            onClick={() => navigate(`/app/teams/${tItem.id}`)}
                             className="group flex items-center justify-between py-1.5 px-2.5 rounded-md hover:bg-muted/50 transition-all cursor-pointer"
                           >
                             <div className="text-sm font-medium group-hover:text-primary transition-colors flex items-center gap-1.5">
-                              <span>{t.name}</span>
+                              <span>{tItem.name}</span>
                               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                             </div>
                             <div className="text-xs text-muted-foreground flex items-center gap-2">
-                              <span>{t._count.memberships} members · {t._count.projects} projects</span>
-                              <span className="text-primary font-medium text-[11px] group-hover:underline">Manage class &rarr;</span>
+                              <span>{tItem._count.memberships} {t('common.members', 'members')} · {tItem._count.projects} {t('admin.projectsCount', 'projects')}</span>
+                              <span className="text-primary font-medium text-[11px] group-hover:underline">{t('admin.manageClass', 'Manage class')} &rarr;</span>
                               {isCurrentUserOwner && (
                                 <Button
                                   size="icon"
                                   variant="ghost"
                                   className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10 ml-1"
-                                  onClick={(e) => { e.stopPropagation(); setDeleteTeamDialog({ open: true, team: t }); }}
-                                  title="Delete Class Section"
+                                  onClick={(e) => { e.stopPropagation(); setDeleteTeamDialog({ open: true, team: tItem }); }}
+                                  title={t('admin.deleteClassSectionTooltip', 'Delete Class Section')}
                                 >
                                   <Trash2 className="h-3 w-3" />
                                 </Button>
@@ -1102,7 +1104,7 @@ export default function AdminPage() {
                     )}
                   </div>
                 ))}
-                {departments.length === 0 && <div className="text-sm text-muted-foreground text-center py-6">No school wings yet</div>}
+                {departments.length === 0 && <div className="text-sm text-muted-foreground text-center py-6">{t('admin.noSchoolWingsYet', 'No school wings yet')}</div>}
               </div>
             </CardContent>
           </Card>
@@ -1110,13 +1112,13 @@ export default function AdminPage() {
 
         <TabsContent value="projects">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0"><CardTitle className="text-base">Projects</CardTitle><Button size="sm" onClick={() => setNewProject({ ...newProject, open: true })}><Plus className="h-4 w-4 mr-1" /> New project</Button></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0"><CardTitle className="text-base">{t('nav.projects', 'Projects')}</CardTitle><Button size="sm" onClick={() => setNewProject({ ...newProject, open: true })}><Plus className="h-4 w-4 mr-1" /> {t('admin.newProject', 'New project')}</Button></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {projects.map((p) => {
                   const teamNames = p.teams?.length > 0
                     ? p.teams.map((pt) => `${pt.team?.department?.name || 'General'} / ${pt.team?.name}`).join(', ')
-                    : (p.team ? `${p.team?.department?.name || 'General'} / ${p.team?.name}` : 'Unassigned');
+                    : (p.team ? `${p.team?.department?.name || 'General'} / ${p.team?.name}` : t('admin.unassigned', 'Unassigned'));
                   return (
                     <div
                       key={p.id}
@@ -1134,13 +1136,13 @@ export default function AdminPage() {
                         {p.description && <div className="text-sm mt-2 text-muted-foreground line-clamp-2">{p.description}</div>}
                       </div>
                       <div className="mt-3 pt-2 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{p._count?.tasks || 0} tasks</span>
-                        <span className="text-primary font-medium text-[11px] group-hover:underline">View workforce & details &rarr;</span>
+                        <span>{p._count?.tasks || 0} {t('admin.tasksCount', 'tasks')}</span>
+                        <span className="text-primary font-medium text-[11px] group-hover:underline">{t('admin.viewWorkforceDetails', 'View workforce & details')} &rarr;</span>
                       </div>
                     </div>
                   );
                 })}
-                {projects.length === 0 && <div className="col-span-full text-sm text-muted-foreground text-center py-6">No projects yet</div>}
+                {projects.length === 0 && <div className="col-span-full text-sm text-muted-foreground text-center py-6">{t('admin.noProjectsYet', 'No projects yet')}</div>}
               </div>
             </CardContent>
           </Card>
@@ -1164,23 +1166,23 @@ export default function AdminPage() {
 
       {/* Invite Dialog */}
       <Dialog open={invite.open} onOpenChange={(o) => setInvite({ ...invite, open: o })}>
-        <DialogContent><DialogHeader><DialogTitle>Invite member</DialogTitle></DialogHeader>
+        <DialogContent><DialogHeader><DialogTitle>{t('admin.inviteMember', 'Invite member')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <div><Label>Email</Label><Input value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="person@company.com" /></div>
-            <div><Label>Full name</Label><Input value={invite.fullName} onChange={(e) => setInvite({ ...invite, fullName: e.target.value })} placeholder="Jane Doe" /></div>
+            <div><Label>{t('auth.email', 'Email')}</Label><Input value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="person@company.com" /></div>
+            <div><Label>{t('admin.fullName', 'Full name')}</Label><Input value={invite.fullName} onChange={(e) => setInvite({ ...invite, fullName: e.target.value })} placeholder="Jane Doe" /></div>
             <div>
-              <Label>Role</Label>
+              <Label>{t('admin.role', 'Role')}</Label>
               <Select value={invite.role} onValueChange={(v) => setInvite({ ...invite, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {['TEACHER', 'HOD', 'DEAN', 'PRINCIPAL', 'ADMIN', 'ACCOUNTANT'].map((r) => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                    <SelectItem key={r} value={r}>{t(`roles.${r.toLowerCase()}`, r)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setInvite({ ...invite, open: false })}>Cancel</Button><Button onClick={submitInvite} disabled={!invite.email}>Invite</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setInvite({ ...invite, open: false })}>{t('common.cancel', 'Cancel')}</Button><Button onClick={submitInvite} disabled={!invite.email}>{t('admin.invite', 'Invite')}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1188,11 +1190,11 @@ export default function AdminPage() {
       <Dialog open={newDept.open} onOpenChange={(o) => setNewDept({ ...newDept, open: o })}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add School Wing / Department</DialogTitle>
+            <DialogTitle>{t('admin.addSchoolWingTitle', 'Add School Wing / Department')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs font-semibold text-muted-foreground mb-1 block">Quick Select Preset</Label>
+              <Label className="text-xs font-semibold text-muted-foreground mb-1 block">{t('admin.quickSelectPreset', 'Quick Select Preset')}</Label>
               <div className="flex flex-wrap gap-1.5">
                 {['Playschool', 'Kindergarten', 'Primary School', 'Middle School', 'High School', 'Higher Secondary'].map((preset) => (
                   <Button
@@ -1209,13 +1211,13 @@ export default function AdminPage() {
               </div>
             </div>
             <div>
-              <Label className="text-xs font-semibold text-muted-foreground mb-1 block">Wing / Department Name</Label>
+              <Label className="text-xs font-semibold text-muted-foreground mb-1 block">{t('admin.wingDeptNameLabel', 'Wing / Department Name')}</Label>
               <Input value={newDept.name} onChange={(e) => setNewDept({ ...newDept, name: e.target.value })} placeholder="e.g. Primary School, High School" />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNewDept({ ...newDept, open: false })}>Cancel</Button>
-            <Button onClick={submitDept} disabled={!newDept.name}>Create Wing</Button>
+            <Button variant="outline" onClick={() => setNewDept({ ...newDept, open: false })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button onClick={submitDept} disabled={!newDept.name}>{t('admin.createWingBtn', 'Create Wing')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1224,19 +1226,19 @@ export default function AdminPage() {
       <Dialog open={newTeam.open} onOpenChange={(o) => setNewTeam({ ...newTeam, open: o })}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Class & Section</DialogTitle>
+            <DialogTitle>{t('admin.addClassSectionTitle', 'Add Class & Section')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label>School Wing / Department</Label>
+              <Label>{t('admin.schoolWingOrDept', 'School Wing / Department')}</Label>
               <Select value={newTeam.deptId} onValueChange={(v) => setNewTeam({ ...newTeam, deptId: v })}>
-                <SelectTrigger><SelectValue placeholder="Choose school wing" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t('admin.chooseSchoolWingPlaceholder', 'Choose school wing')} /></SelectTrigger>
                 <SelectContent>{departments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Class / Grade</Label>
+                <Label>{t('admin.classGradeLabel', 'Class / Grade')}</Label>
                 <Input
                   value={newTeam.gradeName || ''}
                   onChange={(e) => setNewTeam({ ...newTeam, gradeName: e.target.value })}
@@ -1244,7 +1246,7 @@ export default function AdminPage() {
                 />
               </div>
               <div>
-                <Label>Section / Stream</Label>
+                <Label>{t('admin.sectionStreamLabel', 'Section / Stream')}</Label>
                 <Input
                   value={newTeam.sectionName || ''}
                   onChange={(e) => setNewTeam({ ...newTeam, sectionName: e.target.value })}
@@ -1254,48 +1256,48 @@ export default function AdminPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNewTeam({ ...newTeam, open: false })}>Cancel</Button>
-            <Button onClick={submitTeam} disabled={!newTeam.gradeName || !newTeam.deptId}>Create Class</Button>
+            <Button variant="outline" onClick={() => setNewTeam({ ...newTeam, open: false })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button onClick={submitTeam} disabled={!newTeam.gradeName || !newTeam.deptId}>{t('admin.createClassBtn', 'Create Class')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* New Project */}
       <Dialog open={newProject.open} onOpenChange={(o) => setNewProject({ ...newProject, open: o })}>
-        <DialogContent><DialogHeader><DialogTitle>New project</DialogTitle></DialogHeader>
+        <DialogContent><DialogHeader><DialogTitle>{t('admin.newProject', 'New project')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="text-xs font-medium">Assigned Teams (Select one or multiple)</Label>
+              <Label className="text-xs font-medium">{t('admin.assignedTeamsLabel', 'Assigned Teams (Select one or multiple)')}</Label>
               <div className="mt-1.5 flex flex-wrap gap-2 max-h-44 overflow-y-auto p-2 border border-border rounded-md bg-muted/20">
-                {allTeams.map((t) => {
-                  const isSelected = newProject.teamIds.includes(t.id);
+                {allTeams.map((tItem) => {
+                  const isSelected = newProject.teamIds.includes(tItem.id);
                   return (
                     <button
-                      key={t.id}
+                      key={tItem.id}
                       type="button"
-                      onClick={() => toggleTeamSelection(t.id)}
+                      onClick={() => toggleTeamSelection(tItem.id)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 border ${isSelected
                           ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                           : 'bg-background hover:bg-muted text-muted-foreground border-border'
                         }`}
                     >
-                      <span>{t.deptName} &rarr; {t.name}</span>
+                      <span>{tItem.deptName} &rarr; {tItem.name}</span>
                       {isSelected && <span className="font-bold">&times;</span>}
                     </button>
                   );
                 })}
                 {allTeams.length === 0 && (
-                  <div className="text-xs text-muted-foreground py-2 text-center w-full">No teams available. Create a department & team first.</div>
+                  <div className="text-xs text-muted-foreground py-2 text-center w-full">{t('admin.noTeamsAvailable', 'No teams available. Create a department & team first.')}</div>
                 )}
               </div>
               <div className="text-[11px] text-muted-foreground mt-1">
-                {newProject.teamIds.length} team(s) selected
+                {newProject.teamIds.length} {t('admin.teamsSelected', 'team(s) selected')}
               </div>
             </div>
-            <div><Label>Project name</Label><Input value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} placeholder="E.g. Design System" /></div>
-            <div><Label>Description</Label><Input value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} placeholder="Brief project goals..." /></div>
+            <div><Label>{t('admin.projectNameLabel', 'Project name')}</Label><Input value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} placeholder="E.g. Design System" /></div>
+            <div><Label>{t('admin.descriptionLabel', 'Description')}</Label><Input value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} placeholder="Brief project goals..." /></div>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setNewProject({ ...newProject, open: false })}>Cancel</Button><Button onClick={submitProject} disabled={!newProject.name || newProject.teamIds.length === 0}>Create</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setNewProject({ ...newProject, open: false })}>{t('common.cancel', 'Cancel')}</Button><Button onClick={submitProject} disabled={!newProject.name || newProject.teamIds.length === 0}>{t('common.create', 'Create')}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1303,14 +1305,14 @@ export default function AdminPage() {
       <Dialog open={removeDialog.open} onOpenChange={(o) => setRemoveDialog({ open: o, member: o ? removeDialog.member : null })}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Remove Member</DialogTitle>
+            <DialogTitle>{t('admin.removeMemberTitle', 'Remove Member')}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to remove <strong>{removeDialog.member?.user?.fullName || removeDialog.member?.user?.email}</strong> ({removeDialog.member?.user?.email}) from this workspace?
+            {t('admin.removeMemberConfirm', 'Are you sure you want to remove')} <strong>{removeDialog.member?.user?.fullName || removeDialog.member?.user?.email}</strong> ({removeDialog.member?.user?.email}) {t('admin.fromWorkspaceConfirm', 'from this workspace?')}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRemoveDialog({ open: false, member: null })}>Cancel</Button>
-            <Button variant="destructive" onClick={confirmRemoveMember}>Remove</Button>
+            <Button variant="outline" onClick={() => setRemoveDialog({ open: false, member: null })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button variant="destructive" onClick={confirmRemoveMember}>{t('common.remove', 'Remove')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1320,47 +1322,47 @@ export default function AdminPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-500 font-bold">
-              <Crown className="h-5 w-5" /> Transfer Workspace Ownership
+              <Crown className="h-5 w-5" /> {t('admin.transferOwnershipTitle', 'Transfer Workspace Ownership')}
             </DialogTitle>
           </DialogHeader>
 
           {transferFlow.step === 1 && (
             <div className="space-y-3 py-2">
               <p className="text-sm text-muted-foreground">
-                Select the <strong>ADMIN</strong> member you want to transfer workspace ownership to:
+                {t('admin.transferStep1Prompt', 'Select the ADMIN member you want to transfer workspace ownership to:')}
               </p>
               <div>
-                <Label className="text-xs font-medium mb-1 block">Select Admin Member</Label>
+                <Label className="text-xs font-medium mb-1 block">{t('admin.selectAdminMemberLabel', 'Select Admin Member')}</Label>
                 <Select
                   value={transferFlow.targetEmail}
                   onValueChange={(val) => setTransferFlow({ ...transferFlow, targetEmail: val })}
                 >
                   <SelectTrigger className="w-full text-xs">
-                    <SelectValue placeholder="Choose an Admin to transfer ownership..." />
+                    <SelectValue placeholder={t('admin.chooseAdminPlaceholder', 'Choose an Admin to transfer ownership...')} />
                   </SelectTrigger>
                   <SelectContent>
                     {adminMembers.map((m) => (
                       <SelectItem key={m.id} value={m.user?.email}>
-                        <span className="font-medium">{m.user?.fullName || m.user?.email}</span> ({m.user?.email}) - [{m.role}]
+                        <span className="font-medium">{m.user?.fullName || m.user?.email}</span> ({m.user?.email}) - [{t(`roles.${m.role.toLowerCase()}`, m.role)}]
                       </SelectItem>
                     ))}
                     {adminMembers.length === 0 && (
                       <div className="p-3 text-xs text-muted-foreground text-center">
-                        No active Admin members found in this workspace.
+                        {t('admin.noActiveAdmins', 'No active Admin members found in this workspace.')}
                       </div>
                     )}
                   </SelectContent>
                 </Select>
               </div>
               <div className="text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-md border border-border">
-                Note: Only members assigned to an Admin role (*ADMIN, PRINCIPAL, DEAN*) appear in this list.
+                {t('admin.adminTransferNote', 'Note: Only members assigned to an Admin role (ADMIN, PRINCIPAL, DEAN) appear in this list.')}
               </div>
               <DialogFooter className="mt-4">
                 <Button variant="outline" onClick={() => setTransferFlow({ open: false, step: 1, targetEmail: '', verifyEmail: '', targetMember: null, loading: false })}>
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </Button>
                 <Button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold" onClick={handleTransferStep1} disabled={!transferFlow.targetEmail?.trim()}>
-                  Next: Verify Authorization &rarr;
+                  {t('admin.nextVerifyAuth', 'Next: Verify Authorization')} &rarr;
                 </Button>
               </DialogFooter>
             </div>
@@ -1369,18 +1371,18 @@ export default function AdminPage() {
           {transferFlow.step === 2 && (
             <div className="space-y-3 py-2">
               <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-600 space-y-1">
-                <div className="font-semibold">Target Member Verified</div>
+                <div className="font-semibold">{t('admin.targetMemberVerified', 'Target Member Verified')}</div>
                 <div>
-                  <strong>{transferFlow.targetMember?.user?.fullName || transferFlow.targetMember?.user?.email}</strong> ({transferFlow.targetMember?.user?.email}) - <Badge variant="outline" className="text-[9px] uppercase border-amber-500/30 text-amber-500 font-semibold">{transferFlow.targetMember?.role}</Badge>
+                  <strong>{transferFlow.targetMember?.user?.fullName || transferFlow.targetMember?.user?.email}</strong> ({transferFlow.targetMember?.user?.email}) - <Badge variant="outline" className="text-[9px] uppercase border-amber-500/30 text-amber-500 font-semibold">{t(`roles.${transferFlow.targetMember?.role?.toLowerCase()}`, transferFlow.targetMember?.role)}</Badge>
                 </div>
               </div>
 
               <p className="text-sm text-muted-foreground">
-                For security verification, please re-enter <strong>YOUR email address</strong> (<code>{user?.email}</code>) to authorize sending this transfer request:
+                {t('admin.transferSecurityPrompt1', 'For security verification, please re-enter')} <strong>{t('admin.yourEmailAddress', 'YOUR email address')}</strong> (<code>{user?.email}</code>) {t('admin.transferSecurityPrompt2', 'to authorize sending this transfer request:')}
               </p>
 
               <div>
-                <Label className="text-xs font-medium">Your Email (Verification)</Label>
+                <Label className="text-xs font-medium">{t('admin.yourEmailVerification', 'Your Email (Verification)')}</Label>
                 <Input
                   type="email"
                   placeholder={user?.email}
@@ -1392,14 +1394,14 @@ export default function AdminPage() {
 
               <DialogFooter className="mt-4 flex gap-2">
                 <Button variant="outline" onClick={() => setTransferFlow((prev) => ({ ...prev, step: 1 }))}>
-                  &larr; Back
+                  &larr; {t('common.back', 'Back')}
                 </Button>
                 <Button
                   className="bg-amber-600 hover:bg-amber-700 text-white font-semibold flex-1"
                   onClick={handleTransferStep2}
                   disabled={!transferFlow.verifyEmail?.trim() || transferFlow.loading}
                 >
-                  {transferFlow.loading ? 'Sending Request...' : 'Send Transfer Request'}
+                  {transferFlow.loading ? t('admin.sendingRequest', 'Sending Request...') : t('admin.sendTransferRequest', 'Send Transfer Request')}
                 </Button>
               </DialogFooter>
             </div>
@@ -1412,18 +1414,18 @@ export default function AdminPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-destructive flex items-center gap-2">
-              <Trash2 className="h-5 w-5" /> Delete School Wing
+              <Trash2 className="h-5 w-5" /> {t('admin.deleteSchoolWingTitle', 'Delete School Wing')}
             </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete the School Wing <strong>{deleteDeptDialog.dept?.name}</strong>?
+            {t('admin.deleteDeptConfirm', 'Are you sure you want to delete the School Wing')} <strong>{deleteDeptDialog.dept?.name}</strong>?
           </p>
           <p className="text-xs text-destructive bg-destructive/10 p-2.5 rounded-md border border-destructive/20">
-            Warning: All classes and sections inside this wing will also be soft-deleted.
+            {t('admin.deleteDeptWarning', 'Warning: All classes and sections inside this wing will also be soft-deleted.')}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDeptDialog({ open: false, dept: null })}>Cancel</Button>
-            <Button variant="destructive" onClick={confirmDeleteDept}>Delete School Wing</Button>
+            <Button variant="outline" onClick={() => setDeleteDeptDialog({ open: false, dept: null })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button variant="destructive" onClick={confirmDeleteDept}>{t('admin.deleteSchoolWingBtn', 'Delete School Wing')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1433,15 +1435,15 @@ export default function AdminPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-destructive flex items-center gap-2">
-              <Trash2 className="h-5 w-5" /> Delete Class & Section
+              <Trash2 className="h-5 w-5" /> {t('admin.deleteClassSectionTitle', 'Delete Class & Section')}
             </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete the class <strong>{deleteTeamDialog.team?.name}</strong>?
+            {t('admin.deleteTeamConfirm', 'Are you sure you want to delete the class')} <strong>{deleteTeamDialog.team?.name}</strong>?
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTeamDialog({ open: false, team: null })}>Cancel</Button>
-            <Button variant="destructive" onClick={confirmDeleteTeam}>Delete Class</Button>
+            <Button variant="outline" onClick={() => setDeleteTeamDialog({ open: false, team: null })}>{t('common.cancel', 'Cancel')}</Button>
+            <Button variant="destructive" onClick={confirmDeleteTeam}>{t('admin.deleteClassBtn', 'Delete Class')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

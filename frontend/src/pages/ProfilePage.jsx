@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { userApi, fileApi, API_BASE, bugApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2)
 
 export default function ProfilePage() {
   const { user, currentOrg, refresh } = useAuth();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ fullName: '', bio: '', avatarUrl: '' });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
@@ -204,13 +206,13 @@ export default function ProfilePage() {
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold">Profile & Account</h1>
-        <p className="text-muted-foreground">Manage your credentials, login email, password, and personal details</p>
+        <h1 className="font-display text-2xl font-semibold">{t('profile.title', 'Profile & Account')}</h1>
+        <p className="text-muted-foreground">{t('profile.subtitle', 'Manage your credentials, login email, password, and personal details')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Personal Details</CardTitle>
+          <CardTitle className="text-base">{t('profile.personalDetails', 'Personal Details')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pb-4 border-b border-border">
@@ -231,12 +233,12 @@ export default function ProfilePage() {
               </div>
               <div className="text-sm text-muted-foreground">
                 {isInternalIdEmail ? (
-                  <span className="text-amber-400 font-medium">ID Login: {user?.email} (No email linked)</span>
+                  <span className="text-amber-400 font-medium">{t('profile.idLogin', 'ID Login')}: {user?.email} ({t('profile.noEmailLinked', 'No email linked')})</span>
                 ) : (
                   <span className="text-foreground font-medium flex items-center gap-1.5">
                     {user?.email}
                     <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                      ✓ Verified Email
+                      {t('profile.verifiedEmail', '✓ Verified Email')}
                     </Badge>
                   </span>
                 )}
@@ -262,7 +264,7 @@ export default function ProfilePage() {
                   ) : (
                     <Upload className="h-3.5 w-3.5" />
                   )}
-                  {uploading ? 'Uploading…' : 'Upload photo'}
+                  {uploading ? t('profile.uploading', 'Uploading…') : t('profile.uploadPhoto', 'Upload photo')}
                 </Button>
                 {form.avatarUrl && (
                   <Button
@@ -273,7 +275,7 @@ export default function ProfilePage() {
                     className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    Remove
+                    {t('profile.remove', 'Remove')}
                   </Button>
                 )}
               </div>
@@ -282,7 +284,7 @@ export default function ProfilePage() {
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="fullName">Full name</Label>
+              <Label htmlFor="fullName">{t('profile.fullName', 'Full name')}</Label>
               <Input
                 id="fullName"
                 value={form.fullName}
@@ -290,19 +292,19 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio">{t('profile.bio', 'Bio')}</Label>
               <Textarea
                 id="bio"
                 rows={3}
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                placeholder="About you"
+                placeholder={t('profile.aboutYou', 'About you')}
               />
             </div>
           </div>
 
           <Button onClick={save} data-testid="profile-save-btn">
-            Save profile changes
+            {t('profile.saveProfileChanges', 'Save profile changes')}
           </Button>
         </CardContent>
       </Card>
@@ -312,11 +314,11 @@ export default function ProfilePage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">Login Email & Inbox Verification</CardTitle>
+              <CardTitle className="text-base">{t('profile.emailAndVerification', 'Login Email & Inbox Verification')}</CardTitle>
               <CardDescription className="text-xs">
                 {isInternalIdEmail
-                  ? 'Verify and link your real email address with a 6-digit verification code to enable email login and notifications.'
-                  : 'Your active verified email for notifications, announcements, and portal sign in.'}
+                  ? t('profile.unverifiedDesc', 'Verify and link your real email address with a 6-digit verification code to enable email login and notifications.')
+                  : t('profile.verifiedDesc', 'Your active verified email for notifications, announcements, and portal sign in.')}
               </CardDescription>
             </div>
             {!isInternalIdEmail && !isEditingEmail && (
@@ -326,7 +328,7 @@ export default function ProfilePage() {
                 className="text-xs h-7"
                 onClick={() => setIsEditingEmail(true)}
               >
-                Change Email
+                {t('profile.changeEmail', 'Change Email')}
               </Button>
             )}
           </div>
@@ -336,14 +338,14 @@ export default function ProfilePage() {
             <div className="space-y-4">
               {isInternalIdEmail && (
                 <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300">
-                  ⚠️ <strong>No real email is currently linked to your account.</strong> You are logging in via your ID (<code>{user?.email}</code>). Verify your email below to ensure you never lose access.
+                  ⚠️ <strong>{t('profile.noEmailLinked', 'No real email is currently linked to your account.')}</strong> You are logging in via your ID (<code>{user?.email}</code>). Verify your email below to ensure you never lose access.
                 </div>
               )}
 
               {!otpSent ? (
                 <form onSubmit={handleSendOtp} className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="emailInput">Real Email Address</Label>
+                    <Label htmlFor="emailInput">{t('profile.realEmailAddress', 'Real Email Address')}</Label>
                     <Input
                       id="emailInput"
                       type="email"
@@ -353,13 +355,13 @@ export default function ProfilePage() {
                       onChange={(e) => setEmailInput(e.target.value)}
                     />
                     <p className="text-[11px] text-muted-foreground">
-                      A 6-digit confirmation code will be sent to this email to verify that the mailbox exists.
+                      {t('profile.codeSentNote', 'A 6-digit confirmation code will be sent to this email to verify that the mailbox exists.')}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button type="submit" disabled={sendingOtp || !emailInput.trim()} className="gap-2">
                       {sendingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {sendingOtp ? 'Sending Verification Code…' : 'Send 6-Digit Verification Code'}
+                      {sendingOtp ? t('profile.sendingCode', 'Sending Verification Code…') : t('profile.sendCode', 'Send 6-Digit Verification Code')}
                     </Button>
                     {isEditingEmail && (
                       <Button
@@ -370,7 +372,7 @@ export default function ProfilePage() {
                           setEmailInput(user?.email || '');
                         }}
                       >
-                        Cancel
+                        {t('common.cancel', 'Cancel')}
                       </Button>
                     )}
                   </div>
@@ -379,15 +381,15 @@ export default function ProfilePage() {
                 <form onSubmit={handleVerifyOtp} className="space-y-4 p-4 rounded-xl border border-primary/30 bg-primary/5">
                   <div className="space-y-1">
                     <div className="text-xs font-semibold text-foreground">
-                      Enter 6-Digit Code Sent to <span className="font-mono text-primary font-bold">{emailInput}</span>
+                      {t('profile.enterCodeSentTo', 'Enter 6-Digit Code Sent to')} <span className="font-mono text-primary font-bold">{emailInput}</span>
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      Please check your inbox (and spam folder) for the verification code.
+                      {t('profile.checkInboxNote', 'Please check your inbox (and spam folder) for the verification code.')}
                     </p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="otpCode" className="text-xs font-semibold">6-Digit Verification Code</Label>
+                    <Label htmlFor="otpCode" className="text-xs font-semibold">{t('profile.codeLabel', '6-Digit Verification Code')}</Label>
                     <Input
                       id="otpCode"
                       type="text"
@@ -403,7 +405,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2 pt-1">
                     <Button type="submit" disabled={verifyingOtp || otpCode.length < 6} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
                       {verifyingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
-                      {verifyingOtp ? 'Verifying Code…' : '✓ Confirm & Link Email'}
+                      {verifyingOtp ? t('profile.verifyingCode', 'Verifying Code…') : t('profile.confirmAndLink', '✓ Confirm & Link Email')}
                     </Button>
                     <Button
                       type="button"
@@ -412,7 +414,7 @@ export default function ProfilePage() {
                       onClick={() => setOtpSent(false)}
                       className="text-xs text-muted-foreground"
                     >
-                      Change Email / Resend
+                      {t('profile.changeEmailResend', 'Change Email / Resend')}
                     </Button>
                   </div>
                 </form>
@@ -421,11 +423,11 @@ export default function ProfilePage() {
           ) : (
             <div className="flex items-center justify-between p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
               <div className="space-y-0.5">
-                <div className="text-xs font-medium text-emerald-400">Active Verified Email</div>
+                <div className="text-xs font-medium text-emerald-400">{t('profile.activeVerifiedEmail', 'Active Verified Email')}</div>
                 <div className="text-sm font-semibold text-foreground font-mono">{user?.email}</div>
               </div>
               <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
-                ✓ Verified
+                {t('profile.verified', '✓ Verified')}
               </Badge>
             </div>
           )}
@@ -438,11 +440,11 @@ export default function ProfilePage() {
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" />
             <div>
-              <CardTitle className="text-base">Security & Password</CardTitle>
+              <CardTitle className="text-base">{t('profile.securityAndPassword', 'Security & Password')}</CardTitle>
               <CardDescription className="text-xs">
                 {user?.hasPassword
-                  ? 'Update your account password. You can log in using your password alongside your Email or Director ID.'
-                  : 'You logged in with Google OAuth. Set a password below if you would also like to sign in using your Director ID / Email and password.'}
+                  ? t('profile.securityDesc', 'Update your account password. You can log in using your password alongside your Email or Director ID.')
+                  : t('profile.googleOAuthDesc', 'You logged in with Google OAuth. Set a password below if you would also like to sign in using your Director ID / Email and password.')}
               </CardDescription>
             </div>
           </div>
@@ -451,19 +453,19 @@ export default function ProfilePage() {
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             {user?.hasPassword && (
               <div>
-                <Label htmlFor="currentPassword">Current Password</Label>
+                <Label htmlFor="currentPassword">{t('profile.currentPassword', 'Current Password')}</Label>
                 <Input
                   id="currentPassword"
                   type="password"
                   required
                   value={passForm.currentPassword}
                   onChange={(e) => setPassForm({ ...passForm, currentPassword: e.target.value })}
-                  placeholder="Enter current password"
+                  placeholder={t('profile.enterCurrentPassword', 'Enter current password')}
                 />
               </div>
             )}
             <div>
-              <Label htmlFor="newPassword">{user?.hasPassword ? 'New Password' : 'Create Password'}</Label>
+              <Label htmlFor="newPassword">{user?.hasPassword ? t('profile.newPassword', 'New Password') : t('profile.createPassword', 'Create Password')}</Label>
               <Input
                 id="newPassword"
                 type="password"
@@ -471,11 +473,11 @@ export default function ProfilePage() {
                 minLength={6}
                 value={passForm.newPassword}
                 onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })}
-                placeholder="At least 6 characters"
+                placeholder={t('profile.atLeast6Chars', 'At least 6 characters')}
               />
             </div>
             <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t('profile.confirmPassword', 'Confirm Password')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -483,13 +485,13 @@ export default function ProfilePage() {
                 minLength={6}
                 value={passForm.confirmPassword}
                 onChange={(e) => setPassForm({ ...passForm, confirmPassword: e.target.value })}
-                placeholder="Re-enter new password"
+                placeholder={t('profile.reEnterNewPassword', 'Re-enter new password')}
               />
             </div>
 
             <Button type="submit" disabled={passSaving} className="gap-2">
               {passSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
-              {passSaving ? 'Saving…' : user?.hasPassword ? 'Update Password' : 'Set Account Password'}
+              {passSaving ? t('profile.saving', 'Saving…') : user?.hasPassword ? t('profile.updatePassword', 'Update Password') : t('profile.setPassword', 'Set Account Password')}
             </Button>
           </form>
         </CardContent>
@@ -504,9 +506,9 @@ export default function ProfilePage() {
                 <Bug className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-base">Report Bug or System Issue</CardTitle>
+                <CardTitle className="text-base">{t('profile.reportBug', 'Report Bug or System Issue')}</CardTitle>
                 <CardDescription className="text-xs">
-                  Found a glitch, error, or system crash? Submit details and screenshots directly to the development team.
+                  {t('profile.reportBugDesc', 'Found a glitch, error, or system crash? Submit details and screenshots directly to the development team.')}
                 </CardDescription>
               </div>
             </div>
@@ -515,7 +517,7 @@ export default function ProfilePage() {
               className="gap-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-sm self-start sm:self-auto text-xs"
             >
               <Plus className="h-3.5 w-3.5" />
-              Report an Issue
+              {t('profile.reportAnIssue', 'Report an Issue')}
             </Button>
           </div>
         </CardHeader>
@@ -524,7 +526,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
-                My Reported Issues ({myBugReports.length})
+                {t('profile.myReportedIssues', 'My Reported Issues')} ({myBugReports.length})
               </h4>
               <Button
                 variant="ghost"
@@ -533,21 +535,21 @@ export default function ProfilePage() {
                 disabled={loadingBugs}
                 className="text-xs h-7 gap-1 text-muted-foreground hover:text-foreground"
               >
-                {loadingBugs ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Refresh'}
+                {loadingBugs ? <Loader2 className="h-3 w-3 animate-spin" /> : t('common.refresh', 'Refresh')}
               </Button>
             </div>
 
             {loadingBugs && myBugReports.length === 0 ? (
               <div className="p-4 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                Loading your submitted reports...
+                {t('common.loading', 'Loading...')}
               </div>
             ) : myBugReports.length === 0 ? (
               <div className="p-6 text-center rounded-xl border border-dashed border-border/60 bg-muted/20">
                 <CheckCircle2 className="h-8 w-8 text-muted-foreground/60 mx-auto mb-2" />
-                <p className="text-xs font-medium text-foreground">No bug reports submitted yet</p>
+                <p className="text-xs font-medium text-foreground">{t('profile.noBugsYet', 'No bug reports submitted yet')}</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  If you run into any crash or unexpected behavior anywhere in AI Education, click "Report an Issue" above.
+                  {t('profile.reportBugPrompt', 'If you run into any crash or unexpected behavior anywhere in AI Education, click "Report an Issue" above.')}
                 </p>
               </div>
             ) : (

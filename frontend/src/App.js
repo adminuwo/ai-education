@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 // Eagerly loaded critical paths
 import LoginPage from '@/pages/LoginPage';
@@ -154,7 +155,8 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -353,6 +355,7 @@ export default function App() {
           <Toaster richColors position="top-right" />
         </BrowserRouter>
       </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

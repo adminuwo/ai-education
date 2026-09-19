@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { dashboardApi, aiExtendedApi, studentQuizApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -64,6 +65,7 @@ function KpiCard({ icon: Icon, label, value, tone = 'primary', testid }) {
 
 export default function HomePage() {
   const { user, currentOrg } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [empData, setEmpData] = useState(null);
   const [mgrData, setMgrData] = useState(null);
@@ -86,6 +88,30 @@ export default function HomePage() {
 
   const isManagerPlus = ['OWNER', 'ADMIN', 'PRINCIPAL', 'DEAN', 'HOD', 'DIRECTOR'].includes(role);
   const isAdmin = ['OWNER', 'ADMIN', 'PRINCIPAL', 'DIRECTOR'].includes(role);
+
+  const getStatusLabel = (status) => {
+    if (!status) return '';
+    switch (status) {
+      case 'TODO': return t('tasks.statusTodo', 'To do');
+      case 'IN_PROGRESS': return t('tasks.statusInProgress', 'In progress');
+      case 'REVIEW': return t('tasks.statusReview', 'In review');
+      case 'COMPLETED': return t('tasks.statusCompleted', 'Completed');
+      case 'BLOCKED': return t('tasks.statusBlocked', 'Blocked');
+      case 'CANCELLED': return t('tasks.statusCancelled', 'Cancelled');
+      default: return status.replace('_', ' ');
+    }
+  };
+
+  const getPriorityLabel = (priority) => {
+    if (!priority) return '';
+    switch (priority) {
+      case 'LOW': return t('tasks.priorityLow', 'Low');
+      case 'MEDIUM': return t('tasks.priorityMedium', 'Medium');
+      case 'HIGH': return t('tasks.priorityHigh', 'High');
+      case 'URGENT': return t('tasks.priorityUrgent', 'Urgent');
+      default: return priority;
+    }
+  };
 
   const fetchBriefing = useCallback(async () => {
     if (!currentOrg?.id || isStudent) return;
@@ -139,8 +165,8 @@ export default function HomePage() {
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }} className="p-4 sm:p-6 lg:p-8 space-y-6" data-testid="home-page">
       <div>
-        <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">Good to see you, {user?.fullName?.split(' ')[0] || 'there'}.</h1>
-        <p className="text-muted-foreground mt-1">Here's what's happening in <span className="text-foreground font-medium">{currentOrg?.name}</span> today.</p>
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">{t('home.welcomeBack', 'Good to see you')}, {user?.fullName?.split(' ')[0] || 'there'}.</h1>
+        <p className="text-muted-foreground mt-1">{t('home.happeningToday', "Here's what's happening in")} <span className="text-foreground font-medium">{currentOrg?.name}</span> {t('home.today', 'today.')}</p>
       </div>
 
       {/* Student Daily Adaptive Quiz Card */}
@@ -156,21 +182,21 @@ export default function HomePage() {
                   </Badge>
                   <Badge variant="outline" className="bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30 text-[11px]">
                     <Flame className="h-3 w-3 mr-1 text-orange-500" />
-                    {studentQuiz?.streakDays || 0} Day Streak 🔥
+                    {studentQuiz?.streakDays || 0} {t('home.dayStreak', 'Day Streak')} 🔥
                   </Badge>
                 </div>
 
                 <h3 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-                  Daily Adaptive Home Practice Quiz
+                  {t('home.dailyQuiz', 'Daily Adaptive Home Practice Quiz')}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  5 curriculum-aligned questions customized to your grade in <span className="font-semibold text-foreground">{studentQuiz?.classInfo?.className || 'Class'}</span>. Complete daily to level up your mastery.
+                  {t('home.dailyQuizDesc', '5 curriculum-aligned questions customized to your grade in')} <span className="font-semibold text-foreground">{studentQuiz?.classInfo?.className || t('nav.classroom', 'Class')}</span>. {t('home.completeDailyToLevelUp', 'Complete daily to level up your mastery.')}
                 </p>
               </div>
 
               <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
                 <div className="text-right hidden md:block">
-                  <div className="text-[10px] uppercase font-semibold text-muted-foreground">Mastery Score</div>
+                  <div className="text-[10px] uppercase font-semibold text-muted-foreground">{t('home.masteryScore', 'Mastery Score')}</div>
                   <div className="text-sm font-bold text-emerald-500 tabular-nums">{studentQuiz?.totalQuizzes > 0 ? `${studentQuiz.skillScore ?? 0}/100` : '0/100'}</div>
                 </div>
 
@@ -180,7 +206,7 @@ export default function HomePage() {
                   className="font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md px-4 h-9 gap-1.5 rounded-xl w-full sm:w-auto shrink-0"
                 >
                   <Play className="h-3.5 w-3.5 fill-white" />
-                  {studentQuiz?.todayQuiz?.isCompleted ? 'Review Today’s Quiz' : 'Start Daily Quiz (5 mins)'}
+                  {studentQuiz?.todayQuiz?.isCompleted ? t('home.reviewQuiz', 'Review Today’s Quiz') : t('home.startQuiz', 'Start Daily Quiz (5 mins)')}
                 </Button>
               </div>
             </div>
@@ -197,12 +223,12 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                    AI Executive Daily Briefing
+                    {t('home.dailyBriefing', 'AI Executive Daily Briefing')}
                     <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-semibold">
-                      Live Campus Insights
+                      {t('home.liveCampusInsights', 'Live Campus Insights')}
                     </Badge>
                   </h3>
-                  <p className="text-[11px] text-muted-foreground">Auto-generated summary for Directors, Principals & Academic Leaders</p>
+                  <p className="text-[11px] text-muted-foreground">{t('home.briefingSummaryDesc', 'Auto-generated summary for Directors, Principals & Academic Leaders')}</p>
                 </div>
               </div>
 
@@ -213,18 +239,18 @@ export default function HomePage() {
                 disabled={briefingLoading}
                 className="h-7 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
               >
-                <RefreshCw className={`h-3.5 w-3.5 mr-1 ${briefingLoading ? 'animate-spin' : ''}`} /> Refresh Briefing
+                <RefreshCw className={`h-3.5 w-3.5 mr-1 ${briefingLoading ? 'animate-spin' : ''}`} /> {t('home.refreshBriefing', 'Refresh Briefing')}
               </Button>
             </div>
 
             <div className="mt-3 text-xs leading-relaxed text-foreground/90 p-3 rounded-lg bg-card/80 border border-border/60">
               {briefingLoading ? (
                 <div className="flex items-center gap-2 text-muted-foreground animate-pulse py-1">
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-500" /> Synthesizing today's campus briefing...
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-500" /> {t('home.synthesizingBriefing', "Synthesizing today's campus briefing...")}
                 </div>
               ) : (
                 <FormattedMarkdown
-                  content={dailyBriefing || `${currentOrg?.name} campus is operating normally today. Attendance records, active homework tasks, and faculty announcements are up-to-date.`}
+                  content={dailyBriefing || `${currentOrg?.name} ${t('home.campusNormal', 'campus is operating normally today. Attendance records, active homework tasks, and faculty announcements are up-to-date.')}`}
                 />
               )}
             </div>
@@ -235,24 +261,24 @@ export default function HomePage() {
       {/* KPI Row - varies by role */}
       {isStudent ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="kpi-row">
-          <KpiCard icon={BookOpen} label="My Homework" value={empData?.myTasks?.length ?? 0} tone="primary" testid="kpi-homework" />
-          <KpiCard icon={Flame} label="Daily Quiz Streak" value={`${studentQuiz?.streakDays || 0} Days`} tone="warning" testid="kpi-streak" />
-          <KpiCard icon={Zap} label="Mastery Score" value={studentQuiz?.totalQuizzes > 0 ? `${studentQuiz.skillScore ?? 0}/100` : '0/100'} tone="accent" testid="kpi-mastery" />
-          <KpiCard icon={MessageSquare} label="Study Channels" value={empData?.myChannels ?? 0} tone="info" testid="kpi-channels" />
+          <KpiCard icon={BookOpen} label={t('home.myHomework', 'My Homework')} value={empData?.myTasks?.length ?? 0} tone="primary" testid="kpi-homework" />
+          <KpiCard icon={Flame} label={t('home.dailyQuizStreak', 'Daily Quiz Streak')} value={`${studentQuiz?.streakDays || 0} ${t('common.days', 'Days')}`} tone="warning" testid="kpi-streak" />
+          <KpiCard icon={Zap} label={t('home.masteryScore', 'Mastery Score')} value={studentQuiz?.totalQuizzes > 0 ? `${studentQuiz.skillScore ?? 0}/100` : '0/100'} tone="accent" testid="kpi-mastery" />
+          <KpiCard icon={MessageSquare} label={t('home.studyChannels', 'Study Channels')} value={empData?.myChannels ?? 0} tone="info" testid="kpi-channels" />
         </div>
       ) : isAdmin && orgData ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="kpi-row">
-          <KpiCard icon={Users} label="Members" value={orgData.metrics.members} tone="primary" testid="kpi-members" />
-          <KpiCard icon={Building2} label="Departments" value={orgData.metrics.departments} tone="accent" testid="kpi-departments" />
-          <KpiCard icon={Layers} label="Projects" value={orgData.metrics.projects} tone="info" testid="kpi-projects" />
-          <KpiCard icon={Sparkles} label="AI messages" value={orgData.aiUsage} tone="accent" testid="kpi-ai" />
+          <KpiCard icon={Users} label={t('home.members', 'Members')} value={orgData.metrics.members} tone="primary" testid="kpi-members" />
+          <KpiCard icon={Building2} label={t('home.departments', 'Departments')} value={orgData.metrics.departments} tone="accent" testid="kpi-departments" />
+          <KpiCard icon={Layers} label={t('home.projects', 'Projects')} value={orgData.metrics.projects} tone="info" testid="kpi-projects" />
+          <KpiCard icon={Sparkles} label={t('home.aiMessages', 'AI messages')} value={orgData.aiUsage} tone="accent" testid="kpi-ai" />
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="kpi-row">
-          <KpiCard icon={ListTodo} label="My tasks" value={empData?.myTasks?.length ?? 0} tone="primary" testid="kpi-mytasks" />
-          <KpiCard icon={Timer} label="Upcoming meetings" value={empData?.myMeetings?.length ?? 0} tone="accent" testid="kpi-meetings" />
-          <KpiCard icon={Bell} label="Unread notifs" value={empData?.unreadNotifications ?? 0} tone="warning" testid="kpi-notifs" />
-          <KpiCard icon={MessageSquare} label="My channels" value={empData?.myChannels ?? 0} tone="info" testid="kpi-channels" />
+          <KpiCard icon={ListTodo} label={t('home.myTasks', 'My tasks')} value={empData?.myTasks?.length ?? 0} tone="primary" testid="kpi-mytasks" />
+          <KpiCard icon={Timer} label={t('home.upcomingMeetings', 'Upcoming meetings')} value={empData?.myMeetings?.length ?? 0} tone="accent" testid="kpi-meetings" />
+          <KpiCard icon={Bell} label={t('home.unreadNotifs', 'Unread notifs')} value={empData?.unreadNotifications ?? 0} tone="warning" testid="kpi-notifs" />
+          <KpiCard icon={MessageSquare} label={t('home.myChannels', 'My channels')} value={empData?.myChannels ?? 0} tone="info" testid="kpi-channels" />
         </div>
       )}
 
@@ -260,24 +286,24 @@ export default function HomePage() {
         {/* My tasks (all roles) */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base font-semibold">My tasks</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/app/tasks')}>View all</Button>
+            <CardTitle className="text-base font-semibold">{t('home.myTasks', 'My tasks')}</CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/app/tasks')}>{t('home.viewAll', 'View all')}</Button>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-border">
-              {(empData?.myTasks || []).slice(0, 6).map((t) => (
-                <button key={t.id} onClick={() => navigate('/app/tasks')} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 text-left">
-                  <div className={`h-2 w-2 rounded-full ${t.status === 'COMPLETED' ? 'bg-emerald-500' : t.status === 'BLOCKED' ? 'bg-destructive' : t.priority === 'URGENT' ? 'bg-orange-500' : 'bg-primary'}`} />
+              {(empData?.myTasks || []).slice(0, 6).map((taskItem) => (
+                <button key={taskItem.id} onClick={() => navigate('/app/tasks')} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 text-left">
+                  <div className={`h-2 w-2 rounded-full ${taskItem.status === 'COMPLETED' ? 'bg-emerald-500' : taskItem.status === 'BLOCKED' ? 'bg-destructive' : taskItem.priority === 'URGENT' ? 'bg-orange-500' : 'bg-primary'}`} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{t.title}</div>
-                    <div className="text-xs text-muted-foreground truncate">{t.project?.name || 'No project'} · {t.priority}</div>
+                    <div className="text-sm font-medium truncate">{taskItem.title}</div>
+                    <div className="text-xs text-muted-foreground truncate">{taskItem.project?.name || t('common.noProject', 'No project')} · {getPriorityLabel(taskItem.priority)}</div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] uppercase">{t.status.replace('_', ' ')}</Badge>
+                  <Badge variant="outline" className="text-[10px] uppercase">{getStatusLabel(taskItem.status)}</Badge>
                 </button>
               ))}
               {(!empData?.myTasks?.length) && (
                 <div className="p-6 text-center text-sm text-muted-foreground">
-                  You're all clear. 🎉 <Button variant="link" onClick={() => navigate('/app/tasks')} className="px-1">Create a task</Button>
+                  {t('home.allClear', "You're all clear. 🎉")} <Button variant="link" onClick={() => navigate('/app/tasks')} className="px-1">{t('home.createTask', 'Create a task')}</Button>
                 </div>
               )}
             </div>
@@ -286,7 +312,7 @@ export default function HomePage() {
 
         {/* Task status donut */}
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Task status</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base font-semibold">{t('home.taskStatus', 'Task status')}</CardTitle></CardHeader>
           <CardContent>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
@@ -304,7 +330,7 @@ export default function HomePage() {
               {(empData?.taskStatusChart || []).map((s) => (
                 <div key={s.status} className="flex items-center gap-1.5 text-xs">
                   <div className="h-2.5 w-2.5 rounded-sm" style={{ background: STATUS_COLORS[s.status] }} />
-                  {s.status.replace('_', ' ')} <span className="tabular-nums text-muted-foreground">({s.count})</span>
+                  {getStatusLabel(s.status)} <span className="tabular-nums text-muted-foreground">({s.count})</span>
                 </div>
               ))}
             </div>
@@ -319,7 +345,7 @@ export default function HomePage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
-                <span>Team workload</span>
+                <span>{t('home.teamWorkload', 'Team workload')}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -338,11 +364,11 @@ export default function HomePage() {
                       })
                       .sort((a, b) => (b.openTasks || 0) - (a.openTasks || 0))
                       .map((w) => {
-                        const rawFirstName = w.user?.fullName?.split(' ')[0] || 'Unknown';
+                        const rawFirstName = w.user?.fullName?.split(' ')[0] || t('common.unknown', 'Unknown');
                         const displayName = rawFirstName.length > 10 ? `${rawFirstName.slice(0, 9)}…` : rawFirstName;
                         return {
                           name: displayName,
-                          fullName: w.user?.fullName || 'Unknown',
+                          fullName: w.user?.fullName || t('common.unknown', 'Unknown'),
                           tasks: w.openTasks || 0,
                         };
                       })}
@@ -367,27 +393,27 @@ export default function HomePage() {
                     />
                     <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} tickLine={false} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--accent) / 0.15)', rx: 4 }} />
-                    <Bar dataKey="tasks" name="Active Tasks" fill="url(#mgrWorkloadGrad)" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="tasks" name={t('home.activeTasks', 'Active Tasks')} fill="url(#mgrWorkloadGrad)" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
           <Card className="glass-card-highlight">
-            <CardHeader><CardTitle className="text-base font-semibold">Recent activity</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base font-semibold">{t('home.recentActivity', 'Recent activity')}</CardTitle></CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
-                {(mgrData.recentActivity || []).slice(0, 6).map((t) => (
-                  <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
+                {(mgrData.recentActivity || []).slice(0, 6).map((tItem) => (
+                  <div key={tItem.id} className="flex items-center gap-3 px-4 py-2.5">
                     <Avatar className="h-7 w-7">
-                      <AvatarImage src={t.createdBy?.avatarUrl} />
-                      <AvatarFallback className="text-[10px] bg-primary/10 text-primary">{initials(t.createdBy?.fullName)}</AvatarFallback>
+                      <AvatarImage src={tItem.createdBy?.avatarUrl} />
+                      <AvatarFallback className="text-[10px] bg-primary/10 text-primary">{initials(tItem.createdBy?.fullName)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{t.title}</div>
-                      <div className="text-xs text-muted-foreground">Updated {new Date(t.updatedAt).toLocaleString()}</div>
+                      <div className="text-sm font-medium truncate">{tItem.title}</div>
+                      <div className="text-xs text-muted-foreground">{t('home.updated', 'Updated')} {new Date(tItem.updatedAt).toLocaleString()}</div>
                     </div>
-                    <Badge variant="outline" className="text-[10px] uppercase">{t.status.replace('_', ' ')}</Badge>
+                    <Badge variant="outline" className="text-[10px] uppercase">{getStatusLabel(tItem.status)}</Badge>
                   </div>
                 ))}
               </div>
@@ -400,7 +426,7 @@ export default function HomePage() {
       {isAdmin && orgData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
-            <CardHeader><CardTitle className="text-base font-semibold">Member growth</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base font-semibold">{t('home.memberGrowth', 'Member growth')}</CardTitle></CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -416,15 +442,15 @@ export default function HomePage() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle className="text-base font-semibold">Organization overview</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base font-semibold">{t('home.orgOverview', 'Organization overview')}</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
-                <Stat label="Teams" value={orgData.metrics.teams} />
-                <Stat label="Channels" value={orgData.metrics.channels} />
-                <Stat label="Tasks total" value={orgData.metrics.tasks} />
-                <Stat label="Meetings" value={orgData.metrics.meetings} />
-                <Stat label="Files" value={orgData.metrics.files} />
-                <Stat label="Active channels" value={orgData.channelsActive} />
+                <Stat label={t('home.teams', 'Teams')} value={orgData.metrics.teams} />
+                <Stat label={t('home.channels', 'Channels')} value={orgData.metrics.channels} />
+                <Stat label={t('home.tasksTotal', 'Tasks total')} value={orgData.metrics.tasks} />
+                <Stat label={t('home.meetings', 'Meetings')} value={orgData.metrics.meetings} />
+                <Stat label={t('home.files', 'Files')} value={orgData.metrics.files} />
+                <Stat label={t('home.activeChannels', 'Active channels')} value={orgData.channelsActive} />
               </div>
             </CardContent>
           </Card>

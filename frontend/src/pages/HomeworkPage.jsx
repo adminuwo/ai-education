@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { taskApi, orgApi, homeworkApi, parentApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,7 @@ const PRIORITY_CFG = {
 
 export default function HomeworkPage() {
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Role Checks
@@ -490,32 +492,32 @@ export default function HomeworkPage() {
           <div>
             <h1 className="text-2xl font-bold font-display tracking-tight flex items-center gap-2">
               {isParent
-                ? "Child's Homework & Progress"
+                ? t('homework.childHomeworkProgress', "Child's Homework & Progress")
                 : isStudent
-                ? 'My Homework & Assignments'
+                ? t('homework.myHomeworkAssignments', 'My Homework & Assignments')
                 : isPrincipalOrDirector
-                ? 'Faculty Homework & Institutional Oversight Portal'
+                ? t('homework.facultyHomeworkPortal', 'Faculty Homework & Institutional Oversight Portal')
                 : isDeanOrHOD
-                ? 'Departmental Faculty Homework Oversight'
-                : 'My Homework & Submissions Portal'}
+                ? t('homework.deptHomeworkOversight', 'Departmental Faculty Homework Oversight')
+                : t('homework.homeworkSubmissionsPortal', 'My Homework & Submissions Portal')}
             </h1>
             <p className="text-xs text-muted-foreground">
               {isParent
-                ? "View your child's assigned homework, submission progress, and teacher grades."
+                ? t('homework.childHomeworkDesc', "View your child's assigned homework, submission progress, and teacher grades.")
                 : isStudent
-                ? 'View assigned homework, submit completed work for teacher review, and track progress.'
+                ? t('homework.studentHomeworkDesc', 'View assigned homework, submit completed work for teacher review, and track progress.')
                 : isPrincipalOrDirector
-                ? 'Monitor departments, inspect faculty homework assignments, and oversee evaluation compliance.'
+                ? t('homework.facultyOversightDesc', 'Monitor departments, inspect faculty homework assignments, and oversee evaluation compliance.')
                 : isDeanOrHOD
-                ? 'Inspect teachers under your department and review homework assigned to class sections.'
-                : 'Assign homework to class sections, review student submissions, and manage grading.'}
+                ? t('homework.deptOversightDesc', 'Inspect teachers under your department and review homework assigned to class sections.')
+                : t('homework.teacherPortalDesc', 'Assign homework to class sections, review student submissions, and manage grading.')}
             </p>
           </div>
         </div>
 
         {isTeacherOrAdmin && (
           <Button onClick={() => setOpenCreateModal(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-md">
-            <Plus className="h-4 w-4 mr-1.5" /> Assign Homework
+            <Plus className="h-4 w-4 mr-1.5" /> {t('homework.assignHomework', 'Assign Homework')}
           </Button>
         )}
       </div>
@@ -526,13 +528,13 @@ export default function HomeworkPage() {
           {isStudentOrParent ? (
             <TabsList className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl border border-border/50">
               <TabsTrigger value="pending" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" data-testid="tab-pending">
-                Assigned
+                {t('homework.assigned', 'Assigned')}
               </TabsTrigger>
               <TabsTrigger value="review" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" data-testid="tab-review">
-                Under Review
+                {t('homework.underReview', 'Under Review')}
               </TabsTrigger>
               <TabsTrigger value="completed" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" data-testid="tab-completed">
-                Approved & Graded
+                {t('homework.approvedGraded', 'Approved & Graded')}
               </TabsTrigger>
             </TabsList>
           ) : (
@@ -540,11 +542,11 @@ export default function HomeworkPage() {
               {isOversightRole && (
                 <TabsTrigger value="oversight" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 text-emerald-500" data-testid="tab-oversight">
                   {isPrincipalOrDirector ? <Building2 className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />}
-                  {isPrincipalOrDirector ? 'Faculty Oversight' : 'Department Oversight'}
+                  {isPrincipalOrDirector ? t('homework.facultyOversight', 'Faculty Oversight') : t('homework.deptOversight', 'Department Oversight')}
                 </TabsTrigger>
               )}
               <TabsTrigger value="review" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5" data-testid="tab-review">
-                Submissions for Review
+                {t('homework.submissionsForReview', 'Submissions for Review')}
                 {tasks.filter((t) => t.status === 'REVIEW' && t.createdById === user?.id).length > 0 && (
                   <Badge variant="destructive" className="px-1.5 py-0 text-[10px] rounded-full font-bold">
                     {tasks.filter((t) => t.status === 'REVIEW' && t.createdById === user?.id).length}
@@ -552,10 +554,10 @@ export default function HomeworkPage() {
                 )}
               </TabsTrigger>
               <TabsTrigger value="active" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" data-testid="tab-active">
-                My Assignments
+                {t('homework.myAssignments', 'My Assignments')}
               </TabsTrigger>
               <TabsTrigger value="completed" className="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" data-testid="tab-completed">
-                Completed
+                {t('homework.completed', 'Completed')}
               </TabsTrigger>
             </TabsList>
           )}
@@ -566,7 +568,7 @@ export default function HomeworkPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search homework..."
+              placeholder={t('homework.searchHomework', 'Search homework...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 h-9 text-xs"
@@ -588,7 +590,7 @@ export default function HomeworkPage() {
                 }}
                 className={`hover:text-primary transition-colors flex items-center gap-1 ${!selectedDept ? 'text-foreground font-bold' : ''}`}
               >
-                <Building2 className="h-3.5 w-3.5" /> All Departments
+                <Building2 className="h-3.5 w-3.5" /> {t('homework.allDepartments', 'All Departments')}
               </button>
             )}
 
@@ -606,7 +608,7 @@ export default function HomeworkPage() {
 
             {isDeanOrHOD && !selectedDept && (
               <span className={`flex items-center gap-1 ${!selectedTeacher ? 'text-foreground font-bold' : ''}`}>
-                <Users className="h-3.5 w-3.5" /> Department Teachers
+                <Users className="h-3.5 w-3.5" /> {t('homework.deptTeachers', 'Department Teachers')}
               </span>
             )}
 
@@ -629,7 +631,7 @@ export default function HomeworkPage() {
                 }}
                 className="ml-auto h-7 text-[11px] text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="h-3 w-3 mr-1" /> Back
+                <ArrowLeft className="h-3 w-3 mr-1" /> {t('common.back', 'Back')}
               </Button>
             )}
           </div>
@@ -638,8 +640,8 @@ export default function HomeworkPage() {
           {isPrincipalOrDirector && !selectedDept && !selectedTeacher && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground">Select Department to Inspect Faculty Homework</h3>
-                <span className="text-xs text-muted-foreground">{oversightDepts.length} Departments Recorded</span>
+                <h3 className="text-sm font-bold text-foreground">{t('homework.selectDeptToInspect', 'Select Department to Inspect Faculty Homework')}</h3>
+                <span className="text-xs text-muted-foreground">{oversightDepts.length} {t('homework.departmentsRecorded', 'Departments Recorded')}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

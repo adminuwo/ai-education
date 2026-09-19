@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { connectSocket, getSocket } from '@/lib/socket';
 import { meetingApi, orgApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +25,7 @@ function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2)
 
 export default function MeetingsPage() {
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const targetMeetingId = searchParams.get('meetingId');
 
@@ -526,12 +528,12 @@ export default function MeetingsPage() {
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 lg:p-8 space-y-6" data-testid="meetings-page">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Meetings</h1>
-          <p className="text-muted-foreground">Schedule in-app HD video calls or external meetings with attendees-only access.</p>
+          <h1 className="font-display text-2xl font-semibold">{t('meetings.title', 'Meetings')}</h1>
+          <p className="text-muted-foreground">{t('meetings.subtitle', 'Schedule in-app HD video calls or external meetings with attendees-only access.')}</p>
         </div>
         {!isStudent && (
           <Button onClick={() => { loadDepartments(); setOpenCreate(true); }} data-testid="new-meeting-btn">
-            <Plus className="h-4 w-4 mr-1" /> New meeting
+            <Plus className="h-4 w-4 mr-1" /> {t('meetings.newMeeting', 'New meeting')}
           </Button>
         )}
       </div>
@@ -539,10 +541,10 @@ export default function MeetingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Active / Upcoming Meetings */}
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Active & Scheduled Meetings ({upcoming.length})</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base font-semibold">{t('meetings.activeMeetings', 'Active & Scheduled Meetings')} ({upcoming.length})</CardTitle></CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-border">
-              {upcoming.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted-foreground">No active or upcoming meetings assigned to you</div>}
+              {upcoming.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted-foreground">{t('meetings.noActiveMeetings', 'No active or upcoming meetings assigned to you')}</div>}
               {upcoming.map((m) => {
                 const isJitsi = isJitsiMeeting(m.meetingUrl);
                 const isCancelled = m.status === 'CANCELLED';
@@ -562,7 +564,7 @@ export default function MeetingsPage() {
                         </button>
                         {isCancelled && (
                           <span className="ml-2 text-xs font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
-                            CANCELLED
+                            {t('meetings.cancelled', 'CANCELLED')}
                           </span>
                         )}
                       </div>
@@ -594,7 +596,7 @@ export default function MeetingsPage() {
                         ))}
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => openDetail(m)}>Details</Button>
+                        <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => openDetail(m)}>{t('common.details', 'Details')}</Button>
 
                         {isOrganizer && !isCancelled && (
                           <>
@@ -614,13 +616,13 @@ export default function MeetingsPage() {
                           canJoinNow ? (
                             isJitsi ? (
                               <Button size="sm" className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-sm" onClick={() => startInAppCall(m)}>
-                                <Video className="h-3.5 w-3.5 mr-1" /> Join Call
+                                <Video className="h-3.5 w-3.5 mr-1" /> {t('meetings.joinCall', 'Join Call')}
                               </Button>
                             ) : (
                               m.meetingUrl && (
                                 <Button size="sm" variant="outline" className="h-8 text-xs" asChild>
                                   <a href={m.meetingUrl} target="_blank" rel="noreferrer">
-                                    <ExternalLink className="h-3.5 w-3.5 mr-1" /> Join Link
+                                    <ExternalLink className="h-3.5 w-3.5 mr-1" /> {t('meetings.joinMeeting', 'Join Link')}
                                   </a>
                                 </Button>
                               )
@@ -647,7 +649,7 @@ export default function MeetingsPage() {
 
         {/* Past Meetings */}
         <Card>
-          <CardHeader><CardTitle className="text-base font-semibold">Past ({past.length})</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base font-semibold">{t('meetings.pastMeetings', 'Past Meetings')} ({past.length})</CardTitle></CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-border">
               {past.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted-foreground">No past meetings</div>}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { channelApi, aiApi, userApi, orgApi, fileApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getSocket, connectSocket } from '@/lib/socket';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,6 +118,7 @@ function formatMessageContent(content) {
 // systemTags update below
 
 function MessageRow({ m, currentUserId, currentUserRole, onReact, onEdit, onDelete, onPin, onReply, isThread }) {
+  const { t } = useLanguage();
   const [showActions, setShowActions] = useState(false);
   const isAI = m.type === 'AI' || m.sender?.email === 'ai@system';
   const isMe = m.senderId === currentUserId;
@@ -148,12 +150,12 @@ function MessageRow({ m, currentUserId, currentUserRole, onReact, onEdit, onDele
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold">{isAI ? 'AI Assistant' : (m.sender?.fullName || 'Unknown')}</span>
+          <span className="text-sm font-semibold">{isAI ? t('nav.ai', 'AI Assistant') : (m.sender?.fullName || t('common.unknown', 'Unknown'))}</span>
           <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(m.createdAt), { addSuffix: true })}</span>
-          {m.isEdited && <span className="text-xs text-muted-foreground">(edited)</span>}
+          {m.isEdited && <span className="text-xs text-muted-foreground">{t('channel.edited', '(edited)')}</span>}
         </div>
         <div className="text-sm mt-0.5 whitespace-pre-wrap break-words leading-relaxed">
-          {m.isDeleted ? <em className="text-muted-foreground">This message was deleted</em> : formatMessageContent(m.content)}
+          {m.isDeleted ? <em className="text-muted-foreground">{t('channel.messageDeleted', 'This message was deleted')}</em> : formatMessageContent(m.content)}
         </div>
         {Object.entries(reactionsGrouped).length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
@@ -165,7 +167,9 @@ function MessageRow({ m, currentUserId, currentUserRole, onReact, onEdit, onDele
           </div>
         )}
         {(m._count?.replies > 0 && !isThread) && (
-          <button onClick={() => onReply(m)} className="mt-1 text-xs text-primary hover:underline flex items-center gap-1"><Reply className="h-3 w-3" /> {m._count.replies} repl{m._count.replies === 1 ? 'y' : 'ies'}</button>
+          <button onClick={() => onReply(m)} className="mt-1 text-xs text-primary hover:underline flex items-center gap-1">
+            <Reply className="h-3 w-3" /> {m._count.replies === 1 ? t('channel.replySingle', '{{count}} reply', { count: 1 }) : t('channel.repliesCount', '{{count}} replies', { count: m._count.replies, plural: 'ies' })}
+          </button>
         )}
       </div>
       {showActions && !m.isDeleted && (
@@ -183,7 +187,7 @@ function MessageRow({ m, currentUserId, currentUserRole, onReact, onEdit, onDele
           {!isThread && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onReply(m)}><Reply className="h-3.5 w-3.5" /></Button>}
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onPin(m)}><Pin className="h-3.5 w-3.5" /></Button>
           {isMe && <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(m)}><Pencil className="h-3.5 w-3.5" /></Button>}
-          {canDelete && <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(m)} title="Delete message"><Trash2 className="h-3.5 w-3.5" /></Button>}
+          {canDelete && <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => onDelete(m)} title={t('channel.deleteMessage', 'Delete message')}><Trash2 className="h-3.5 w-3.5" /></Button>}
         </div>
       )}
     </div>
@@ -194,6 +198,7 @@ export default function ChannelPage() {
   const { channelId } = useParams();
   const navigate = useNavigate();
   const { user, currentOrg } = useAuth();
+  const { t } = useLanguage();
   const [channel, setChannel] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -697,10 +702,10 @@ export default function ChannelPage() {
   const confirmDeleteChannel = async () => {
     try {
       await channelApi.deleteChannel(channelId);
-      toast.success('Channel deleted');
+      toast.success(t('channel.channelDeleted', 'Channel deleted'));
       navigate('/app/home');
     } catch (e) {
-      toast.error(e?.response?.data?.error || 'Failed to delete channel');
+      toast.error(e?.response?.data?.error || t('channel.failedToDeleteChannel', 'Failed to delete channel'));
     }
   };
 
@@ -743,13 +748,13 @@ export default function ChannelPage() {
             <div className="flex items-center gap-1.5 ml-1 bg-muted/40 px-2 py-0.5 rounded-full border border-border/50">
               <span className={`h-2 w-2 rounded-full ${dmPartner?.status === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/40'}`} />
               <span className="text-[11px] font-semibold text-muted-foreground">
-                {dmPartner?.status === 'online' ? 'Online' : 'Offline'}
+                {dmPartner?.status === 'online' ? t('channel.online', 'Online') : t('channel.offline', 'Offline')}
               </span>
             </div>
           )}
           {isAlumniChannel ? (
             <Badge variant="outline" className="text-[10px] uppercase font-bold bg-amber-500/10 text-amber-400 border-amber-500/30">
-              Alumni Network
+              {t('channel.alumniNetwork', 'Alumni Network')}
             </Badge>
           ) : (
             <Badge variant="outline" className="text-[10px] uppercase">{channel?.type}</Badge>
@@ -763,7 +768,7 @@ export default function ChannelPage() {
               data-testid="channel-members-btn"
             >
               <UserPlus className="h-3.5 w-3.5" />
-              <span>{channel?.members?.length || channel?._count?.members || 0} {isAlumniChannel ? 'alumni & faculty' : 'members'}</span>
+              <span>{channel?.members?.length || channel?._count?.members || 0} {isAlumniChannel ? t('channel.alumniAndFaculty', 'alumni & faculty') : t('channel.members', 'members')}</span>
             </Button>
           )}
         </div>
@@ -777,10 +782,10 @@ export default function ChannelPage() {
                 ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
                 : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
             }`}
-            title={isAlumniChannel ? 'Alumni Archives, Yearbooks & Batch Records' : 'Class Files & Study Knowledge Base'}
+            title={isAlumniChannel ? t('channel.alumniBatchFiles', 'Alumni Archives, Yearbooks & Batch Records') : t('channel.classFiles', 'Class Files & Study Knowledge Base')}
           >
             {isAlumniChannel ? <GraduationCap className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
-            {isAlumniChannel ? 'Alumni & Batch Files' : 'Class Files'}
+            {isAlumniChannel ? t('channel.alumniBatchFiles', 'Alumni & Batch Files') : t('channel.classFiles', 'Class Files')}
             {studyFiles.length > 0 && (
               <Badge variant="secondary" className={`ml-1 text-[10px] px-1.5 py-0 ${isAlumniChannel ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
                 {studyFiles.length}
@@ -796,7 +801,7 @@ export default function ChannelPage() {
               size="icon"
               onClick={doDeleteChannel}
               className="h-8 w-8 text-muted-foreground hover:text-destructive"
-              title="Delete channel"
+              title={t('channel.deleteChannelBtn', 'Delete channel')}
               data-testid="delete-channel-btn"
             >
               <Trash2 className="h-4 w-4" />
@@ -805,9 +810,9 @@ export default function ChannelPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild><Button variant="ghost" size="sm" className="gap-1" data-testid="channel-ai-menu"><Sparkles className="h-4 w-4" /> AI</Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={doGenDraft} data-testid="ai-gen-draft"><Wand2 className="h-4 w-4 mr-2" /> Draft message</DropdownMenuItem>
-              <DropdownMenuItem onClick={doSummarize} data-testid="ai-summarize"><Sparkles className="h-4 w-4 mr-2" /> Summarize channel</DropdownMenuItem>
-              <DropdownMenuItem onClick={doGenTasks} data-testid="ai-gen-tasks"><ListTodo className="h-4 w-4 mr-2" /> Generate tasks</DropdownMenuItem>
+              <DropdownMenuItem onClick={doGenDraft} data-testid="ai-gen-draft"><Wand2 className="h-4 w-4 mr-2" /> {t('channel.draftMessage', 'Draft message')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={doSummarize} data-testid="ai-summarize"><Sparkles className="h-4 w-4 mr-2" /> {t('channel.summarizeChannel', 'Summarize channel')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={doGenTasks} data-testid="ai-gen-tasks"><ListTodo className="h-4 w-4 mr-2" /> {t('channel.generateTasks', 'Generate tasks')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -822,13 +827,13 @@ export default function ChannelPage() {
                   <GraduationCap className="h-8 w-8 text-amber-400" />
                 </div>
                 <Badge variant="outline" className="text-[11px] font-bold px-3 py-0.5 bg-amber-500/10 text-amber-400 border-amber-500/30 mb-2 uppercase tracking-wide">
-                  Official Alumni Batch Hub
+                  {t('channel.alumniHubBadge', 'Official Alumni Batch Hub')}
                 </Badge>
                 <h3 className="text-xl font-bold tracking-tight text-foreground">
-                  Welcome to #{channel?.name}
+                  {t('channel.welcomeTo', 'Welcome to #{{name}}', { name: channel?.name })}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed max-w-md">
-                  Official networking hub for the Graduating Class. Connect with fellow alumni, share career milestones, reunion announcements, mentorship opportunities, and stay connected with your Alma Mater.
+                  {t('channel.alumniHubDesc', 'Official networking hub for the Graduating Class. Connect with fellow alumni, share career milestones, reunion announcements, mentorship opportunities, and stay connected with your Alma Mater.')}
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   <Button
@@ -838,7 +843,7 @@ export default function ChannelPage() {
                     className="h-8 text-xs font-semibold bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20 gap-1.5"
                   >
                     <GraduationCap className="h-3.5 w-3.5" />
-                    View Batch Archives & Yearbooks
+                    {t('channel.viewBatchArchives', 'View Batch Archives & Yearbooks')}
                   </Button>
                 </div>
               </div>
@@ -846,7 +851,7 @@ export default function ChannelPage() {
               <>
                 <Users className="h-10 w-10 text-muted-foreground" />
                 <h3 className="font-semibold mt-3">
-                  {channel?.type === 'DIRECT' ? `Direct message with ${dmPartner?.fullName || 'user'}` : `Welcome to #${channel?.name}`}
+                  {channel?.type === 'DIRECT' ? t('channel.directMessageWith', 'Direct message with {{name}}', { name: dmPartner?.fullName || 'user' }) : t('channel.welcomeTo', 'Welcome to #{{name}}', { name: channel?.name })}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">This is the start of your direct conversation. Say hello or mention <span className="font-mono">@AI</span> to get help.</p>
               </>
@@ -933,10 +938,10 @@ export default function ChannelPage() {
               className="min-h-[52px] max-h-40 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
               placeholder={
                 isAlumniChannel
-                  ? `Post an announcement or message #${channel?.name}… (type @ to tag)`
+                  ? t('channel.messagePlaceholder', 'Message #{{name}}...', { name: channel?.name })
                   : channel?.type === 'DIRECT'
-                  ? `Message ${dmPartner?.fullName || 'user'}…`
-                  : `Message #${channel?.name} — type @ to tag users, team, or project`
+                  ? t('channel.directMessageWith', 'Message {{name}}…', { name: dmPartner?.fullName || 'user' })
+                  : t('channel.messagePlaceholder', 'Message #{{name}}...', { name: channel?.name })
               }
               value={text}
               onChange={handleInputChange}
@@ -976,7 +981,7 @@ export default function ChannelPage() {
               data-testid="chat-input"
             />
             <div className="flex items-center justify-between px-2 py-1.5 border-t border-border/60">
-              <div className="text-xs text-muted-foreground">Enter to send · Shift+Enter for newline</div>
+              <div className="text-xs text-muted-foreground">{t('channel.inputHint', 'Enter to send · Shift+Enter for newline')}</div>
               <div className="flex items-center gap-1">
                 <Button
                   type="button"
@@ -988,7 +993,7 @@ export default function ChannelPage() {
                   data-testid="chat-ai-draft-btn"
                 >
                   {drafting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-                  {drafting ? 'Drafting…' : 'AI Draft'}
+                  {drafting ? t('channel.drafting', 'Drafting…') : t('channel.aiDraft', 'AI Draft')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -1000,11 +1005,11 @@ export default function ChannelPage() {
                     textareaRef.current?.focus();
                   }}
                   className="text-xs gap-1 text-muted-foreground hover:text-foreground"
-                  title="Tag members, teams, or AI"
+                  title={t('channel.tagTitle', 'Tag members, teams, or AI')}
                 >
-                  <AtSign className="h-3.5 w-3.5" /> @tag
+                  <AtSign className="h-3.5 w-3.5" /> {t('channel.tagPrompt', '@tag')}
                 </Button>
-                <Button size="sm" onClick={send} disabled={!text.trim()} data-testid="chat-send-btn"><Send className="h-4 w-4 mr-1" /> Send</Button>
+                <Button size="sm" onClick={send} disabled={!text.trim()} data-testid="chat-send-btn"><Send className="h-4 w-4 mr-1" /> {t('channel.send', 'Send')}</Button>
               </div>
             </div>
           </div>
@@ -1019,11 +1024,11 @@ export default function ChannelPage() {
               <SheetTitle className="flex items-center gap-2 text-sm font-bold">
                 {isAlumniChannel ? (
                   <>
-                    <GraduationCap className="h-4.5 w-4.5 text-amber-400" /> Alumni & Batch Archive
+                    <GraduationCap className="h-4.5 w-4.5 text-amber-400" /> {t('channel.alumniArchive', 'Alumni & Batch Archive')}
                   </>
                 ) : (
                   <>
-                    <BookOpen className="h-4.5 w-4.5 text-emerald-400" /> Class Study Materials
+                    <BookOpen className="h-4.5 w-4.5 text-emerald-400" /> {t('channel.classMaterials', 'Class Study Materials')}
                   </>
                 )}
               </SheetTitle>
@@ -1038,15 +1043,15 @@ export default function ChannelPage() {
                       isAlumniChannel ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'
                     }`}
                   >
-                    <UploadCloud className="h-3.5 w-3.5 mr-1" /> {uploadingMaterial ? 'Uploading…' : isAlumniChannel ? 'Upload Batch File' : 'Upload File'}
+                    <UploadCloud className="h-3.5 w-3.5 mr-1" /> {uploadingMaterial ? t('channel.uploading', 'Uploading…') : isAlumniChannel ? t('channel.uploadBatchFile', 'Upload Batch File') : t('channel.uploadFile', 'Upload File')}
                   </Button>
                 </div>
               )}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
               {isAlumniChannel
-                ? `Official archives, batch yearbooks, graduation memorabilia, and event documents for #${channel?.name}.`
-                : `Materials uploaded here are specific to #${channel?.name} and automatically indexed by @AI when tagged in chat.`}
+                ? t('channel.alumniArchiveDesc', 'Official archives, batch yearbooks, graduation memorabilia, and event documents for #{{name}}.', { name: channel?.name })
+                : t('channel.classFilesDesc', 'Materials uploaded here are specific to #{{name}} and automatically indexed by @AI when tagged in chat.', { name: channel?.name })}
             </p>
           </SheetHeader>
 
@@ -1059,12 +1064,12 @@ export default function ChannelPage() {
                   {isAlumniChannel ? <GraduationCap className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
                 </div>
                 <div className="text-xs font-semibold text-foreground">
-                  {isAlumniChannel ? 'No Alumni Documents Yet' : 'No Class Materials Yet'}
+                  {isAlumniChannel ? t('channel.noAlumniDocs', 'No Alumni Documents Yet') : t('channel.noClassMaterials', 'No Class Materials Yet')}
                 </div>
                 <p className="text-[11px] text-muted-foreground max-w-xs mx-auto">
                   {isAlumniChannel
-                    ? 'Administrators and alumni representatives can upload batch yearbooks, graduation programs, newsletters, or directories.'
-                    : 'Teachers can upload lecture notes, textbook chapters, guides, or study sheets for this class.'}
+                    ? t('channel.alumniArchiveSubtext', 'Administrators and alumni representatives can upload batch yearbooks, graduation programs, newsletters, or directories.')
+                    : t('channel.classFilesSubtext', 'Teachers can upload lecture notes, textbook chapters, guides, or study sheets for this class.')}
                 </p>
               </div>
             )}
@@ -1101,7 +1106,7 @@ export default function ChannelPage() {
                       className="h-7 text-[10px] gap-1 text-amber-400 hover:bg-amber-500/10"
                       title="Ask AI about this file"
                     >
-                      <Sparkles className="h-3 w-3" /> Ask AI
+                      <Sparkles className="h-3 w-3" /> {t('channel.askAi', 'Ask AI')}
                     </Button>
 
                     <Button
@@ -1109,13 +1114,13 @@ export default function ChannelPage() {
                       size="icon"
                       onClick={() => fileApi.download(f.id, f.originalName)}
                       className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      title="Download file"
+                      title={t('channel.download', 'Download')}
                     >
                       <Download className="h-3.5 w-3.5" />
                     </Button>
 
                     {(f.uploaderId === user?.id || ['DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'ADMIN'].includes(currentOrg?.role)) && (
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteStudyMaterial(f.id)} className="h-7 w-7 text-muted-foreground hover:text-destructive" title="Remove material">
+                      <Button variant="ghost" size="icon" onClick={() => handleDeleteStudyMaterial(f.id)} className="h-7 w-7 text-muted-foreground hover:text-destructive" title={t('channel.removeMaterial', 'Remove material')}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     )}
@@ -1130,7 +1135,7 @@ export default function ChannelPage() {
       {/* AI Summary drawer */}
       <Sheet open={!!aiSummary} onOpenChange={(o) => !o && setAiSummary(null)}>
         <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader><SheetTitle className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> AI Summary</SheetTitle></SheetHeader>
+          <SheetHeader><SheetTitle className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> {t('channel.aiSummary', 'AI Summary')}</SheetTitle></SheetHeader>
           <div className="mt-4 text-sm leading-relaxed">
             <FormattedMarkdown content={aiSummary} />
           </div>
@@ -1140,7 +1145,7 @@ export default function ChannelPage() {
       {/* Thread drawer */}
       <Sheet open={!!threadFor} onOpenChange={(o) => !o && setThreadFor(null)}>
         <SheetContent className="w-full sm:max-w-lg flex flex-col p-0">
-          <SheetHeader className="p-4 border-b border-border"><SheetTitle>Thread</SheetTitle></SheetHeader>
+          <SheetHeader className="p-4 border-b border-border"><SheetTitle>{t('channel.thread', 'Thread')}</SheetTitle></SheetHeader>
           <div className="flex-1 overflow-auto">
             {threadFor && <MessageRow m={threadFor} currentUserId={user?.id} currentUserRole={currentOrg?.role} onReact={doReact} onEdit={() => {}} onDelete={doDelete} onPin={doPin} onReply={() => {}} isThread />}
             <div className="h-px bg-border my-2" />
@@ -1150,9 +1155,9 @@ export default function ChannelPage() {
           </div>
           <div className="border-t border-border p-3">
             <div className="rounded-lg border border-border bg-secondary/40">
-              <Textarea className="min-h-[40px] border-0 bg-transparent focus-visible:ring-0 resize-none" placeholder="Reply to thread…" value={threadText} onChange={(e) => setThreadText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendThread(); } }} />
+              <Textarea className="min-h-[40px] border-0 bg-transparent focus-visible:ring-0 resize-none" placeholder={t('channel.replyPlaceholder', 'Reply to thread…')} value={threadText} onChange={(e) => setThreadText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendThread(); } }} />
               <div className="flex justify-end p-1.5 border-t border-border">
-                <Button size="sm" onClick={sendThread} disabled={!threadText.trim()}><Send className="h-4 w-4 mr-1" />Reply</Button>
+                <Button size="sm" onClick={sendThread} disabled={!threadText.trim()}><Send className="h-4 w-4 mr-1" />{t('channel.reply', 'Reply')}</Button>
               </div>
             </div>
           </div>
@@ -1162,12 +1167,12 @@ export default function ChannelPage() {
       {/* Pinned drawer */}
       <Sheet open={pinnedOpen} onOpenChange={setPinnedOpen}>
         <SheetContent className="w-full sm:max-w-md">
-          <SheetHeader><SheetTitle>Pinned messages</SheetTitle></SheetHeader>
+          <SheetHeader><SheetTitle>{t('channel.pinnedMessages', 'Pinned messages')}</SheetTitle></SheetHeader>
           <div className="mt-4 space-y-2">
-            {pinned.length === 0 && <div className="text-sm text-muted-foreground">No pinned messages</div>}
+            {pinned.length === 0 && <div className="text-sm text-muted-foreground">{t('channel.noPinned', 'No pinned messages')}</div>}
             {pinned.map((p) => (
               <div key={p.id} className="rounded-md border border-border p-3">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">{p.message.sender?.fullName || 'Unknown'} · {formatDistanceToNow(new Date(p.message.createdAt), { addSuffix: true })}</div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">{p.message.sender?.fullName || t('common.unknown', 'Unknown')} · {formatDistanceToNow(new Date(p.message.createdAt), { addSuffix: true })}</div>
                 <div className="text-sm whitespace-pre-wrap">{p.message.content}</div>
               </div>
             ))}
@@ -1178,10 +1183,10 @@ export default function ChannelPage() {
       {/* Search dialog */}
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Search #{channel?.name}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('channel.searchChannel', 'Search #{{name}}', { name: channel?.name })}</DialogTitle></DialogHeader>
           <div className="flex gap-2">
-            <Input value={searchQ} onChange={(e) => setSearchQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && doSearch()} placeholder="Search messages…" autoFocus />
-            <Button onClick={doSearch}>Search</Button>
+            <Input value={searchQ} onChange={(e) => setSearchQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && doSearch()} placeholder={t('channel.searchMessages', 'Search messages…')} autoFocus />
+            <Button onClick={doSearch}>{t('common.search', 'Search')}</Button>
           </div>
           <div className="mt-2 max-h-96 overflow-auto space-y-2">
             {searchResults.map((r) => (
@@ -1199,14 +1204,14 @@ export default function ChannelPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-accent" /> AI Channel Summary
+              <Sparkles className="h-5 w-5 text-accent" /> {t('channel.aiSummary', 'AI Channel Summary')}
             </DialogTitle>
           </DialogHeader>
           <div className="max-h-96 overflow-auto text-sm leading-relaxed">
             <FormattedMarkdown content={aiSummary} />
           </div>
           <DialogFooter>
-            <Button onClick={() => setAiSummary(null)}>Close</Button>
+            <Button onClick={() => setAiSummary(null)}>{t('common.close', 'Close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1216,7 +1221,7 @@ export default function ChannelPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <ListTodo className="h-5 w-5 text-accent" /> AI Generated Tasks
+              <ListTodo className="h-5 w-5 text-accent" /> {t('channel.aiTasks', 'AI Generated Tasks')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-96 overflow-auto py-2">
@@ -1236,8 +1241,8 @@ export default function ChannelPage() {
             ))}
           </div>
           <DialogFooter className="flex justify-between items-center sm:justify-between">
-            <Button variant="ghost" size="sm" onClick={() => { setAiTasksCreated(null); navigate('/app/tasks'); }}>View All Tasks</Button>
-            <Button onClick={() => setAiTasksCreated(null)}>Done</Button>
+            <Button variant="ghost" size="sm" onClick={() => { setAiTasksCreated(null); navigate('/app/tasks'); }}>{t('channel.viewAllTasks', 'View All Tasks')}</Button>
+            <Button onClick={() => setAiTasksCreated(null)}>{t('common.close', 'Done')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1245,11 +1250,11 @@ export default function ChannelPage() {
       {/* Edit dialog */}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Edit message</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('channel.editMessage', 'Edit message')}</DialogTitle></DialogHeader>
           <Textarea value={editing?.content || ''} onChange={(e) => setEditing({ ...editing, content: e.target.value })} className="min-h-32" />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-            <Button onClick={async () => { await channelApi.editMessage(channelId, editing.id, editing.content); setEditing(null); }}>Save</Button>
+            <Button variant="outline" onClick={() => setEditing(null)}>{t('common.cancel', 'Cancel')}</Button>
+            <Button onClick={async () => { await channelApi.editMessage(channelId, editing.id, editing.content); setEditing(null); }}>{t('common.save', 'Save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1258,12 +1263,12 @@ export default function ChannelPage() {
       <Dialog open={membersModalOpen} onOpenChange={setMembersModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Members of #{channel?.name}</DialogTitle>
+            <DialogTitle>{t('channel.membersTitle', 'Members of #{{name}}', { name: channel?.name })}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Current Members ({channel?.members?.length || 0})
+                {t('channel.currentMembers', 'Current Members ({{count}})', { count: channel?.members?.length || 0 })}
               </h4>
               <div className="max-h-44 overflow-y-auto space-y-1.5 border rounded-md p-1.5">
                 {(channel?.members || []).map((m) => (
@@ -1281,7 +1286,7 @@ export default function ChannelPage() {
                         size="icon"
                         onClick={() => removeMemberFromChannel(m.userId)}
                         className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                        title="Remove member"
+                        title={t('common.remove', 'Remove member')}
                         data-testid={`remove-member-${m.userId}`}
                       >
                         <X className="h-3.5 w-3.5" />
@@ -1294,7 +1299,7 @@ export default function ChannelPage() {
 
             <div>
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Add Workspace Members
+                {t('channel.addWorkspaceMembers', 'Add Workspace Members')}
               </h4>
 
               {/* Sub-Tabs for Add Member candidates */}
@@ -1309,7 +1314,7 @@ export default function ChannelPage() {
                   }`}
                 >
                   <GraduationCap className="h-4 w-4 text-amber-400 shrink-0" />
-                  <span>Unassigned Students</span>
+                  <span>{t('channel.unassignedStudents', 'Unassigned Students')}</span>
                   <Badge variant="secondary" className="ml-1 text-[9px] px-1.5 py-0 bg-amber-500/10 text-amber-300 font-bold">
                     {unassignedStudentsCount}
                   </Badge>
@@ -1325,7 +1330,7 @@ export default function ChannelPage() {
                   }`}
                 >
                   <UserCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Faculty & Staff</span>
+                  <span>{t('channel.facultyStaff', 'Faculty & Staff')}</span>
                   <Badge variant="secondary" className="ml-1 text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-300 font-bold">
                     {facultyCandidatesCount}
                   </Badge>
@@ -1343,7 +1348,7 @@ export default function ChannelPage() {
                       <div className="flex flex-col min-w-0">
                         <span className="truncate font-medium">{om.user?.fullName || om.user?.email}</span>
                         <span className="text-[10px] text-muted-foreground">
-                          {om.role || 'Member'} • {om.title || 'No ID'}
+                          {om.role ? t('roles.' + om.role.toLowerCase(), om.role) : t('common.members', 'Member')} • {om.title || 'No ID'}
                         </span>
                       </div>
                     </div>
@@ -1354,7 +1359,7 @@ export default function ChannelPage() {
                       className="h-6 px-2 text-[10px]"
                       data-testid={`add-channel-member-btn-${om.userId}`}
                     >
-                      + Add
+                      {t('channel.add', '+ Add')}
                     </Button>
                   </div>
                 ))}
@@ -1362,15 +1367,15 @@ export default function ChannelPage() {
                 {eligibleChannelCandidates.length === 0 && (
                   <div className="px-2 py-3 text-center text-xs text-muted-foreground">
                     {addMemberSubTab === 'unassigned'
-                      ? 'No unassigned students available to add'
-                      : 'No additional faculty members available to add'}
+                      ? t('channel.noUnassignedStudents', 'No unassigned students available to add')
+                      : t('channel.noFacultyAvailable', 'No additional faculty members available to add')}
                   </div>
                 )}
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setMembersModalOpen(false)}>Close</Button>
+            <Button variant="outline" onClick={() => setMembersModalOpen(false)}>{t('common.close', 'Close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1378,9 +1383,9 @@ export default function ChannelPage() {
       <ConfirmModal
         open={deleteMsgModal.open}
         onOpenChange={(open) => setDeleteMsgModal((prev) => ({ ...prev, open }))}
-        title="Delete Message"
-        description="Are you sure you want to delete this message? This action cannot be undone."
-        confirmText="Delete"
+        title={t('channel.deleteMessageTitle', 'Delete Message')}
+        description={t('channel.deleteMessageDesc', 'Are you sure you want to delete this message? This action cannot be undone.')}
+        confirmText={t('common.delete', 'Delete')}
         variant="destructive"
         onConfirm={confirmDeleteMessage}
       />
@@ -1388,9 +1393,9 @@ export default function ChannelPage() {
       <ConfirmModal
         open={deleteChanModal}
         onOpenChange={setDeleteChanModal}
-        title={`Delete #${channel?.name || 'channel'}`}
-        description={`Are you sure you want to delete #${channel?.name}? All messages and channel data will be permanently removed.`}
-        confirmText="Delete Channel"
+        title={t('channel.deleteChannelTitle', 'Delete #{{name}}', { name: channel?.name || 'channel' })}
+        description={t('channel.deleteChannelDesc', 'Are you sure you want to delete #{{name}}? All messages and channel data will be permanently removed.', { name: channel?.name })}
+        confirmText={t('channel.deleteChannelBtn', 'Delete Channel')}
         variant="destructive"
         onConfirm={confirmDeleteChannel}
       />

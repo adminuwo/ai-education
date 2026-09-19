@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { fileApi } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2)
 
 export default function FilesPage() {
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const [files, setFiles] = useState([]);
   const [q, setQ] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -53,15 +55,15 @@ export default function FilesPage() {
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 lg:p-8 space-y-4" data-testid="files-page">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Files</h1>
-          <p className="text-muted-foreground text-sm">Shared documents and media</p>
+          <h1 className="font-display text-2xl font-semibold">{t('files.title', 'Files')}</h1>
+          <p className="text-muted-foreground text-sm">{t('files.subtitle', 'Shared documents and media')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="relative"><Search className="h-4 w-4 absolute left-3 top-2.5 text-muted-foreground" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search files…" className="pl-8 h-9 w-56" /></div>
+          <div className="relative"><Search className="h-4 w-4 absolute left-3 top-2.5 text-muted-foreground" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('files.searchFiles', 'Search files…')} className="pl-8 h-9 w-56" /></div>
           {currentOrg?.role !== 'STUDENT' && (
             <>
               <input type="file" hidden ref={inputRef} onChange={(e) => upload(e.target.files?.[0])} />
-              <Button onClick={() => inputRef.current?.click()} disabled={uploading} data-testid="upload-file-btn"><UploadCloud className="h-4 w-4 mr-1" /> {uploading ? 'Uploading…' : 'Upload'}</Button>
+              <Button onClick={() => inputRef.current?.click()} disabled={uploading} data-testid="upload-file-btn"><UploadCloud className="h-4 w-4 mr-1" /> {uploading ? t('files.uploading', 'Uploading…') : t('files.upload', 'Upload')}</Button>
             </>
           )}
         </div>
@@ -72,11 +74,11 @@ export default function FilesPage() {
           <table className="w-full text-sm">
             <thead className="border-b border-border">
               <tr className="text-left text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Name</th>
-                <th className="px-4 py-2 font-medium">Uploader</th>
-                <th className="px-4 py-2 font-medium">Size</th>
-                <th className="px-4 py-2 font-medium">Uploaded</th>
-                <th className="px-4 py-2 font-medium text-right">Actions</th>
+                <th className="px-4 py-2 font-medium">{t('files.name', 'Name')}</th>
+                <th className="px-4 py-2 font-medium">{t('files.uploader', 'Uploader')}</th>
+                <th className="px-4 py-2 font-medium">{t('files.size', 'Size')}</th>
+                <th className="px-4 py-2 font-medium">{t('files.uploaded', 'Uploaded')}</th>
+                <th className="px-4 py-2 font-medium text-right">{t('files.actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +93,7 @@ export default function FilesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        title="Download file"
+                        title={t('common.view', 'Download file')}
                         onClick={() => fileApi.download(f.id, f.originalName)}
                       >
                         <Download className="h-4 w-4" />
@@ -102,7 +104,7 @@ export default function FilesPage() {
                           size="sm"
                           onClick={() => removeFile(f.id)}
                           className="text-muted-foreground hover:text-destructive"
-                          title="Delete file"
+                          title={t('common.delete', 'Delete file')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -111,7 +113,7 @@ export default function FilesPage() {
                   </td>
                 </tr>
               );})}
-              {filtered.length === 0 && <tr><td colSpan={5} className="text-center text-muted-foreground py-8">No files yet</td></tr>}
+              {filtered.length === 0 && <tr><td colSpan={5} className="text-center text-muted-foreground py-8">{t('files.noFiles', 'No files yet')}</td></tr>}
             </tbody>
           </table>
         </CardContent>

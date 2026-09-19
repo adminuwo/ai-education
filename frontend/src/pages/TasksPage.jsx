@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { connectSocket, getSocket } from '@/lib/socket';
 import { taskApi, orgApi, userApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -43,8 +44,17 @@ const PRIORITY_CFG = {
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
 function TaskCard({ task, onOpen, isDragging }) {
+  const { t } = useLanguage();
   const { setNodeRef, transform, transition, isDragging: dragging, attributes, listeners } = useSortable({ id: task.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
+  const priorityKeyMap = {
+    LOW: 'priorityLow',
+    MEDIUM: 'priorityMedium',
+    HIGH: 'priorityHigh',
+    URGENT: 'priorityUrgent',
+  };
+  const priorityLabel = t(`tasks.${priorityKeyMap[task.priority]}`, PRIORITY_CFG[task.priority]?.label || task.priority);
+
   return (
     <div
       ref={setNodeRef}
@@ -57,7 +67,7 @@ function TaskCard({ task, onOpen, isDragging }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="font-medium text-sm text-balance leading-snug flex-1">{task.title}</div>
-        <Badge variant="outline" className={`text-[10px] shrink-0 ${PRIORITY_CFG[task.priority]?.color || ''}`}>{PRIORITY_CFG[task.priority]?.label || task.priority}</Badge>
+        <Badge variant="outline" className={`text-[10px] shrink-0 ${PRIORITY_CFG[task.priority]?.color || ''}`}>{priorityLabel}</Badge>
       </div>
       {task.project && <div className="mt-1 text-xs text-muted-foreground">{task.project.name}</div>}
       <div className="mt-3 flex items-center justify-between">
@@ -77,19 +87,29 @@ function TaskCard({ task, onOpen, isDragging }) {
 }
 
 function KanbanColumn({ status, tasks, onOpen }) {
+  const { t } = useLanguage();
   const cfg = STATUS_CFG[status];
+  const statusKeyMap = {
+    TODO: 'statusTodo',
+    IN_PROGRESS: 'statusInProgress',
+    REVIEW: 'statusReview',
+    COMPLETED: 'statusCompleted',
+    BLOCKED: 'statusBlocked',
+    CANCELLED: 'statusCancelled',
+  };
+  const statusLabel = t(`tasks.${statusKeyMap[status]}`, cfg.label);
   const { setNodeRef } = useSortable({ id: `col-${status}`, disabled: true });
   return (
     <div className="w-72 flex-shrink-0 flex flex-col rounded-lg border border-border bg-secondary/30" data-testid={`kanban-column-${status}`}>
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
         <div className={`h-2 w-2 rounded-full ${cfg.color}`} />
-        <div className="font-medium text-sm">{cfg.label}</div>
+        <div className="font-medium text-sm">{statusLabel}</div>
         <Badge variant="secondary" className="ml-auto text-[10px]">{tasks.length}</Badge>
       </div>
       <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy} id={status}>
         <div ref={setNodeRef} data-status={status} className="flex-1 overflow-auto p-2 space-y-2 min-h-32">
           {tasks.map((t) => <TaskCard key={t.id} task={t} onOpen={onOpen} />)}
-          {tasks.length === 0 && <div className="text-xs text-muted-foreground text-center py-6">Drop tasks here</div>}
+          {tasks.length === 0 && <div className="text-xs text-muted-foreground text-center py-6">{t('tasks.dropTasksHere', 'Drop tasks here')}</div>}
         </div>
       </SortableContext>
     </div>
@@ -98,6 +118,7 @@ function KanbanColumn({ status, tasks, onOpen }) {
 
 export default function TasksPage() {
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const userRole = (currentOrg?.role || user?.role || '').toUpperCase();
   const isLearnerOrParent = ['STUDENT', 'PARENT', 'ALUMNI'].includes(userRole);
   const canCreateTask = !isLearnerOrParent;
@@ -367,28 +388,28 @@ export default function TasksPage() {
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="h-full flex flex-col" data-testid="tasks-page">
       <div className="flex items-center justify-between border-b border-border px-4 py-3 gap-3">
         <div>
-          <h1 className="font-display text-xl font-semibold">Tasks</h1>
-          <p className="text-xs text-muted-foreground">Manage work across projects and teams</p>
+          <h1 className="font-display text-xl font-semibold">{t('tasks.title', 'Tasks')}</h1>
+          <p className="text-xs text-muted-foreground">{t('tasks.subtitle', 'Manage work across projects and teams')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={filterProject} onValueChange={setFilterProject}>
             <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All projects</SelectItem>
+              <SelectItem value="all">{t('tasks.allProjects', 'All projects')}</SelectItem>
               {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={filterAssignee} onValueChange={setFilterAssignee}>
             <SelectTrigger className="w-36 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Anyone</SelectItem>
-              <SelectItem value="me">Me</SelectItem>
+              <SelectItem value="all">{t('tasks.anyone', 'Anyone')}</SelectItem>
+              <SelectItem value="me">{t('tasks.me', 'Me')}</SelectItem>
               {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.fullName}</SelectItem>)}
             </SelectContent>
           </Select>
           {canCreateTask && (
             <Button onClick={() => setOpenCreate(true)} data-testid="new-task-btn">
-              <Plus className="h-4 w-4 mr-1" /> New task
+              <Plus className="h-4 w-4 mr-1" /> {t('tasks.newTask', 'New task')}
             </Button>
           )}
         </div>
@@ -397,9 +418,9 @@ export default function TasksPage() {
       <Tabs defaultValue="kanban" className="flex-1 flex flex-col overflow-hidden">
         <div className="px-4 pt-2">
           <TabsList data-testid="tasks-tabs">
-            <TabsTrigger value="kanban"><LayoutGrid className="h-3.5 w-3.5 mr-1" /> Kanban</TabsTrigger>
-            <TabsTrigger value="list"><ListTodo className="h-3.5 w-3.5 mr-1" /> List</TabsTrigger>
-            <TabsTrigger value="calendar"><CalIcon className="h-3.5 w-3.5 mr-1" /> Calendar</TabsTrigger>
+            <TabsTrigger value="kanban"><LayoutGrid className="h-3.5 w-3.5 mr-1" /> {t('tasks.kanban', 'Kanban')}</TabsTrigger>
+            <TabsTrigger value="list"><ListTodo className="h-3.5 w-3.5 mr-1" /> {t('tasks.list', 'List')}</TabsTrigger>
+            <TabsTrigger value="calendar"><CalIcon className="h-3.5 w-3.5 mr-1" /> {t('tasks.calendar', 'Calendar')}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -418,26 +439,26 @@ export default function TasksPage() {
               <table className="w-full text-sm">
                 <thead className="border-b border-border">
                   <tr className="text-left text-muted-foreground">
-                    <th className="px-3 py-2 font-medium">Title</th>
-                    <th className="px-3 py-2 font-medium">Project</th>
-                    <th className="px-3 py-2 font-medium">Priority</th>
-                    <th className="px-3 py-2 font-medium">Status</th>
-                    <th className="px-3 py-2 font-medium">Assignees</th>
-                    <th className="px-3 py-2 font-medium">Due</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colTitle', 'Title')}</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colProject', 'Project')}</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colPriority', 'Priority')}</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colStatus', 'Status')}</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colAssignees', 'Assignees')}</th>
+                    <th className="px-3 py-2 font-medium">{t('tasks.colDue', 'Due')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tasks.map((t) => (
-                    <tr key={t.id} onClick={() => setOpenDetail(t)} className="cursor-pointer hover:bg-muted/50 border-b border-border" data-testid={`task-list-row-${t.id}`}>
-                      <td className="px-3 py-2 font-medium">{t.title}</td>
-                      <td className="px-3 py-2 text-muted-foreground">{t.project?.name || '—'}</td>
-                      <td className="px-3 py-2"><Badge variant="outline" className={`text-[10px] ${PRIORITY_CFG[t.priority]?.color}`}>{PRIORITY_CFG[t.priority]?.label}</Badge></td>
-                      <td className="px-3 py-2"><Badge variant="outline" className="text-[10px] uppercase">{t.status.replace('_',' ')}</Badge></td>
-                      <td className="px-3 py-2"><div className="flex -space-x-2">{t.assignees.slice(0,3).map((a) => <Avatar key={a.id} className="h-6 w-6 border-2 border-card"><AvatarImage src={a.user?.avatarUrl}/><AvatarFallback className="text-[10px] bg-primary/10 text-primary">{initials(a.user?.fullName)}</AvatarFallback></Avatar>)}</div></td>
-                      <td className="px-3 py-2 text-muted-foreground">{t.dueDate ? format(new Date(t.dueDate), 'MMM d') : '—'}</td>
+                  {tasks.map((tItem) => (
+                    <tr key={tItem.id} onClick={() => setOpenDetail(tItem)} className="cursor-pointer hover:bg-muted/50 border-b border-border" data-testid={`task-list-row-${tItem.id}`}>
+                      <td className="px-3 py-2 font-medium">{tItem.title}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{tItem.project?.name || '—'}</td>
+                      <td className="px-3 py-2"><Badge variant="outline" className={`text-[10px] ${PRIORITY_CFG[tItem.priority]?.color}`}>{t(`tasks.${{ LOW: 'priorityLow', MEDIUM: 'priorityMedium', HIGH: 'priorityHigh', URGENT: 'priorityUrgent' }[tItem.priority]}`, PRIORITY_CFG[tItem.priority]?.label || tItem.priority)}</Badge></td>
+                      <td className="px-3 py-2"><Badge variant="outline" className="text-[10px] uppercase">{tItem.status.replace('_',' ')}</Badge></td>
+                      <td className="px-3 py-2"><div className="flex -space-x-2">{tItem.assignees.slice(0,3).map((a) => <Avatar key={a.id} className="h-6 w-6 border-2 border-card"><AvatarImage src={a.user?.avatarUrl}/><AvatarFallback className="text-[10px] bg-primary/10 text-primary">{initials(a.user?.fullName)}</AvatarFallback></Avatar>)}</div></td>
+                      <td className="px-3 py-2 text-muted-foreground">{tItem.dueDate ? format(new Date(tItem.dueDate), 'MMM d') : '—'}</td>
                     </tr>
                   ))}
-                  {tasks.length === 0 && <tr><td colSpan={6} className="text-center text-muted-foreground py-8">No tasks yet</td></tr>}
+                  {tasks.length === 0 && <tr><td colSpan={6} className="text-center text-muted-foreground py-8">{t('tasks.noTasksYet', 'No tasks yet')}</td></tr>}
                 </tbody>
               </table>
             </CardContent>
@@ -452,15 +473,15 @@ export default function TasksPage() {
               </CardContent>
             </Card>
             <Card className="lg:col-span-2">
-              <CardHeader><CardTitle className="text-base">Tasks on {format(selectedDate, 'PPPP')}</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">{t('tasks.tasksOn', 'Tasks on')} {format(selectedDate, 'PPPP')}</CardTitle></CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y divide-border">
-                  {tasksOnDate.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted-foreground">No tasks scheduled for this day</div>}
-                  {tasksOnDate.map((t) => (
-                    <button key={t.id} onClick={() => setOpenDetail(t)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 text-left">
-                      <div className={`h-2 w-2 rounded-full ${STATUS_CFG[t.status].color}`} />
-                      <div className="flex-1 min-w-0"><div className="font-medium text-sm truncate">{t.title}</div><div className="text-xs text-muted-foreground">{t.project?.name} · {t.priority}</div></div>
-                      <Badge variant="outline" className="text-[10px] uppercase">{t.status.replace('_',' ')}</Badge>
+                  {tasksOnDate.length === 0 && <div className="px-4 py-8 text-center text-sm text-muted-foreground">{t('tasks.noTasksScheduled', 'No tasks scheduled for this day')}</div>}
+                  {tasksOnDate.map((tItem) => (
+                    <button key={tItem.id} onClick={() => setOpenDetail(tItem)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 text-left">
+                      <div className={`h-2 w-2 rounded-full ${STATUS_CFG[tItem.status].color}`} />
+                      <div className="flex-1 min-w-0"><div className="font-medium text-sm truncate">{tItem.title}</div><div className="text-xs text-muted-foreground">{tItem.project?.name} · {tItem.priority}</div></div>
+                      <Badge variant="outline" className="text-[10px] uppercase">{tItem.status.replace('_',' ')}</Badge>
                     </button>
                   ))}
                 </div>
@@ -474,10 +495,10 @@ export default function TasksPage() {
       <Dialog open={openCreate} onOpenChange={setOpenCreate}>
         <DialogContent className="max-w-lg">
           <DialogHeader className="pr-6 pb-1">
-            <DialogTitle className="text-lg font-bold font-display">Create task</DialogTitle>
+            <DialogTitle className="text-lg font-bold font-display">{t('tasks.createTask', 'Create task')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 overflow-y-auto pr-1 flex-1 py-1">
-            <div><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="What needs to be done?" data-testid="task-title-input" /></div>
+            <div><Label>{t('tasks.titleLabel', 'Title')} *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder={t('tasks.titlePlaceholder', 'What needs to be done?')} data-testid="task-title-input" /></div>
             <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} placeholder="Add details…" /></div>
             <div className="grid grid-cols-2 gap-3">
               <div>

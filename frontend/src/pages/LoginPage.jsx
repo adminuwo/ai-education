@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { toast } from 'sonner';
 import { Sparkles, ShieldCheck, Zap, Users, Mail, ArrowLeft, RefreshCw, GraduationCap, UserCheck, Info, KeyRound, Building2, IndianRupee, CalendarCheck, Award, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,6 +14,7 @@ import { authApi } from '@/lib/api';
 
 export default function LoginPage({ initialPortal = 'faculty' }) {
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -412,6 +415,14 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
 
           <Card className="w-full border-slate-800/90 bg-slate-900/90 backdrop-blur-xl shadow-2xl glass-card-highlight">
             <CardHeader className="pb-3 pt-5 px-5 sm:px-6">
+              {/* Language Selection Header */}
+              <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-800/80">
+                <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+                  {t('language.selectLanguage', 'Language')}
+                </span>
+                <LanguageSwitcher variant="pills" />
+              </div>
+
               {/* Mode Switcher Tabs */}
               <div className="relative grid grid-cols-3 gap-1 p-1 bg-slate-950/80 rounded-xl border border-slate-800 mb-3">
                 <button
@@ -430,7 +441,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                     />
                   )}
                   <UserCheck className="relative z-10 h-3.5 w-3.5 text-emerald-400" />
-                  <span className="relative z-10">Faculty</span>
+                  <span className="relative z-10">{t('auth.facultyPortal', 'Faculty')}</span>
                 </button>
 
                 <button
@@ -449,7 +460,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                     />
                   )}
                   <GraduationCap className="relative z-10 h-3.5 w-3.5 text-sky-400" />
-                  <span className="relative z-10">Student</span>
+                  <span className="relative z-10">{t('auth.studentPortal', 'Student')}</span>
                 </button>
 
                 <button
@@ -468,30 +479,30 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                     />
                   )}
                   <ShieldCheck className="relative z-10 h-3.5 w-3.5 text-purple-400" />
-                  <span className="relative z-10">Parent</span>
+                  <span className="relative z-10">{t('auth.parentPortal', 'Parent')}</span>
                 </button>
               </div>
 
               {portalMode === 'faculty' ? (
                 <div>
                   <CardTitle className="font-display text-xl xl:text-2xl flex items-center gap-2 text-white">
-                    <UserCheck className="h-5 w-5 text-emerald-400" /> Faculty & Staff Sign In
+                    <UserCheck className="h-5 w-5 text-emerald-400" /> {t('auth.facultyPortal', 'Faculty & Staff')} {t('auth.signIn', 'Sign In')}
                   </CardTitle>
-                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">Sign in with your institutional credentials.</p>
+                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">{t('auth.facultySignInDesc', 'Sign in with your institutional credentials.')}</p>
                 </div>
               ) : portalMode === 'student' ? (
                 <div>
                   <CardTitle className="font-display text-xl xl:text-2xl flex items-center gap-2 text-white">
-                    <GraduationCap className="h-5 w-5 text-sky-400" /> Student Portal Sign In
+                    <GraduationCap className="h-5 w-5 text-sky-400" /> {t('auth.studentPortal', 'Student Portal')} {t('auth.signIn', 'Sign In')}
                   </CardTitle>
-                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">Access your class channels, assignments, and campus updates.</p>
+                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">{t('auth.studentSignInDesc', 'Access your class channels, assignments, and campus updates.')}</p>
                 </div>
               ) : (
                 <div>
                   <CardTitle className="font-display text-xl xl:text-2xl flex items-center gap-2 text-white">
-                    <ShieldCheck className="h-5 w-5 text-purple-400" /> Parent Portal Sign In
+                    <ShieldCheck className="h-5 w-5 text-purple-400" /> {t('auth.parentPortal', 'Parent Portal')} {t('auth.signIn', 'Sign In')}
                   </CardTitle>
-                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">View attendance records, homework rubrics, and message teachers.</p>
+                  <p className="text-xs xl:text-sm text-slate-400 mt-0.5">{t('auth.parentSignInDesc', 'View attendance records, homework rubrics, and message teachers.')}</p>
                 </div>
               )}
             </CardHeader>
@@ -500,7 +511,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
               <form onSubmit={submit} className="space-y-2.5">
                 <div>
                   <Label htmlFor="username" className="text-xs text-slate-300 font-medium">
-                    {portalMode === 'student' ? 'Student ID / Admission No' : portalMode === 'parent' ? 'Parent ID' : 'Work Email or Faculty / Staff ID'}
+                    {portalMode === 'student' ? t('auth.studentIdOrAdmissionNo', 'Student ID / Admission No') : portalMode === 'parent' ? t('auth.parentId', 'Parent ID') : t('auth.workEmailOrId', 'Work Email or Faculty / Staff ID')}
                   </Label>
                   <Input
                     id="username"
@@ -523,8 +534,8 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-xs text-slate-300 font-medium">Password</Label>
-                    <button type="button" onClick={() => setShowPw((v) => !v)} className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">{showPw ? 'Hide' : 'Show'}</button>
+                    <Label htmlFor="password" className="text-xs text-slate-300 font-medium">{t('auth.passwordLabel', 'Password')}</Label>
+                    <button type="button" onClick={() => setShowPw((v) => !v)} className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">{showPw ? t('auth.hide', 'Hide') : t('auth.show', 'Show')}</button>
                   </div>
                   <Input
                     id="password"
@@ -538,7 +549,7 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                   />
                   <div className="mt-1 text-right">
                     <button type="button" onClick={() => { setForgotEmail(email); setView('forgot'); }} className="text-xs text-slate-400 hover:text-emerald-400 transition-colors">
-                      Forgot password?
+                      {t('auth.forgotPassword', 'Forgot password?')}
                     </button>
                   </div>
                 </div>
@@ -556,14 +567,10 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" /> Signing in…
+                      <RefreshCw className="h-4 w-4 animate-spin" /> {t('auth.signingIn', 'Signing in…')}
                     </span>
-                  ) : portalMode === 'student' ? (
-                    'Sign in to Student Portal'
-                  ) : portalMode === 'parent' ? (
-                    'Sign in to Parent Portal'
                   ) : (
-                    'Sign in to Faculty Portal'
+                    <span>{t('auth.signIn', 'Sign In')}</span>
                   )}
                 </Button>
               </form>
@@ -573,30 +580,30 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
                   <div className="my-2.5 flex items-center gap-3"><div className="h-px flex-1 bg-slate-800" /><span className="text-[11px] text-slate-500">OR</span><div className="h-px flex-1 bg-slate-800" /></div>
                   <Button variant="outline" className="w-full border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-200 h-9 text-xs font-medium" onClick={startGoogle} data-testid="login-google-button">
                     <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Continue with Google
+                    {t('auth.continueWithGoogle', 'Continue with Google')}
                   </Button>
                   <div className="mt-2 text-center text-[11px] text-slate-500">
-                    Accounts are provisioned by your institution. Need access? Contact your administrator.
+                    {t('auth.accountsProvisionedNotice', 'Accounts are provisioned by your institution. Need access? Contact your administrator.')}
                   </div>
                 </>
               ) : portalMode === 'student' ? (
                 /* Student Notice Box */
                 <div className="mt-2 p-2.5 rounded-xl border border-sky-500/20 bg-sky-500/5 text-xs text-sky-300 space-y-1">
                   <div className="font-semibold flex items-center gap-1.5 text-sky-200 text-xs">
-                    <Info className="h-3.5 w-3.5 shrink-0 text-sky-400" /> Student Account Notice
+                    <Info className="h-3.5 w-3.5 shrink-0 text-sky-400" /> {t('auth.studentAccountNotice', 'Student Account Notice')}
                   </div>
                   <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Student accounts are generated directly by the school administration. Self-registration is disabled for students. Please contact your class teacher or school administrator to receive your credentials.
+                    {t('auth.studentAccountNoticeDesc', 'Student accounts are generated directly by the school administration. Self-registration is disabled for students. Please contact your class teacher or school administrator to receive your credentials.')}
                   </p>
                 </div>
               ) : (
                 /* Parent Notice Box */
                 <div className="mt-2 p-2.5 rounded-xl border border-purple-500/20 bg-purple-500/5 text-xs text-purple-300 space-y-1">
                   <div className="font-semibold flex items-center gap-1.5 text-purple-200 text-xs">
-                    <UserCheck className="h-3.5 w-3.5 shrink-0 text-purple-400" /> Parent Portal Access
+                    <UserCheck className="h-3.5 w-3.5 shrink-0 text-purple-400" /> {t('auth.parentPortalAccess', 'Parent Portal Access')}
                   </div>
                   <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Parent accounts allow monitoring of student attendance records, graded homework rubrics, and direct messaging with class teachers.
+                    {t('auth.parentPortalAccessDesc', 'Parent accounts allow monitoring of student attendance records, graded homework rubrics, and direct messaging with class teachers.')}
                   </p>
                 </div>
               )}

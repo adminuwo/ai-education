@@ -12,8 +12,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheck, ShieldAlert, Plus, Trash2, Lock, Save, Search, Sparkles, Check, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/ConfirmModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RolePermissionsPage() {
+  const { t } = useLanguage();
   const { currentOrg, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState([]);
@@ -171,9 +173,9 @@ export default function RolePermissionsPage() {
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <ShieldAlert className="h-7 w-7" />
         </div>
-        <h2 className="text-xl font-bold">Director Access Required</h2>
+        <h2 className="text-xl font-bold">{t('rolePermissions.directorAccessRequired', 'Director Access Required')}</h2>
         <p className="text-sm text-muted-foreground">
-          The Role & Permissions Dashboard is restricted to Directors and Admins. You do not have permission to view or edit role security policies.
+          {t('rolePermissions.directorAccessDesc', 'The Role & Permissions Dashboard is restricted to Directors and Admins. You do not have permission to view or edit role security policies.')}
         </p>
       </div>
     );
@@ -185,17 +187,17 @@ export default function RolePermissionsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">Role & Permissions Management</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t('rolePermissions.title', 'Role & Permissions Management')}</h1>
             <Badge variant="secondary" className="gap-1 bg-amber-500/10 text-amber-500 border-amber-500/20">
-              <ShieldCheck className="h-3.5 w-3.5" /> Director Control Panel
+              <ShieldCheck className="h-3.5 w-3.5" /> {t('rolePermissions.directorControlPanel', 'Director Control Panel')}
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Grant or revoke permissions across system roles, create custom roles with specific privileges, or manage custom role lifecycles.
+            {t('rolePermissions.description', 'Grant or revoke permissions across system roles, create custom roles with specific privileges, or manage custom role lifecycles.')}
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2 shrink-0">
-          <Plus className="h-4 w-4" /> Create Custom Role
+          <Plus className="h-4 w-4" /> {t('rolePermissions.createCustomRole', 'Create Custom Role')}
         </Button>
       </div>
 
@@ -206,7 +208,7 @@ export default function RolePermissionsPage() {
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Filter roles…"
+              placeholder={t('rolePermissions.filterRoles', 'Filter roles…')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 text-xs"
@@ -228,18 +230,20 @@ export default function RolePermissionsPage() {
                 >
                   <div className="flex flex-col min-w-0 pr-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold truncate">{r.role}</span>
+                      <span className="text-sm font-semibold truncate">
+                        {r.isSystem ? t(`roles.${r.role.toLowerCase()}`, r.role) : r.role}
+                      </span>
                     </div>
-                    <span className="text-xs opacity-70 truncate">{r.permissions?.length || 0} permissions</span>
+                    <span className="text-xs opacity-70 truncate">{r.permissions?.length || 0} {t('rolePermissions.permissionsCount', 'permissions')}</span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     {r.isSystem ? (
                       <Badge variant="outline" className="text-[10px] bg-muted/50 border-border gap-1 text-muted-foreground">
-                        <Lock className="h-2.5 w-2.5" /> SYSTEM
+                        <Lock className="h-2.5 w-2.5" /> {t('rolePermissions.systemRole', 'SYSTEM')}
                       </Badge>
                     ) : (
                       <Badge variant="secondary" className="text-[10px] bg-primary/15 text-primary border-primary/30">
-                        CUSTOM
+                        {t('rolePermissions.customRole', 'CUSTOM')}
                       </Badge>
                     )}
                   </div>
@@ -257,28 +261,34 @@ export default function RolePermissionsPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <CardTitle className="text-xl font-bold">{selectedRole.role}</CardTitle>
+                      <CardTitle className="text-xl font-bold">
+                        {selectedRole.isSystem ? t(`roles.${selectedRole.role.toLowerCase()}`, selectedRole.role) : selectedRole.role}
+                      </CardTitle>
                       {selectedRole.isSystem ? (
                         <Badge variant="outline" className="gap-1 border-muted-foreground/30 text-muted-foreground">
-                          <Lock className="h-3 w-3" /> Hardcoded System Role
+                          <Lock className="h-3 w-3" /> {t('rolePermissions.hardcodedSystemRole', 'Hardcoded System Role')}
                         </Badge>
                       ) : (
-                        <Badge className="bg-primary/20 text-primary hover:bg-primary/20">Custom Role</Badge>
+                        <Badge className="bg-primary/20 text-primary hover:bg-primary/20">{t('rolePermissions.customRoleBadge', 'Custom Role')}</Badge>
                       )}
                     </div>
-                    <CardDescription className="mt-1">{selectedRole.description}</CardDescription>
+                    <CardDescription className="mt-1">
+                      {selectedRole.isSystem
+                        ? t(`rolePermissions.roleDesc.${selectedRole.role.toLowerCase()}`, selectedRole.description)
+                        : selectedRole.description}
+                    </CardDescription>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Button onClick={handleSavePermissions} disabled={saving} className="gap-2">
-                      <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save Changes'}
+                      <Save className="h-4 w-4" /> {saving ? t('rolePermissions.saving', 'Saving…') : t('rolePermissions.saveChanges', 'Save Changes')}
                     </Button>
                     {!selectedRole.isSystem && (
                       <Button
                         variant="destructive"
                         size="icon"
                         onClick={() => setDeleteModal({ open: true, role: selectedRole })}
-                        title="Delete custom role"
+                        title={t('rolePermissions.deleteCustomRole', 'Delete custom role')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -290,7 +300,7 @@ export default function RolePermissionsPage() {
                   <div className="mt-3 text-xs bg-amber-500/10 border border-amber-500/20 text-amber-500 p-2.5 rounded-md flex items-center gap-2">
                     <Info className="h-4 w-4 shrink-0" />
                     <span>
-                      This is a built-in system role. You can customize which permissions are granted or revoked below, but this role cannot be deleted.
+                      {t('rolePermissions.systemRoleNotice', 'This is a built-in system role. You can customize which permissions are granted or revoked below, but this role cannot be deleted.')}
                     </span>
                   </div>
                 )}
@@ -300,7 +310,7 @@ export default function RolePermissionsPage() {
                 {Object.entries(categories).map(([cat, perms]) => (
                   <div key={cat} className="space-y-3">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border pb-1">
-                      {cat}
+                      {t(`rolePermissions.categories.${cat.toLowerCase().replace(/[^a-z0-9]/g, '')}`, cat)}
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {perms.map((p) => {
@@ -317,7 +327,7 @@ export default function RolePermissionsPage() {
                           >
                             <div className="space-y-0.5 pr-2">
                               <div className="text-sm font-medium flex items-center gap-1.5">
-                                <span>{p.label}</span>
+                                <span>{t(`rolePermissions.permissions.${p.key}`, p.label)}</span>
                               </div>
                               <div className="text-xs font-mono text-muted-foreground">{p.key}</div>
                             </div>
@@ -337,7 +347,7 @@ export default function RolePermissionsPage() {
             </Card>
           ) : (
             <div className="h-64 flex flex-col items-center justify-center border border-dashed rounded-lg text-muted-foreground">
-              Select a role from the left panel to configure permissions.
+              {t('rolePermissions.selectRolePrompt', 'Select a role from the left panel to configure permissions.')}
             </div>
           )}
         </div>
@@ -347,29 +357,29 @@ export default function RolePermissionsPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Create Custom Role</DialogTitle>
+            <DialogTitle>{t('rolePermissions.createCustomRole', 'Create Custom Role')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateRole} className="space-y-4 mt-2">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">Role Name</label>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">{t('rolePermissions.roleName', 'Role Name')}</label>
               <Input
-                placeholder="e.g. EXAM_COORDINATOR or Lab Assistant"
+                placeholder={t('rolePermissions.roleNamePlaceholder', 'e.g. EXAM_COORDINATOR or Lab Assistant')}
                 value={newRoleName}
                 onChange={(e) => setNewRoleName(e.target.value)}
                 required
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">Description</label>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">{t('rolePermissions.roleDescription', 'Description')}</label>
               <Textarea
-                placeholder="Briefly describe what this custom role handles…"
+                placeholder={t('rolePermissions.roleDescPlaceholder', 'Briefly describe what this custom role handles…')}
                 value={newRoleDesc}
                 onChange={(e) => setNewRoleDesc(e.target.value)}
                 rows={2}
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-2">Initial Permissions</label>
+              <label className="text-xs font-semibold text-muted-foreground block mb-2">{t('rolePermissions.initialPermissions', 'Initial Permissions')}</label>
               <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded-md p-3">
                 {allPermissions.map((p) => {
                   const checked = newRolePerms.includes(p.key);
@@ -386,7 +396,7 @@ export default function RolePermissionsPage() {
                         className="rounded text-primary focus:ring-primary h-4 w-4"
                       />
                       <div>
-                        <span className="font-medium text-foreground">{p.label}</span>
+                        <span className="font-medium text-foreground">{t(`rolePermissions.permissions.${p.key}`, p.label)}</span>
                         <span className="text-[10px] text-muted-foreground block">{p.key}</span>
                       </div>
                     </label>
@@ -396,10 +406,10 @@ export default function RolePermissionsPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
-                Cancel
+                {t('rolePermissions.cancel', 'Cancel')}
               </Button>
               <Button type="submit" disabled={creating}>
-                {creating ? 'Creating…' : 'Create Role'}
+                {creating ? t('rolePermissions.creating', 'Creating…') : t('rolePermissions.createRole', 'Create Role')}
               </Button>
             </DialogFooter>
           </form>
@@ -410,9 +420,9 @@ export default function RolePermissionsPage() {
       <ConfirmModal
         open={deleteModal.open}
         onOpenChange={(val) => !val && setDeleteModal({ open: false, role: null })}
-        title={`Delete Custom Role "${deleteModal.role?.role}"?`}
-        description="Are you sure you want to delete this custom role? Members currently assigned to this role will revert to default permissions."
-        confirmText="Delete Role"
+        title={t('rolePermissions.deleteRoleTitle', `Delete Custom Role "${deleteModal.role?.role}"?`, { role: deleteModal.role?.role })}
+        description={t('rolePermissions.deleteRoleDesc', 'Are you sure you want to delete this custom role? Members currently assigned to this role will revert to default permissions.')}
+        confirmText={t('rolePermissions.deleteRoleBtn', 'Delete Role')}
         variant="destructive"
         loading={deleting}
         onConfirm={handleDeleteRole}

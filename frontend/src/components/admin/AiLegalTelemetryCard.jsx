@@ -26,8 +26,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true }) {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const isSuperAdmin = user?.systemRole === 'SUPER_ADMIN';
 
@@ -141,13 +143,13 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
               </div>
               <div>
                 <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  AI-Legal™ Academic Telemetry
+                  {t('analytics.aiLegalTelemetry', 'AI-Legal™ Academic Telemetry')}
                   <Badge variant="outline" className="bg-purple-500/10 text-purple-600 border-purple-500/30 text-[10px] font-mono">
-                    INSTITUTIONAL SUITE ACTIVE
+                    {t('analytics.suiteActive', 'INSTITUTIONAL SUITE ACTIVE')}
                   </Badge>
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Real-time feature utilization, research inquiries, and campus scholarly engagement for {orgName || 'your institution'}
+                  {t('analytics.telemetrySubtitle', 'Real-time feature utilization, research inquiries, and campus scholarly engagement for {{orgName}}', { orgName: orgName || 'your institution' })}
                 </CardDescription>
               </div>
             </div>
@@ -170,12 +172,12 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
               {telemetry?.autoMonthlyResetActive !== false ? (
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                  Auto-Renewal: Active (1st of month)
+                  {t('analytics.autoRenewalActive', 'Auto-Renewal: Active (1st of month)')}
                 </span>
               ) : (
                 <span className="flex items-center gap-1">
                   <AlertCircle className="h-3 w-3 text-amber-500" />
-                  Auto-Renewal: Paused by Superadmin
+                  {t('analytics.autoRenewalPaused', 'Auto-Renewal: Paused by Superadmin')}
                 </span>
               )}
             </Badge>
@@ -190,7 +192,7 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
                 title="Superadmin Override: Instantly force-renew student plans for this campus"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${renewing ? 'animate-spin' : ''}`} />
-                {renewing ? 'Renewing...' : 'Superadmin Force Renew'}
+                {renewing ? t('analytics.renewing', 'Renewing...') : t('analytics.forceRenew', 'Superadmin Force Renew')}
               </Button>
             )}
 
@@ -203,7 +205,7 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
               title="Refresh real-time inquiry telemetry and student scholar counts"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-purple-600' : ''}`} />
-              {refreshing ? 'Syncing...' : 'Refresh'}
+              {refreshing ? t('analytics.syncing', 'Syncing...') : t('analytics.refresh', 'Refresh')}
             </Button>
           </div>
         </div>
@@ -212,7 +214,7 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
         <div className="mt-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 flex items-start gap-2.5 text-xs text-emerald-700 dark:text-emerald-300">
           <ShieldCheck className="h-4 w-4 mt-0.5 text-emerald-500 shrink-0" />
           <div>
-            <strong>Privacy-Preserving Telemetry:</strong> Zero chat conversation transcripts, student research queries, or document drafts are inspected. Only feature module frequencies and numerical inquiry totals are tracked.
+            <strong>{t('analytics.privacyNoticeTitle', 'Privacy-Preserving Telemetry:')}</strong> {t('analytics.privacyNoticeDesc', 'Zero chat conversation transcripts, student research queries, or document drafts are inspected. Only feature module frequencies and numerical inquiry totals are tracked.')}
           </div>
         </div>
       </CardHeader>
@@ -223,47 +225,47 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
           {/* Total Inquiries */}
           <div className="bg-card/70 border border-border/80 rounded-xl p-3.5 space-y-1 shadow-xs">
             <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-              <span>Legal Inquiries</span>
+              <span>{t('analytics.legalInquiries', 'Legal Inquiries')}</span>
               <Activity className="h-4 w-4 text-purple-500" />
             </div>
             <div className="text-2xl font-bold font-display text-foreground">{overview.totalInquiries.toLocaleString()}</div>
-            <p className="text-[11px] text-muted-foreground">Total module executions</p>
+            <p className="text-[11px] text-muted-foreground">{t('analytics.legalInquiriesSubtitle', 'Total module executions')}</p>
           </div>
 
           {/* Chat Inquiries */}
           <div className="bg-card/70 border border-border/80 rounded-xl p-3.5 space-y-1 shadow-xs">
             <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-              <span>Chat Consultations</span>
+              <span>{t('analytics.chatConsultations', 'Chat Consultations')}</span>
               <MessageSquare className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-bold font-display text-emerald-600 dark:text-emerald-400">
               {overview.totalChatSessions.toLocaleString()}
             </div>
-            <p className="text-[11px] text-muted-foreground">Total chat inquiries run</p>
+            <p className="text-[11px] text-muted-foreground">{t('analytics.chatConsultationsSubtitle', 'Total chat inquiries run')}</p>
           </div>
 
           {/* Active Scholars */}
           <div className="bg-card/70 border border-border/80 rounded-xl p-3.5 space-y-1 shadow-xs">
             <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-              <span>Active Scholars</span>
+              <span>{t('analytics.activeScholars', 'Active Scholars')}</span>
               <Users className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-bold font-display text-foreground">
               {overview.activeScholars} <span className="text-sm font-normal text-muted-foreground">/ {overview.totalStudents}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground">Enrolled student scholars</p>
+            <p className="text-[11px] text-muted-foreground">{t('analytics.activeScholarsSubtitle', 'Enrolled student scholars')}</p>
           </div>
 
           {/* Academic Plan Status */}
           <div className="bg-card/70 border border-border/80 rounded-xl p-3.5 space-y-1 shadow-xs">
             <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-              <span>Academic License</span>
+              <span>{t('analytics.academicLicense', 'Academic License')}</span>
               <Award className="h-4 w-4 text-purple-500" />
             </div>
             <div className="text-xl font-bold font-display text-purple-600 dark:text-purple-400">
-              Full Suite <span className="text-xs font-medium text-muted-foreground">Active</span>
+              {t('analytics.fullSuite', 'Full Suite')} <span className="text-xs font-medium text-muted-foreground">{t('analytics.active', 'Active')}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground">Uncapped academic tools & research</p>
+            <p className="text-[11px] text-muted-foreground">{t('analytics.licenseSubtitle', 'Uncapped academic tools & research')}</p>
           </div>
         </div>
 
@@ -272,16 +274,16 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-semibold text-xs text-foreground">
               <Sliders className="h-4 w-4 text-purple-600" />
-              Legal Research Module Utilization
+              {t('analytics.moduleUtilization', 'Legal Research Module Utilization')}
             </div>
             <span className="text-[11px] text-muted-foreground">
-              {featureBreakdown.length} active module(s)
+              {t('analytics.activeModules', `${featureBreakdown.length} active module(s)`, { count: featureBreakdown.length })}
             </span>
           </div>
 
           {featureBreakdown.length === 0 ? (
             <div className="text-center py-6 text-xs text-muted-foreground">
-              No module activity recorded yet this academic term. Students will appear here once they run research inquiries.
+              {t('analytics.noModuleActivity', 'No module activity recorded yet this academic term. Students will appear here once they run research inquiries.')}
             </div>
           ) : (
             <div className="space-y-3 pt-1">
@@ -309,13 +311,13 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                 <Users className="h-3.5 w-3.5" />
-                Enrolled Scholars Telemetry ({filteredStudents.length})
+                {t('analytics.enrolledScholarsTelemetry', `Enrolled Scholars Telemetry (${filteredStudents.length})`, { count: filteredStudents.length })}
               </h3>
             </div>
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Search by student or ID..."
+                placeholder={t('analytics.searchScholars', 'Search by student or ID...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8 h-8 text-xs"
@@ -328,13 +330,13 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
               <table className="w-full text-xs text-left">
                 <thead className="bg-muted/60 text-muted-foreground uppercase text-[10px] font-semibold border-b border-border">
                   <tr>
-                    <th className="py-2.5 px-3.5">Student Scholar</th>
-                    <th className="py-2.5 px-3.5">Class / Batch</th>
-                    <th className="py-2.5 px-3.5 text-center">Inquiries</th>
-                    <th className="py-2.5 px-3.5 text-center">Chat Sessions</th>
-                    <th className="py-2.5 px-3.5">Top Utilized Feature</th>
-                    <th className="py-2.5 px-3.5">Scholar Status</th>
-                    <th className="py-2.5 px-3.5 text-right">Academic Plan</th>
+                    <th className="py-2.5 px-3.5">{t('analytics.studentScholar', 'Student Scholar')}</th>
+                    <th className="py-2.5 px-3.5">{t('analytics.classBatch', 'Class / Batch')}</th>
+                    <th className="py-2.5 px-3.5 text-center">{t('analytics.inquiries', 'Inquiries')}</th>
+                    <th className="py-2.5 px-3.5 text-center">{t('analytics.chatSessions', 'Chat Sessions')}</th>
+                    <th className="py-2.5 px-3.5">{t('analytics.topUtilizedFeature', 'Top Utilized Feature')}</th>
+                    <th className="py-2.5 px-3.5">{t('analytics.scholarStatus', 'Scholar Status')}</th>
+                    <th className="py-2.5 px-3.5 text-right">{t('analytics.academicPlan', 'Academic Plan')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60 font-sans">
@@ -342,8 +344,8 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
                     <tr>
                       <td colSpan={7} className="py-8 text-center text-muted-foreground text-xs">
                         {students.length === 0
-                          ? 'No students enrolled with AI-Legal integration yet. Generate an enrollment link from the Student ID Generator tab to onboard students.'
-                          : 'No students match your search criteria.'}
+                          ? t('analytics.noScholarsFound', 'No students enrolled with AI-Legal integration yet. Generate an enrollment link from the Student ID Generator tab to onboard students.')
+                          : t('analytics.noScholarsMatch', 'No students match your search criteria.')}
                       </td>
                     </tr>
                   ) : (
@@ -387,17 +389,17 @@ export default function AiLegalTelemetryCard({ orgId, orgName, hasAiLegal = true
                             {isActive ? (
                               <Badge variant="outline" className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 text-[10px] gap-1 font-medium">
                                 <CheckCircle2 className="h-2.5 w-2.5" />
-                                Active Scholar
+                                {t('analytics.activeScholarBadge', 'Active Scholar')}
                               </Badge>
                             ) : (
                               <Badge variant="secondary" className="text-[10px] text-muted-foreground font-medium">
-                                Enrolled
+                                {t('analytics.enrolledBadge', 'Enrolled')}
                               </Badge>
                             )}
                           </td>
                           <td className="py-3 px-3.5 text-right">
                             <Badge variant="outline" className="bg-purple-500/15 text-purple-600 dark:text-purple-300 border-purple-500/30 text-[10px] gap-1 font-mono">
-                              Full Academic Suite
+                              {t('analytics.fullAcademicSuite', 'Full Academic Suite')}
                             </Badge>
                           </td>
                         </tr>

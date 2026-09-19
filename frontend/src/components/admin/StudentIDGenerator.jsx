@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { UserCheck, Sparkles, Download, Copy, Check, FileText, Upload, ShieldAlert, Key, Users, RefreshCw, Sliders, Eye, Link as LinkIcon, Scale, Globe, Share2, ExternalLink, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import AiLegalTelemetryCard from '@/components/admin/AiLegalTelemetryCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Target System Fields for Auto-Mapping & Alias Synonyms
 const SYSTEM_FIELDS = [
@@ -23,6 +24,7 @@ const SYSTEM_FIELDS = [
 ];
 
 function StudentIDGenerator({ departments = [], onStudentCreated }) {
+  const { t } = useLanguage();
   const { currentOrg } = useAuth();
   const { refreshOrgData } = useOrgData() || {};
   const [mode, setMode] = useState('single'); // 'single' | 'mass' | 'link'
@@ -354,13 +356,13 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CardTitle className="text-lg font-bold">Student ID & Credentials Generator</CardTitle>
+                <CardTitle className="text-lg font-bold">{t('studentIdGenerator.cardTitle', 'Student ID & Credentials Generator')}</CardTitle>
                 <Badge variant="outline" className="text-amber-500 border-amber-500/30 font-semibold text-[10px] tracking-wider uppercase">
-                  Admin Exclusive
+                  {t('studentIdGenerator.adminExclusive', 'Admin Exclusive')}
                 </Badge>
               </div>
               <CardDescription className="text-xs">
-                Generate unique Student IDs, passwords, and auto-enrol into database, class channels, and projects.
+                {t('studentIdGenerator.cardSubtitle', 'Generate unique Student IDs, passwords, and auto-enrol into database, class channels, and projects.')}
               </CardDescription>
             </div>
             <div className="flex items-center gap-1 bg-background/80 p-1 rounded-xl border border-border/60">
@@ -370,7 +372,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                 onClick={() => setMode('single')}
                 className="text-xs h-7 gap-1.5"
               >
-                <UserCheck className="h-3.5 w-3.5" /> Single Student
+                <UserCheck className="h-3.5 w-3.5" /> {t('studentIdGenerator.singleStudent', 'Single Student')}
               </Button>
               <Button
                 size="sm"
@@ -378,7 +380,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                 onClick={() => setMode('mass')}
                 className="text-xs h-7 gap-1.5"
               >
-                <Users className="h-3.5 w-3.5" /> Mass File Generator
+                <Users className="h-3.5 w-3.5" /> {t('studentIdGenerator.massGenerator', 'Mass File Generator')}
               </Button>
               <Button
                 size="sm"
@@ -386,7 +388,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                 onClick={() => setMode('link')}
                 className="text-xs h-7 gap-1.5"
               >
-                <LinkIcon className="h-3.5 w-3.5" /> Self-Signup Link
+                <LinkIcon className="h-3.5 w-3.5" /> {t('studentIdGenerator.selfSignupLink', 'Self-Signup Link')}
               </Button>
             </div>
           </div>
@@ -400,33 +402,33 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
           <div className="space-y-6">
             <form onSubmit={handleSingleGenerate} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Admission Number *</Label>
+                <Label className="text-xs font-semibold">{t('studentIdGenerator.admissionNumber', 'Admission Number *')}</Label>
                 <Input
                   required
-                  placeholder="e.g. ADM-2026-101"
+                  placeholder={t('studentIdGenerator.admissionPlaceholder', 'e.g. ADM-2026-101')}
                   value={singleForm.admissionNo}
                   onChange={(e) => setSingleForm({ ...singleForm, admissionNo: e.target.value })}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Student Full Name *</Label>
+                <Label className="text-xs font-semibold">{t('studentIdGenerator.studentFullName', 'Student Full Name *')}</Label>
                 <Input
                   required
-                  placeholder="e.g. Sarah Jenkins"
+                  placeholder={t('studentIdGenerator.studentNamePlaceholder', 'e.g. Sarah Jenkins')}
                   value={singleForm.fullName}
                   onChange={(e) => setSingleForm({ ...singleForm, fullName: e.target.value })}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">School Wing / Department *</Label>
+                <Label className="text-xs font-semibold">{t('studentIdGenerator.schoolWingDept', 'School Wing / Department *')}</Label>
                 <Select
                   value={singleForm.departmentId || undefined}
                   onValueChange={(val) => setSingleForm({ ...singleForm, departmentId: val || '', teamId: '' })}
                 >
                   <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Wing / Department" />
+                    <SelectValue placeholder={t('studentIdGenerator.selectWingPlaceholder', 'Select Wing / Department')} />
                   </SelectTrigger>
                   <SelectContent>
                     {departments.map((d) => (
@@ -437,7 +439,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Class & Section *</Label>
+                <Label className="text-xs font-semibold">{t('studentIdGenerator.classAndSection', 'Class & Section *')}</Label>
                 <Select
                   disabled={!singleForm.departmentId}
                   value={singleForm.teamId || undefined}
@@ -447,8 +449,8 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                     <SelectValue
                       placeholder={
                         singleForm.departmentId
-                          ? "Select Class & Section"
-                          : "⚠️ Select School Wing / Department first"
+                          ? t('studentIdGenerator.selectClassPlaceholder', 'Select Class & Section')
+                          : t('studentIdGenerator.selectWingFirst', '⚠️ Select School Wing / Department first')
                       }
                     />
                   </SelectTrigger>
@@ -459,7 +461,7 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                       ))
                     ) : (
                       <SelectItem value="__NO_TEAMS__" disabled>
-                        No class sections found for this wing
+                        {t('studentIdGenerator.noClassesFound', 'No class sections found for this wing')}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -467,9 +469,9 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-xs font-semibold">Parent Full Name (Optional)</Label>
+                <Label className="text-xs font-semibold">{t('studentIdGenerator.parentFullName', 'Parent Full Name (Optional)')}</Label>
                 <Input
-                  placeholder="e.g. Robert Smith"
+                  placeholder={t('studentIdGenerator.parentNamePlaceholder', 'e.g. Robert Smith')}
                   value={singleForm.parentFullName}
                   onChange={(e) => setSingleForm({ ...singleForm, parentFullName: e.target.value })}
                 />
@@ -486,11 +488,11 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
                   ) : (
                     <Sparkles className="h-4 w-4" />
                   )}
-                  {singleLoading ? 'Generating & Enrolling Student…' : 'Generate Student ID & Credentials'}
+                  {singleLoading ? t('studentIdGenerator.generating', 'Generating & Enrolling Student…') : t('studentIdGenerator.generateButton', 'Generate Student ID & Credentials')}
                 </Button>
                 {!isSingleFormValid && (
                   <p className="text-[11px] text-muted-foreground mt-2 italic">
-                    * Fill Admission Number, Full Name, Department, and Class & Section to enable generation button.
+                    {t('studentIdGenerator.formHelper', '* Fill Admission Number, Full Name, Department, and Class & Section to enable generation button.')}
                   </p>
                 )}
               </div>
@@ -501,15 +503,15 @@ Michael Brown,ADM-2026-003,Middle School,Grade 8 - Sec B,Sarah Brown
               <div className="p-4 rounded-2xl border border-amber-500/40 bg-amber-500/10 space-y-4 animate-in fade-in slide-in-from-bottom-2">
                 <div className="flex items-center justify-between border-b border-amber-500/20 pb-2">
                   <div className="flex items-center gap-2 text-sm font-bold text-amber-300">
-                    <Check className="h-4 w-4" /> Student & Parent Accounts Created
+                    <Check className="h-4 w-4" /> {t('studentIdGenerator.accountsCreated', 'Student & Parent Accounts Created')}
                   </div>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="outline" onClick={copyCredentials} className="h-7 text-xs gap-1 border-amber-500/30">
                       {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                      {copied ? 'Copied All' : 'Copy All Credentials'}
+                      {copied ? t('studentIdGenerator.copiedAll', 'Copied All') : t('studentIdGenerator.copyAll', 'Copy All Credentials')}
                     </Button>
                     <Button size="sm" onClick={downloadSingleCSV} className="h-7 text-xs gap-1 bg-amber-600 hover:bg-amber-700 text-white">
-                      <Download className="h-3 w-3" /> Download CSV
+                      <Download className="h-3 w-3" /> {t('studentIdGenerator.downloadCsv', 'Download CSV')}
                     </Button>
                   </div>
                 </div>

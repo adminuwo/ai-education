@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { parentApi, channelApi, financeApi, examApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ function initials(n) {
 export default function ParentPortalPage() {
   const navigate = useNavigate();
   const { currentOrg, user } = useAuth();
+  const { t } = useLanguage();
   const [childrenList, setChildrenList] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [report, setReport] = useState(null);
@@ -106,17 +108,17 @@ export default function ParentPortalPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold font-display tracking-tight flex items-center gap-2">
-              Parent Portal Dashboard
+              {t('parent.portalTitle', 'Parent Portal Dashboard')}
             </h1>
             <p className="text-xs text-muted-foreground">
-              Monitor your child's attendance statistics, graded homework, and connect with Class Teachers & HOD.
+              {t('parent.portalSubtitle', "Monitor your child's attendance statistics, graded homework, and connect with Class Teachers & HOD.")}
             </p>
           </div>
         </div>
 
         {childrenList.length > 1 && (
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-muted-foreground">Select Student:</span>
+            <span className="text-xs font-semibold text-muted-foreground">{t('parent.myChildren', 'Select Student:')}</span>
             <div className="flex gap-1">
               {childrenList.map((c) => {
                 const uId = c.userId || c.user?.id;
@@ -169,14 +171,14 @@ export default function ParentPortalPage() {
                   </Avatar>
                   <div>
                     <div className="text-xs font-semibold text-foreground">{report.classTeacher.fullName}</div>
-                    <div className="text-[10px] text-muted-foreground">Class Teacher</div>
+                    <div className="text-[10px] text-muted-foreground">{t('parent.classTeacher', 'Class Teacher')}</div>
                   </div>
                   <Button
                     size="sm"
                     onClick={() => handleMessageFaculty(report.classTeacher.id, 'Class Teacher')}
                     className="h-7 text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold ml-1.5"
                   >
-                    <MessageSquare className="h-3.5 w-3.5 mr-1" /> Contact Teacher
+                    <MessageSquare className="h-3.5 w-3.5 mr-1" /> {t('parent.contactTeacher', 'Contact Teacher')}
                   </Button>
                 </div>
               )}
@@ -191,14 +193,14 @@ export default function ParentPortalPage() {
                   </Avatar>
                   <div>
                     <div className="text-xs font-semibold text-foreground">{report.hodUser.fullName}</div>
-                    <div className="text-[10px] text-muted-foreground">Head of Department (HOD)</div>
+                    <div className="text-[10px] text-muted-foreground">{t('parent.hod', 'Head of Department (HOD)')}</div>
                   </div>
                   <Button
                     size="sm"
                     onClick={() => handleMessageFaculty(report.hodUser.id, 'HOD')}
                     className="h-7 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold ml-1.5"
                   >
-                    <Building className="h-3.5 w-3.5 mr-1" /> Contact HOD
+                    <Building className="h-3.5 w-3.5 mr-1" /> {t('parent.contactHOD', 'Contact HOD')}
                   </Button>
                 </div>
               )}
@@ -210,11 +212,11 @@ export default function ParentPortalPage() {
             <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
-                  <Sparkles className="h-4 w-4" /> Parent AI Academic Assistant
-                  <Badge variant="outline" className="text-[10px] bg-purple-500/20 text-purple-300 border-purple-500/30">24/7 AI Helper</Badge>
+                  <Sparkles className="h-4 w-4" /> {t('parent.aiAssistantTitle', 'Parent AI Academic Assistant')}
+                  <Badge variant="outline" className="text-[10px] bg-purple-500/20 text-purple-300 border-purple-500/30">{t('parent.aiHelperBadge', '24/7 AI Helper')}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground max-w-xl">
-                  Need help understanding your child's progress, explaining homework concepts, or drafting messages to Class Teachers & HOD? Use your personal Parent AI Companion.
+                  {t('parent.aiAssistantDesc', "Need help understanding your child's progress, explaining homework concepts, or drafting messages to Class Teachers & HOD? Use your personal Parent AI Companion.")}
                 </p>
               </div>
 
@@ -224,7 +226,7 @@ export default function ParentPortalPage() {
                   onClick={() => navigate('/app/ai')}
                   className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs gap-1.5 shadow-md w-full sm:w-auto"
                 >
-                  <Sparkles className="h-3.5 w-3.5" /> Launch Parent AI Assistant
+                  <Sparkles className="h-3.5 w-3.5" /> {t('parent.launchAiAssistant', 'Launch Parent AI Assistant')}
                 </Button>
               </div>
             </CardContent>
@@ -241,7 +243,7 @@ export default function ParentPortalPage() {
                   <div className="text-2xl font-bold font-display">
                     {report.attendance?.percentage}%
                   </div>
-                  <div className="text-xs text-muted-foreground font-medium">Monthly Attendance Rate</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('parent.attendanceRate', 'Monthly Attendance Rate')}</div>
                 </div>
               </CardContent>
             </Card>
@@ -255,7 +257,7 @@ export default function ParentPortalPage() {
                   <div className="text-2xl font-bold font-display">
                     {report.homeworkReport?.filter(h => h.status === 'COMPLETED').length || 0} / {report.homeworkReport?.length || 0}
                   </div>
-                  <div className="text-xs text-muted-foreground font-medium">Completed Homework</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('parent.completedHomework', 'Completed Homework')}</div>
                 </div>
               </CardContent>
             </Card>
@@ -267,9 +269,9 @@ export default function ParentPortalPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold font-display">
-                    {report.homeworkReport?.filter(h => h.submission?.gradeScore).length || 0} Graded
+                    {report.homeworkReport?.filter(h => h.submission?.gradeScore).length || 0} {t('parent.graded', 'Graded')}
                   </div>
-                  <div className="text-xs text-muted-foreground font-medium">Rubric Scores Released</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('parent.rubricScores', 'Rubric Scores Released')}</div>
                 </div>
               </CardContent>
             </Card>
@@ -281,15 +283,15 @@ export default function ParentPortalPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
-                    <IndianRupee className="h-4 w-4 text-emerald-400" /> School Fees & Payment Statement
+                    <IndianRupee className="h-4 w-4 text-emerald-400" /> {t('parent.feeStatus', 'School Fees & Payment Statement')}
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Synced from Institution Accounting Ledgers (Tally Prime / Busy Sync)
+                    {t('parent.feeSyncedDesc', 'Synced from Institution Accounting Ledgers (Tally Prime / Busy Sync)')}
                   </CardDescription>
                 </div>
                 {feeData?.summary?.totalPending > 0 && (
                   <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-xs font-bold">
-                    Pending Dues: ₹{feeData.summary.totalPending.toLocaleString('en-IN')}
+                    {t('parent.pendingDues', 'Pending Dues:')} ₹{feeData.summary.totalPending.toLocaleString('en-IN')}
                   </Badge>
                 )}
               </div>
@@ -317,21 +319,21 @@ export default function ParentPortalPage() {
 
                       <div className="flex items-center justify-between text-xs pt-1 border-t border-border/40">
                         <div>
-                          <span className="text-muted-foreground">Total Fee: </span>
+                          <span className="text-muted-foreground">{t('parent.totalFee', 'Total Fee:')} </span>
                           <strong className="text-foreground">₹{fee.totalAmount.toLocaleString('en-IN')}</strong>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Paid: </span>
+                          <span className="text-muted-foreground">{t('parent.paid', 'Paid:')} </span>
                           <strong className="text-emerald-400">₹{fee.paidAmount.toLocaleString('en-IN')}</strong>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Balance: </span>
+                          <span className="text-muted-foreground">{t('parent.balance', 'Balance:')} </span>
                           <strong className="text-amber-400">₹{fee.pendingBalance.toLocaleString('en-IN')}</strong>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-border/40">
-                        <span>Receipt: <code className="text-xs text-foreground font-mono">{fee.receiptNo}</code></span>
+                        <span>{t('parent.receipt', 'Receipt:')} <code className="text-xs text-foreground font-mono">{fee.receiptNo}</code></span>
                         <div className="flex items-center gap-2">
                           <Button
                             size="sm"
@@ -339,11 +341,11 @@ export default function ParentPortalPage() {
                             onClick={() => setPrintableReceipt(fee)}
                             className="h-6 text-[11px] border-border text-emerald-400 hover:bg-emerald-500/10 px-2 py-0"
                           >
-                            <Printer className="w-3 h-3 mr-1" /> Download Receipt
+                            <Printer className="w-3 h-3 mr-1" /> {t('parent.downloadReceipt', 'Download Receipt')}
                           </Button>
                           {fee.status !== 'PAID' && (
                             <Button size="sm" className="h-6 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0">
-                              <CreditCard className="w-3 h-3 mr-1" /> Pay Now
+                              <CreditCard className="w-3 h-3 mr-1" /> {t('parent.payNow', 'Pay Now')}
                             </Button>
                           )}
                         </div>
@@ -353,7 +355,7 @@ export default function ParentPortalPage() {
                 </div>
               ) : (
                 <div className="text-xs text-muted-foreground py-4 text-center">
-                  No active fee records found for your linked student.
+                  {t('parent.noFeeRecords', 'No active fee records found for your linked student.')}
                 </div>
               )}
             </CardContent>
@@ -365,15 +367,15 @@ export default function ParentPortalPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base font-bold flex items-center gap-2 text-foreground">
-                    <GraduationCap className="h-4 w-4 text-purple-500" /> Official Exam Marks & Term Report Cards
+                    <GraduationCap className="h-4 w-4 text-purple-500" /> {t('parent.officialExamsTitle', 'Official Exam Marks & Term Report Cards')}
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    View published examination marks, subject breakdown, pass/fail status, and download official report cards.
+                    {t('parent.officialExamsDesc', 'View published examination marks, subject breakdown, pass/fail status, and download official report cards.')}
                   </CardDescription>
                 </div>
                 {studentReportCards.length > 0 && (
                   <Badge variant="outline" className="bg-purple-500/10 text-purple-500 border-purple-500/30 text-xs font-semibold">
-                    {studentReportCards.length} Report Card(s) Available
+                    {studentReportCards.length} {t('parent.reportCardsAvailable', 'Report Card(s) Available')}
                   </Badge>
                 )}
               </div>
@@ -405,15 +407,15 @@ export default function ParentPortalPage() {
 
                         <div className="grid grid-cols-3 gap-2 bg-muted/40 p-2.5 rounded-lg text-center text-xs border border-border/60">
                           <div>
-                            <span className="text-[10px] text-muted-foreground block">Percentage</span>
+                            <span className="text-[10px] text-muted-foreground block">{t('parent.percentage', 'Percentage')}</span>
                             <span className="font-bold text-primary text-sm">{rc.percentage}%</span>
                           </div>
                           <div>
-                            <span className="text-[10px] text-muted-foreground block">Grade</span>
+                            <span className="text-[10px] text-muted-foreground block">{t('parent.grade', 'Grade')}</span>
                             <span className="font-bold text-foreground text-sm">{rc.overallGrade}</span>
                           </div>
                           <div>
-                            <span className="text-[10px] text-muted-foreground block">Total Marks</span>
+                            <span className="text-[10px] text-muted-foreground block">{t('parent.totalMarks', 'Total Marks')}</span>
                             <span className="font-bold text-foreground text-sm">{rc.totalMarksObtained}/{rc.totalMaxMarks}</span>
                           </div>
                         </div>
@@ -426,7 +428,7 @@ export default function ParentPortalPage() {
 
                         <div className="pt-2 border-t border-border flex items-center justify-between">
                           <span className="text-[10px] text-muted-foreground">
-                            Generated on {new Date(rc.publishedAt || rc.createdAt).toLocaleDateString('en-GB')}
+                            {t('parent.generatedOn', 'Generated on')} {new Date(rc.publishedAt || rc.createdAt).toLocaleDateString('en-GB')}
                           </span>
                           <Button
                             size="sm"
@@ -436,7 +438,7 @@ export default function ParentPortalPage() {
                             }}
                             className="h-7 text-xs gap-1.5 bg-primary text-primary-foreground font-semibold"
                           >
-                            <Printer className="h-3 w-3" /> View & Print Report Card
+                            <Printer className="h-3 w-3" /> {t('parent.viewAndPrintReportCard', 'View & Print Report Card')}
                           </Button>
                         </div>
                       </div>
@@ -446,7 +448,7 @@ export default function ParentPortalPage() {
               ) : (
                 <div className="text-xs text-muted-foreground py-6 text-center bg-card rounded-lg border border-dashed border-border">
                   <GraduationCap className="h-7 w-7 text-muted-foreground mx-auto mb-1.5 opacity-60" />
-                  <span>No official report cards published yet for this term. Graded examinations will appear here once finalized by faculty.</span>
+                  <span>{t('parent.noReportCardsYet', 'No official report cards published yet for this term. Graded examinations will appear here once finalized by faculty.')}</span>
                 </div>
               )}
             </CardContent>
@@ -456,10 +458,10 @@ export default function ParentPortalPage() {
           <Card className="border-border shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-emerald-500" /> Child's Homework & Rubric Progress
+                <BookOpen className="h-4 w-4 text-emerald-500" /> {t('parent.homeworkProgressTitle', "Child's Homework & Rubric Progress")}
               </CardTitle>
               <CardDescription className="text-xs">
-                View homework assignments, teacher feedback, and criterion-based rubric scores.
+                {t('parent.homeworkProgressDesc', 'View homework assignments, teacher feedback, and criterion-based rubric scores.')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -472,27 +474,27 @@ export default function ParentPortalPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <h4 className="font-bold text-sm text-foreground">{h.title}</h4>
-                        <div className="text-xs text-muted-foreground">Assigned by {h.createdBy?.fullName || 'Teacher'}</div>
+                        <div className="text-xs text-muted-foreground">{t('parent.assignedBy', 'Assigned by')} {h.createdBy?.fullName || 'Teacher'}</div>
                       </div>
 
                       {sub?.gradeScore !== undefined && sub?.gradeScore !== null ? (
                         <Badge variant="outline" className="text-xs font-bold bg-emerald-500/10 text-emerald-500 border-emerald-500/30">
-                          Grade: {sub.gradeScore} / {sub.gradeMax || 100}
+                          {t('parent.gradeLabel', 'Grade:')} {sub.gradeScore} / {sub.gradeMax || 100}
                         </Badge>
                       ) : isCompleted ? (
                         <Badge variant="outline" className="text-xs font-bold bg-emerald-500/10 text-emerald-500 border-emerald-500/30">
-                          Grade: - / {sub?.gradeMax || 100}
+                          {t('parent.gradeLabel', 'Grade:')} - / {sub?.gradeMax || 100}
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="text-xs font-semibold bg-amber-500/10 text-amber-500 border-amber-500/30">
-                          Pending Submission
+                          {t('parent.pendingSubmission', 'Pending Submission')}
                         </Badge>
                       )}
                     </div>
 
                     {sub?.feedbackNotes && (
                       <div className="p-2.5 rounded-lg bg-muted/40 text-xs text-foreground border border-border/60">
-                        <strong className="text-muted-foreground">Teacher Feedback:</strong> "{sub.feedbackNotes}"
+                        <strong className="text-muted-foreground">{t('parent.teacherFeedback', 'Teacher Feedback:')}</strong> "{sub.feedbackNotes}"
                       </div>
                     )}
                   </div>
@@ -501,7 +503,7 @@ export default function ParentPortalPage() {
 
               {(!report.homeworkReport || report.homeworkReport.length === 0) && (
                 <div className="text-center py-8 text-xs text-muted-foreground">
-                  No homework assignments logged yet.
+                  {t('parent.noHomeworkLogged', 'No homework assignments logged yet.')}
                 </div>
               )}
             </CardContent>
@@ -515,11 +517,11 @@ export default function ParentPortalPage() {
             <UserCheck className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-foreground">No Linked Children Found</h3>
+            <h3 className="text-lg font-bold text-foreground">{t('parent.noLinkedChildren', 'No Linked Children Found')}</h3>
             <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
               {user?.email?.includes('parent') || currentOrg?.role === 'PARENT'
-                ? "Your parent account is not currently linked to any student profile. Please contact the school administration or enter your child's Student ID to link."
-                : "You are currently viewing the Parent Portal as a Staff/Administrator. To test child progress tracking, log in with a Parent account or link a student account."}
+                ? t('parent.linkChildPrompt', "Your parent account is not currently linked to any student profile. Please contact the school administration or enter your child's Student ID to link.")
+                : t('parent.staffPreviewPrompt', "You are currently viewing the Parent Portal as a Staff/Administrator. To test child progress tracking, log in with a Parent account or link a student account.")}
             </p>
           </div>
         </Card>

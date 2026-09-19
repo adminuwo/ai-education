@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { aiApi, taskApi, channelApi, parentApi, financeApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,76 +17,77 @@ import DailyHomeQuiz from '@/components/classroom/DailyHomeQuiz';
 import LegalStudyHubTab from '@/components/legal/LegalStudyHubTab';
 
 const QUICK_PROMPTS = [
-  { icon: MessageSquareText, label: 'Summarize channel', prompt: 'Summarize the last 24 hours of activity in my current workspace.' },
-  { icon: ListTodo, label: 'Extract action items', prompt: 'Extract action items from my recent conversations and list them with owners.' },
-  { icon: FileText, label: 'Draft an update', prompt: 'Draft a weekly status update for my team based on my recent tasks and progress.' },
-  { icon: Zap, label: 'Sprint planning', prompt: 'Suggest a 2-week sprint plan based on my open backlog items.' },
+  { icon: MessageSquareText, labelKey: 'aiPage.prompts.summarizeChannel', promptKey: 'aiPage.prompts.summarizeChannelPrompt', label: 'Summarize channel', prompt: 'Summarize the last 24 hours of activity in my current workspace.' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.extractActionItems', promptKey: 'aiPage.prompts.extractActionItemsPrompt', label: 'Extract action items', prompt: 'Extract action items from my recent conversations and list them with owners.' },
+  { icon: FileText, labelKey: 'aiPage.prompts.draftUpdate', promptKey: 'aiPage.prompts.draftUpdatePrompt', label: 'Draft an update', prompt: 'Draft a weekly status update for my team based on my recent tasks and progress.' },
+  { icon: Zap, labelKey: 'aiPage.prompts.sprintPlanning', promptKey: 'aiPage.prompts.sprintPlanningPrompt', label: 'Sprint planning', prompt: 'Suggest a 2-week sprint plan based on my open backlog items.' },
 ];
 
 const STUDENT_PROMPTS = [
-  { icon: ListTodo, label: 'Pending Homework & Tasks', prompt: 'What homework and tasks do I have due for my class?' },
-  { icon: Zap, label: 'Class Projects Overview', prompt: 'Summarize my active class projects and their goals.' },
-  { icon: Sparkles, label: 'Homework & Study Help', prompt: 'Can you help me understand a complex topic step-by-step for my studies?' },
-  { icon: MessageSquareText, label: 'Grade Announcements', prompt: 'What are the latest announcements for my grade and school wing?' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.pendingHomework', promptKey: 'aiPage.prompts.pendingHomeworkPrompt', label: 'Pending Homework & Tasks', prompt: 'What homework and tasks do I have due for my class?' },
+  { icon: Zap, labelKey: 'aiPage.prompts.classProjects', promptKey: 'aiPage.prompts.classProjectsPrompt', label: 'Class Projects Overview', prompt: 'Summarize my active class projects and their goals.' },
+  { icon: Sparkles, labelKey: 'aiPage.prompts.studyHelp', promptKey: 'aiPage.prompts.studyHelpPrompt', label: 'Homework & Study Help', prompt: 'Can you help me understand a complex topic step-by-step for my studies?' },
+  { icon: MessageSquareText, labelKey: 'aiPage.prompts.gradeAnnouncements', promptKey: 'aiPage.prompts.gradeAnnouncementsPrompt', label: 'Grade Announcements', prompt: 'What are the latest announcements for my grade and school wing?' },
 ];
 
 const PARENT_PROMPTS = [
-  { icon: ListTodo, label: "Child's Progress & Homework 📊", prompt: "Summarize my child's current academic progress, attendance rate, and pending homework assignments." },
-  { icon: MessageSquareText, label: 'Contact Class Teacher ✉️', prompt: 'Draft a polite message to my child\'s Class Teacher regarding their recent homework performance and attendance.' },
-  { icon: GraduationCap, label: 'Contact Head of Department (HOD) 🏛️', prompt: 'Draft a message to the Head of Department (HOD) to discuss my child\'s overall academic progress and support.' },
-  { icon: Sparkles, label: 'Help Child With Homework 💡', prompt: 'My child needs help understanding their homework assignment. Can you break down the concept step-by-step so I can guide them?' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.childProgress', promptKey: 'aiPage.prompts.childProgressPrompt', label: "Child's Progress & Homework 📊", prompt: "Summarize my child's current academic progress, attendance rate, and pending homework assignments." },
+  { icon: MessageSquareText, labelKey: 'aiPage.prompts.contactClassTeacher', promptKey: 'aiPage.prompts.contactClassTeacherPrompt', label: 'Contact Class Teacher ✉️', prompt: 'Draft a polite message to my child\'s Class Teacher regarding their recent homework performance and attendance.' },
+  { icon: GraduationCap, labelKey: 'aiPage.prompts.contactHOD', promptKey: 'aiPage.prompts.contactHODPrompt', label: 'Contact Head of Department (HOD) 🏛️', prompt: 'Draft a message to the Head of Department (HOD) to discuss my child\'s overall academic progress and support.' },
+  { icon: Sparkles, labelKey: 'aiPage.prompts.helpChildHomework', promptKey: 'aiPage.prompts.helpChildHomeworkPrompt', label: 'Help Child With Homework 💡', prompt: 'My child needs help understanding their homework assignment. Can you break down the concept step-by-step so I can guide them?' },
 ];
 
 const ACCOUNTANT_PROMPTS = [
-  { icon: FileText, label: 'Fee Collection & Dues Analysis 📊', prompt: 'Give me a summary of total student fees collected, pending balances, and overdue accounts for this term.' },
-  { icon: Sparkles, label: 'Faculty Payroll Summary 💼', prompt: 'Show me the disbursed faculty payroll breakdown and total net salary payout for this month.' },
-  { icon: RefreshCw, label: 'Sync Pending Ledgers with Tally 🔄', prompt: 'Sync all staged student fee ledgers and payroll vouchers with Tally Prime (incremental sync).' },
-  { icon: ListTodo, label: 'Financial Health & Revenue Report 📈', prompt: 'Analyze financial metrics, ledger sync statuses, and overall net balance for Demo International Academy.' },
+  { icon: FileText, labelKey: 'aiPage.prompts.feeCollectionAnalysis', promptKey: 'aiPage.prompts.feeCollectionAnalysisPrompt', label: 'Fee Collection & Dues Analysis 📊', prompt: 'Give me a summary of total student fees collected, pending balances, and overdue accounts for this term.' },
+  { icon: Sparkles, labelKey: 'aiPage.prompts.facultyPayrollSummary', promptKey: 'aiPage.prompts.facultyPayrollSummaryPrompt', label: 'Faculty Payroll Summary 💼', prompt: 'Show me the disbursed faculty payroll breakdown and total net salary payout for this month.' },
+  { icon: RefreshCw, labelKey: 'aiPage.prompts.syncTallyLedgers', promptKey: 'aiPage.prompts.syncTallyLedgersPrompt', label: 'Sync Pending Ledgers with Tally 🔄', prompt: 'Sync all staged student fee ledgers and payroll vouchers with Tally Prime (incremental sync).' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.financialHealthReport', promptKey: 'aiPage.prompts.financialHealthReportPrompt', label: 'Financial Health & Revenue Report 📈', prompt: 'Analyze financial metrics, ledger sync statuses, and overall net balance for Demo International Academy.' },
 ];
 
 const ADMIN_DIRECTOR_PROMPTS = [
-  { icon: Building2, label: 'Campus Enrollment & Staffing 🏛️', prompt: 'Provide an executive summary of total student enrollment, active departments, and faculty headcount across the campus.' },
-  { icon: UserCheck, label: 'Campus-Wide Attendance Health 📊', prompt: 'Analyze student and faculty attendance across all wings, and highlight any classes or sections with attendance below 75%.' },
-  { icon: Landmark, label: 'Institutional Financial Health 💰', prompt: 'Give me an executive overview of total student fee collections, pending dues, and monthly operational payroll.' },
-  { icon: GraduationCap, label: 'Faculty Absences & Proxies 👨‍🏫', prompt: 'Show today\'s teacher attendance, absent faculty members, and active substitute/proxy assignments.' },
-  { icon: Megaphone, label: 'Draft Campus Circular / Notice 📢', prompt: 'Draft an official campus-wide circular announcement from the Director\'s Office regarding upcoming term exams and parent-teacher meetings.' },
-  { icon: BookOpen, label: 'Create Class Homework (Teaching) 📚', prompt: 'Create a new homework assignment for my assigned class with instructions, due date, and checklist.' },
-  { icon: ListTodo, label: 'Check Homework Submissions 📝', prompt: 'Who has submitted homework and who has not submitted yet for my assigned classes?' },
-  { icon: Zap, label: 'Generate Quiz / Question Bank 💡', prompt: 'Generate an Exam Question Bank (5 MCQs + 3 Short Answer Questions with answer key) for my class subject.' },
+  { icon: Building2, labelKey: 'aiPage.prompts.campusEnrollment', promptKey: 'aiPage.prompts.campusEnrollmentPrompt', label: 'Campus Enrollment & Staffing 🏛️', prompt: 'Provide an executive summary of total student enrollment, active departments, and faculty headcount across the campus.' },
+  { icon: UserCheck, labelKey: 'aiPage.prompts.campusAttendanceHealth', promptKey: 'aiPage.prompts.campusAttendanceHealthPrompt', label: 'Campus-Wide Attendance Health 📊', prompt: 'Analyze student and faculty attendance across all wings, and highlight any classes or sections with attendance below 75%.' },
+  { icon: Landmark, labelKey: 'aiPage.prompts.institutionalFinancialHealth', promptKey: 'aiPage.prompts.institutionalFinancialHealthPrompt', label: 'Institutional Financial Health 💰', prompt: 'Give me an executive overview of total student fee collections, pending dues, and monthly operational payroll.' },
+  { icon: GraduationCap, labelKey: 'aiPage.prompts.facultyAbsencesProxies', promptKey: 'aiPage.prompts.facultyAbsencesProxiesPrompt', label: 'Faculty Absences & Proxies 👨‍🏫', prompt: 'Show today\'s teacher attendance, absent faculty members, and active substitute/proxy assignments.' },
+  { icon: Megaphone, labelKey: 'aiPage.prompts.draftCampusCircular', promptKey: 'aiPage.prompts.draftCampusCircularPrompt', label: 'Draft Campus Circular / Notice 📢', prompt: 'Draft an official campus-wide circular announcement from the Director\'s Office regarding upcoming term exams and parent-teacher meetings.' },
+  { icon: BookOpen, labelKey: 'aiPage.prompts.createClassHomework', promptKey: 'aiPage.prompts.createClassHomeworkPrompt', label: 'Create Class Homework (Teaching) 📚', prompt: 'Create a new homework assignment for my assigned class with instructions, due date, and checklist.' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.checkHomeworkSubmissions', promptKey: 'aiPage.prompts.checkHomeworkSubmissionsPrompt', label: 'Check Homework Submissions 📝', prompt: 'Who has submitted homework and who has not submitted yet for my assigned classes?' },
+  { icon: Zap, labelKey: 'aiPage.prompts.generateQuizQuestionBank', promptKey: 'aiPage.prompts.generateQuizQuestionBankPrompt', label: 'Generate Quiz / Question Bank 💡', prompt: 'Generate an Exam Question Bank (5 MCQs + 3 Short Answer Questions with answer key) for my class subject.' },
 ];
 
 const TEACHER_PROMPTS = [
-  { icon: GraduationCap, label: 'Generate Quiz / Question Bank 📝', prompt: 'Generate an Exam Question Bank (5 MCQs + 3 Short Answer Questions with answer key) from the topic: Photosynthesis & Cell Respiration.' },
-  { icon: ListTodo, label: 'Check Homework Submissions', prompt: 'Who has submitted their homework and who has not submitted yet for my class?' },
-  { icon: BookOpen, label: 'Create Class Homework', prompt: 'Create a new science homework assignment for Grade 10 Sec A on Quadratic Equations due next Monday with instructions and checklist.' },
-  { icon: Sparkles, label: 'Class Submission Analytics', prompt: 'Give me a full breakdown of homework submission rates across my class sections and department.' },
-  { icon: MessageSquareText, label: 'Draft Class Announcement', prompt: 'Draft an announcement for my class students about upcoming homework due dates.' },
+  { icon: GraduationCap, labelKey: 'aiPage.prompts.teacherQuiz', promptKey: 'aiPage.prompts.teacherQuizPrompt', label: 'Generate Quiz / Question Bank 📝', prompt: 'Generate an Exam Question Bank (5 MCQs + 3 Short Answer Questions with answer key) from the topic: Photosynthesis & Cell Respiration.' },
+  { icon: ListTodo, labelKey: 'aiPage.prompts.teacherSubmissions', promptKey: 'aiPage.prompts.teacherSubmissionsPrompt', label: 'Check Homework Submissions', prompt: 'Who has submitted their homework and who has not submitted yet for my class?' },
+  { icon: BookOpen, labelKey: 'aiPage.prompts.teacherHomework', promptKey: 'aiPage.prompts.teacherHomeworkPrompt', label: 'Create Class Homework', prompt: 'Create a new science homework assignment for Grade 10 Sec A on Quadratic Equations due next Monday with instructions and checklist.' },
+  { icon: Sparkles, labelKey: 'aiPage.prompts.submissionAnalytics', promptKey: 'aiPage.prompts.submissionAnalyticsPrompt', label: 'Class Submission Analytics', prompt: 'Give me a full breakdown of homework submission rates across my class sections and department.' },
+  { icon: MessageSquareText, labelKey: 'aiPage.prompts.draftClassAnnouncement', promptKey: 'aiPage.prompts.draftClassAnnouncementPrompt', label: 'Draft Class Announcement', prompt: 'Draft an announcement for my class students about upcoming homework due dates.' },
 ];
 
 const ALUMNI_PROMPTS = [
-  { icon: GraduationCap, label: 'Alumni Network & Connections 🎓', prompt: 'How can I connect with fellow alumni, graduating batches, and departmental networks from my Alma Mater?' },
-  { icon: Sparkles, label: 'Career Mentorship & Guidance 💼', prompt: 'Suggest ways I can mentor current students or share job opportunities and career guidance with the campus.' },
-  { icon: FileText, label: 'Transcript & Degree Verification 📜', prompt: 'What is the procedure for requesting official academic transcripts, degree verification, and duplicate certificates?' },
-  { icon: MessageSquareText, label: 'Alumni Reunions & Campus Events 🏛️', prompt: 'Are there any upcoming campus reunions, alumni guest lectures, or homecoming events scheduled?' },
+  { icon: GraduationCap, labelKey: 'aiPage.prompts.alumniNetwork', promptKey: 'aiPage.prompts.alumniNetworkPrompt', label: 'Alumni Network & Connections 🎓', prompt: 'How can I connect with fellow alumni, graduating batches, and departmental networks from my Alma Mater?' },
+  { icon: Sparkles, labelKey: 'aiPage.prompts.careerMentorship', promptKey: 'aiPage.prompts.careerMentorshipPrompt', label: 'Career Mentorship & Guidance 💼', prompt: 'Suggest ways I can mentor current students or share job opportunities and career guidance with the campus.' },
+  { icon: FileText, labelKey: 'aiPage.prompts.transcriptVerification', promptKey: 'aiPage.prompts.transcriptVerificationPrompt', label: 'Transcript & Degree Verification 📜', prompt: 'What is the procedure for requesting official academic transcripts, degree verification, and duplicate certificates?' },
+  { icon: MessageSquareText, labelKey: 'aiPage.prompts.alumniReunions', promptKey: 'aiPage.prompts.alumniReunionsPrompt', label: 'Alumni Reunions & Campus Events 🏛️', prompt: 'Are there any upcoming campus reunions, alumni guest lectures, or homecoming events scheduled?' },
 ];
 
 const LEGAL_STUDENT_PROMPTS = [
-  { icon: Scale, label: '⚖️ Judicial Exam Blueprint (DJS / UP PCS-J)', prompt: 'Create a 30-day comprehensive study blueprint for Delhi Judicial Service (DJS) Prelims & Mains criminal law syllabus.' },
-  { icon: BookOpen, label: '📜 IPC to BNS Transition Map', prompt: 'Explain the key changes between IPC Section 302/304 and Bharatiya Nyaya Sanhita (BNS) Section 103, with new illustrations and legal impacts.' },
-  { icon: FileText, label: '✍️ Evaluate Judicial Mains Answer', prompt: 'Evaluate my legal reasoning for this Judicial Mains problem question: Issue identification, applicable statutory provisions under CrPC/BNSS, landmark precedents, and final conclusion.' },
-  { icon: Zap, label: '🎯 Bare Act Section Drill (MCQs)', prompt: 'Generate 5 high-yield Prelims MCQs testing tricky exceptions in Bharatiya Sakshya Adhiniyam (BSA) Section 23 to 27 with detailed statutory explanations.' },
+  { icon: Scale, labelKey: 'aiPage.prompts.legalExamBlueprint', promptKey: 'aiPage.prompts.legalExamBlueprintPrompt', label: '⚖️ Judicial Exam Blueprint (DJS / UP PCS-J)', prompt: 'Create a 30-day comprehensive study blueprint for Delhi Judicial Service (DJS) Prelims & Mains criminal law syllabus.' },
+  { icon: BookOpen, labelKey: 'aiPage.prompts.ipcToBnsMap', promptKey: 'aiPage.prompts.ipcToBnsMapPrompt', label: '📜 IPC to BNS Transition Map', prompt: 'Explain the key changes between IPC Section 302/304 and Bharatiya Nyaya Sanhita (BNS) Section 103, with new illustrations and legal impacts.' },
+  { icon: FileText, labelKey: 'aiPage.prompts.evalJudicialMains', promptKey: 'aiPage.prompts.evalJudicialMainsPrompt', label: '✍️ Evaluate Judicial Mains Answer', prompt: 'Evaluate my legal reasoning for this Judicial Mains problem question: Issue identification, applicable statutory provisions under CrPC/BNSS, landmark precedents, and final conclusion.' },
+  { icon: Zap, labelKey: 'aiPage.prompts.bareActSectionDrill', promptKey: 'aiPage.prompts.bareActSectionDrillPrompt', label: '🎯 Bare Act Section Drill (MCQs)', prompt: 'Generate 5 high-yield Prelims MCQs testing tricky exceptions in Bharatiya Sakshya Adhiniyam (BSA) Section 23 to 27 with detailed statutory explanations.' },
 ];
 
 const LEGAL_FACULTY_PROMPTS = [
-  { icon: Scale, label: '⚖️ Draft Judicial Exam Question Bank', prompt: 'Generate an advanced Judicial Services exam question paper (5 analytical Mains problem questions + 5 Bare Act Prelims MCQs) covering BNS vs IPC criminal jurisprudence with model answers and evaluation rubric.' },
-  { icon: BookOpen, label: '📜 Curate New Criminal Laws Lecture Notes', prompt: 'Prepare a 4-lecture modular syllabus and comparative notes on the procedural transition from CrPC 1973 to Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 for final-year law students.' },
-  { icon: FileText, label: '✍️ Mains Evaluation Rubric & Model Answer', prompt: 'Draft a comprehensive Judicial Mains model answer and 20-mark evaluation rubric for a moot court/exam problem involving digital evidence admissibility under Bharatiya Sakshya Adhiniyam (BSA).' },
-  { icon: Zap, label: '🎯 High-Yield Bare Act Drill for Class', prompt: 'Generate a high-yield 10-question Bare Act drill with tricky statutory exceptions and case citations on the Constitution of India (Articles 14, 19, 21, and 32) for law aspirants.' },
+  { icon: Scale, labelKey: 'aiPage.prompts.draftJudicialBank', promptKey: 'aiPage.prompts.draftJudicialBankDesc', label: '⚖️ Draft Judicial Exam Question Bank', prompt: 'Generate an advanced Judicial Services exam question paper (5 analytical Mains problem questions + 5 Bare Act Prelims MCQs) covering BNS vs IPC criminal jurisprudence with model answers and evaluation rubric.' },
+  { icon: BookOpen, labelKey: 'aiPage.prompts.curateCriminalNotes', promptKey: 'aiPage.prompts.curateCriminalNotesDesc', label: '📜 Curate New Criminal Laws Lecture Notes', prompt: 'Prepare a 4-lecture modular syllabus and comparative notes on the procedural transition from CrPC 1973 to Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 for final-year law students.' },
+  { icon: FileText, labelKey: 'aiPage.prompts.mainsRubric', promptKey: 'aiPage.prompts.mainsRubricDesc', label: '✍️ Mains Evaluation Rubric & Model Answer', prompt: 'Draft a comprehensive Judicial Mains model answer and 20-mark evaluation rubric for a moot court/exam problem involving digital evidence admissibility under Bharatiya Sakshya Adhiniyam (BSA).' },
+  { icon: Zap, labelKey: 'aiPage.prompts.bareActDrill', promptKey: 'aiPage.prompts.bareActDrillDesc', label: '🎯 High-Yield Bare Act Drill for Class', prompt: 'Generate a high-yield 10-question Bare Act drill with tricky statutory exceptions and case citations on the Constitution of India (Articles 14, 19, 21, and 32) for law aspirants.' },
 ];
 
 function initials(n) { return (n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('').toUpperCase(); }
 
 export default function AIPage() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { user, currentOrg } = useAuth();
   const [conversations, setConversations] = useState([]);
@@ -437,15 +439,15 @@ export default function AIPage() {
         {proposal && (
           <Card className="border border-emerald-500/30 bg-emerald-500/10 p-3.5 rounded-xl space-y-2 text-xs">
             <div className="flex items-center justify-between font-bold text-emerald-400">
-              <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4" /> AI Generated Homework Proposal</span>
+              <span className="flex items-center gap-1.5"><BookOpen className="h-4 w-4" /> {t('aiPage.homeworkProposal', 'AI Generated Homework Proposal')}</span>
               {proposal.priority && <Badge variant="outline" className="text-[10px] bg-emerald-500/20 text-emerald-300">{proposal.priority}</Badge>}
             </div>
             <div className="font-semibold text-sm text-foreground">{proposal.title}</div>
             {proposal.targetClassNames && (
-              <div className="text-[11px] text-muted-foreground">Target Class: <span className="font-semibold text-foreground">{proposal.targetClassNames.join(', ')}</span></div>
+              <div className="text-[11px] text-muted-foreground">{t('aiPage.targetClass', 'Target Class:')} <span className="font-semibold text-foreground">{proposal.targetClassNames.join(', ')}</span></div>
             )}
             {proposal.dueDate && (
-              <div className="text-[11px] text-muted-foreground">Suggested Due Date: <span className="font-semibold text-foreground">{proposal.dueDate}</span></div>
+              <div className="text-[11px] text-muted-foreground">{t('aiPage.suggestedDueDate', 'Suggested Due Date:')} <span className="font-semibold text-foreground">{proposal.dueDate}</span></div>
             )}
             {proposal.description && (
               <p className="text-muted-foreground line-clamp-2">{proposal.description}</p>
@@ -462,11 +464,11 @@ export default function AIPage() {
             >
               {isAlreadyAssigned ? (
                 <>
-                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> Assigned
+                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> {t('aiPage.assigned', 'Assigned')}
                 </>
               ) : (
                 <>
-                  <Check className="h-3.5 w-3.5 mr-1.5" /> Assign Homework Now
+                  <Check className="h-3.5 w-3.5 mr-1.5" /> {t('aiPage.assignHomeworkNow', 'Assign Homework Now')}
                 </>
               )}
             </Button>
@@ -476,8 +478,8 @@ export default function AIPage() {
         {broadcastProposal && (
           <Card className="border border-amber-500/30 bg-amber-500/10 p-3.5 rounded-xl space-y-2.5 text-xs">
             <div className="flex items-center justify-between font-bold text-amber-400">
-              <span className="flex items-center gap-1.5"><Megaphone className="h-4 w-4" /> Official Campus Circular Draft</span>
-              <Badge variant="outline" className="text-[10px] bg-amber-500/20 text-amber-300">Executive Broadcast</Badge>
+              <span className="flex items-center gap-1.5"><Megaphone className="h-4 w-4" /> {t('aiPage.circularDraft', 'Official Campus Circular Draft')}</span>
+              <Badge variant="outline" className="text-[10px] bg-amber-500/20 text-amber-300">{t('aiPage.executiveBroadcast', 'Executive Broadcast')}</Badge>
             </div>
             <div className="font-semibold text-sm text-foreground">{broadcastProposal.title}</div>
             {broadcastProposal.content && (
@@ -497,11 +499,11 @@ export default function AIPage() {
             >
               {isAlreadyBroadcast ? (
                 <>
-                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> Published to Campus Announcements
+                  <Check className="h-3.5 w-3.5 mr-1.5 text-emerald-500" /> {t('aiPage.publishedAnnouncements', 'Published to Campus Announcements')}
                 </>
               ) : (
                 <>
-                  <Megaphone className="h-3.5 w-3.5 mr-1.5" /> 📢 Publish to Campus Announcements
+                  <Megaphone className="h-3.5 w-3.5 mr-1.5" /> {t('aiPage.publishAnnouncements', '📢 Publish to Campus Announcements')}
                 </>
               )}
             </Button>
@@ -511,8 +513,8 @@ export default function AIPage() {
         {contactProposal && (
           <Card className="border border-purple-500/30 bg-purple-500/10 p-3.5 rounded-xl space-y-2.5 text-xs">
             <div className="flex items-center justify-between font-bold text-purple-400">
-              <span className="flex items-center gap-1.5"><MessageSquareText className="h-4 w-4" /> Message Draft for {contactProposal.recipientRole || 'Faculty'}</span>
-              <Badge variant="outline" className="text-[10px] bg-purple-500/20 text-purple-300">Ready to Send</Badge>
+              <span className="flex items-center gap-1.5"><MessageSquareText className="h-4 w-4" /> {t('aiPage.messageDraftFor', `Message Draft for ${contactProposal.recipientRole || 'Faculty'}`, { role: contactProposal.recipientRole || 'Faculty' })}</span>
+              <Badge variant="outline" className="text-[10px] bg-purple-500/20 text-purple-300">{t('aiPage.readyToSend', 'Ready to Send')}</Badge>
             </div>
             <div className="font-semibold text-sm text-foreground">{contactProposal.recipientName || contactProposal.recipientRole}</div>
             {contactProposal.draftMessage && (
@@ -525,7 +527,7 @@ export default function AIPage() {
               onClick={() => handleSendFacultyMessage(contactProposal)}
               className="w-full h-8 font-bold text-xs shadow-md mt-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
-              <MessageSquareText className="h-3.5 w-3.5 mr-1.5" /> Send Direct Message to {contactProposal.recipientRole || 'Faculty'}
+              <MessageSquareText className="h-3.5 w-3.5 mr-1.5" /> {t('aiPage.sendDmTo', `Send Direct Message to ${contactProposal.recipientRole || 'Faculty'}`, { role: contactProposal.recipientRole || 'Faculty' })}
             </Button>
           </Card>
         )}
@@ -533,16 +535,16 @@ export default function AIPage() {
         {tallyProposal && (
           <Card className="border border-emerald-500/30 bg-emerald-500/10 p-3.5 rounded-xl space-y-2.5 text-xs">
             <div className="flex items-center justify-between font-bold text-emerald-400">
-              <span className="flex items-center gap-1.5"><RefreshCw className="h-4 w-4" /> Incremental Tally Sync Requested</span>
-              <Badge variant="outline" className="text-[10px] bg-emerald-500/20 text-emerald-300">Port 9000 Active</Badge>
+              <span className="flex items-center gap-1.5"><RefreshCw className="h-4 w-4" /> {t('aiPage.tallySyncRequested', 'Incremental Tally Sync Requested')}</span>
+              <Badge variant="outline" className="text-[10px] bg-emerald-500/20 text-emerald-300">{t('aiPage.portActive', 'Port 9000 Active')}</Badge>
             </div>
-            <p className="text-muted-foreground text-xs">Push all staged fee ledgers and payroll vouchers live to Tally Prime.</p>
+            <p className="text-muted-foreground text-xs">{t('aiPage.tallyPushDesc', 'Push all staged fee ledgers and payroll vouchers live to Tally Prime.')}</p>
             <Button
               size="sm"
               onClick={handleExecuteTallySync}
               className="w-full h-8 font-bold text-xs shadow-md mt-1 bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Sync Pending Ledgers with Tally
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> {t('aiPage.syncTally', 'Sync Pending Ledgers with Tally')}
             </Button>
           </Card>
         )}
@@ -561,7 +563,7 @@ export default function AIPage() {
               size="icon"
               onClick={() => setSidebarOpen((v) => !v)}
               className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              title={sidebarOpen ? 'Hide History' : 'Show History'}
+              title={sidebarOpen ? t('aiPage.hideHistory', 'Hide History') : t('aiPage.showHistory', 'Show History')}
             >
               <PanelLeft className="h-4 w-4" />
             </Button>
@@ -602,41 +604,41 @@ export default function AIPage() {
             <div>
               <div className="font-display font-semibold text-sm leading-tight">
                 {hasAiLegal && studentTab === 'legal'
-                  ? 'Judicial Services & ADP Hub ⚖️'
+                  ? t('aiPage.judicialHub', 'Judicial Services & ADP Hub ⚖️')
                   : hasAiLegal && isStudent
-                  ? 'Judicial & Law Study Buddy ⚖️'
+                  ? t('aiPage.judicialStudyBuddy', 'Judicial & Law Study Buddy ⚖️')
                   : hasAiLegal && !isStudent
-                  ? 'Judicial & Law Faculty Assistant ⚖️'
+                  ? t('aiPage.judicialFacultyAssistant', 'Judicial & Law Faculty Assistant ⚖️')
                   : isStudent
-                  ? 'Study Buddy 🎒'
+                  ? t('aiPage.studyBuddy', 'Study Buddy 🎒')
                   : isParent
-                  ? 'Parent AI Academic Assistant'
+                  ? t('aiPage.parentAssistant', 'Parent AI Academic Assistant')
                   : isAlumni
-                  ? 'AI Alumni Relations & Career Mentor'
+                  ? t('aiPage.alumniAssistant', 'AI Alumni Relations & Career Mentor')
                   : isAccountant
-                  ? 'AI Financial & Accounting Assistant'
+                  ? t('aiPage.accountantAssistant', 'AI Financial & Accounting Assistant')
                   : isAdminOrDirector
-                  ? 'AI Executive Director & Campus Operations Assistant'
-                  : 'AI Academic & Classroom Assistant'}
+                  ? t('aiPage.directorAssistant', 'AI Executive Director & Campus Operations Assistant')
+                  : t('aiPage.classroomAssistant', 'AI Academic & Classroom Assistant')}
               </div>
               <div className="text-[11px] text-muted-foreground">
                 {hasAiLegal && studentTab === 'legal'
-                  ? 'Bare Acts, open legal scraping vault, BNS/BNSS/BSA transition, and Mains answer evaluation'
+                  ? t('aiPage.subtitles.legalHub', 'Bare Acts, open legal scraping vault, BNS/BNSS/BSA transition, and Mains answer evaluation')
                   : hasAiLegal && isStudent
-                  ? 'Bare Acts, PYQs, exam blueprint, and 24/7 AI tutor for Judicial & ADP examination preparation'
+                  ? t('aiPage.subtitles.legalStudent', 'Bare Acts, PYQs, exam blueprint, and 24/7 AI tutor for Judicial & ADP examination preparation')
                   : hasAiLegal && !isStudent
-                  ? 'Legal pedagogy copilot: curriculum drafting, comparative BNS notes, question bank & Mains rubric generator'
+                  ? t('aiPage.subtitles.legalFaculty', 'Legal pedagogy copilot: curriculum drafting, comparative BNS notes, question bank & Mains rubric generator')
                   : isStudent
-                  ? 'Your 24/7 personal tutor for homework, daily quizzes, and study guidance'
+                  ? t('aiPage.subtitles.student', 'Your 24/7 personal tutor for homework, daily quizzes, and study guidance')
                   : isParent
-                  ? "Monitor your child's progress & homework, and connect with Teachers & HOD"
+                  ? t('aiPage.subtitles.parent', "Monitor your child's progress & homework, and connect with Teachers & HOD")
                   : isAlumni
-                  ? 'Networking with peers, career mentoring, transcript assistance & batch archives'
+                  ? t('aiPage.subtitles.alumni', 'Networking with peers, career mentoring, transcript assistance & batch archives')
                   : isAccountant
-                  ? 'Financial analysis, fee collection insights, payroll support & Tally synchronization'
+                  ? t('aiPage.subtitles.accountant', 'Financial analysis, fee collection insights, payroll support & Tally synchronization')
                   : isAdminOrDirector
-                  ? 'Campus-wide enrollment, staffing, attendance health, financial metrics, circulars & teaching tasks'
-                  : 'Class homework creation & student submission tracking'}
+                  ? t('aiPage.subtitles.director', 'Campus-wide enrollment, staffing, attendance health, financial metrics, circulars & teaching tasks')
+                  : t('aiPage.subtitles.teacher', 'Class homework creation & student submission tracking')}
               </div>
             </div>
           </div>
@@ -658,7 +660,7 @@ export default function AIPage() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <MessageSquareText className="h-3.5 w-3.5" /> Ask AI
+                <MessageSquareText className="h-3.5 w-3.5" /> {t('aiPage.askAi', 'Ask AI')}
               </button>
               {isStudent && (
                 <button
@@ -673,7 +675,7 @@ export default function AIPage() {
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <Play className="h-3.5 w-3.5" /> Daily Home Quiz 🎯
+                  <Play className="h-3.5 w-3.5" /> {t('aiPage.dailyHomeQuiz', 'Daily Home Quiz 🎯')}
                 </button>
               )}
               {hasAiLegal && (
@@ -689,7 +691,7 @@ export default function AIPage() {
                       : 'text-amber-500 hover:text-amber-400'
                   }`}
                 >
-                  <Scale className="h-3.5 w-3.5" /> Judicial & ADP Hub ⚖️
+                  <Scale className="h-3.5 w-3.5" /> {t('aiPage.judicialHubTab', 'Judicial & ADP Hub ⚖️')}
                 </button>
               )}
             </div>
@@ -697,7 +699,7 @@ export default function AIPage() {
 
           {studentTab === 'chat' && (
             <Button onClick={handleNewChat} size="sm" className="gap-1.5 font-medium shadow-xs">
-              <Plus className="h-4 w-4" /> New Chat
+              <Plus className="h-4 w-4" /> {t('aiPage.newChat', 'New Chat')}
             </Button>
           )}
         </div>
@@ -724,8 +726,8 @@ export default function AIPage() {
         {sidebarOpen && (
           <div className="w-64 border-r border-border bg-card flex flex-col shrink-0">
             <div className="p-3 border-b border-border flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Chat History</span>
-              <span className="text-[10px] text-muted-foreground font-normal">{conversations.length} sessions</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('aiPage.chatHistory', 'Chat History')}</span>
+              <span className="text-[10px] text-muted-foreground font-normal">{t('aiPage.sessionCount', '{{count}} sessions', { count: conversations.length })}</span>
             </div>
 
             <ScrollArea className="flex-1 p-2">
@@ -744,14 +746,14 @@ export default function AIPage() {
                     >
                       <div className="flex items-center gap-2 min-w-0 pr-1">
                         <MessageSquareText className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-primary' : 'opacity-70'}`} />
-                        <span className="truncate">{c.title || 'Conversation'}</span>
+                        <span className="truncate">{c.title || t('aiPage.conversation', 'Conversation')}</span>
                       </div>
 
                       <button
                         type="button"
                         onClick={(e) => handleDeleteSession(c.sessionKey, e)}
                         className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
-                        title="Delete chat session"
+                        title={t('aiPage.deleteSession', 'Delete chat session')}
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
@@ -761,7 +763,7 @@ export default function AIPage() {
 
                 {conversations.length === 0 && (
                   <div className="p-4 text-center text-xs text-muted-foreground">
-                    No past sessions yet. Click "+ New Chat" to start!
+                    {t('aiPage.noSessions', 'No past sessions yet. Click "+ New Chat" to start!')}
                   </div>
                 )}
               </div>
@@ -780,10 +782,10 @@ export default function AIPage() {
                   </div>
                   <div>
                     <div className="font-bold text-foreground flex items-center gap-2">
-                      <span>Daily Home Practice Quiz Ready</span>
-                      <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] py-0 px-1.5 border border-emerald-500/30">Adaptive</Badge>
+                      <span>{t('aiPage.dailyQuizReady', 'Daily Home Practice Quiz Ready')}</span>
+                      <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] py-0 px-1.5 border border-emerald-500/30">{t('aiPage.adaptive', 'Adaptive')}</Badge>
                     </div>
-                    <div className="text-[11px] text-muted-foreground">5 quick curriculum questions customized to your grade and current skill mastery.</div>
+                    <div className="text-[11px] text-muted-foreground">{t('aiPage.dailyQuizDesc', '5 quick curriculum questions customized to your grade and current skill mastery.')}</div>
                   </div>
                 </div>
                 <Button
@@ -794,7 +796,7 @@ export default function AIPage() {
                   }}
                   className="text-xs h-8 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 shadow-xs"
                 >
-                  <Play className="h-3 w-3 mr-1 fill-white" /> Take Today's Quiz
+                  <Play className="h-3 w-3 mr-1 fill-white" /> {t('aiPage.takeQuiz', "Take Today's Quiz")}
                 </Button>
               </div>
             )}
@@ -826,23 +828,25 @@ export default function AIPage() {
                     )}
                   </div>
                   <h2 className="font-display text-2xl font-semibold">
-                    {isStudent ? `What shall we study today, ${user?.fullName?.split(' ')[0]}?` : `How can I help you today, ${user?.fullName?.split(' ')[0]}?`}
+                    {isStudent
+                      ? t('aiPage.greetingStudent', 'What shall we study today, {{name}}?', { name: user?.fullName?.split(' ')[0] })
+                      : t('aiPage.greetingGeneral', 'How can I help you today, {{name}}?', { name: user?.fullName?.split(' ')[0] })}
                   </h2>
                   <p className="text-muted-foreground mt-1">
                     {isStudent
-                      ? 'Ask me about your class tasks, homework, active projects, or any subject questions.'
+                      ? t('aiPage.introStudent', 'Ask me about your class tasks, homework, active projects, or any subject questions.')
                       : isParent
-                      ? "Ask me about your child's attendance, grades, pending homework, or contact their teachers."
+                      ? t('aiPage.introParent', "Ask me about your child's attendance, grades, pending homework, or contact their teachers.")
                       : isAccountant
-                      ? 'Ask me to analyze fee collection rates, review pending dues, check faculty payroll, or sync ledgers with Tally Prime.'
+                      ? t('aiPage.introAccountant', 'Ask me to analyze fee collection rates, review pending dues, check faculty payroll, or sync ledgers with Tally Prime.')
                       : isAdminOrDirector
-                      ? 'Ask me about campus enrollment, attendance health, faculty proxy status, institutional circulars, or managing your assigned teaching classes.'
-                      : 'Ask me to create homework for your class, check who has submitted homework, or draft class updates.'}
+                      ? t('aiPage.introDirector', 'Ask me about campus enrollment, attendance health, faculty proxy status, institutional circulars, or managing your assigned teaching classes.')
+                      : t('aiPage.introTeacher', 'Ask me to create homework for your class, check who has submitted homework, or draft class updates.')}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {activePrompts.map((q, i) => (
-                    <button key={i} onClick={() => send(q.prompt)} className="text-left rounded-lg border border-border p-4 hover:border-accent transition-colors" data-testid={`ai-prompt-${i}`}>
+                    <button key={i} onClick={() => send(q.promptKey ? t(q.promptKey, q.prompt) : q.prompt)} className="text-left rounded-lg border border-border p-4 hover:border-accent transition-colors" data-testid={`ai-prompt-${i}`}>
                       <div className="flex items-center gap-2">
                         <q.icon className={`h-4 w-4 ${
                           isStudent
@@ -855,9 +859,9 @@ export default function AIPage() {
                             ? 'text-amber-500'
                             : 'text-accent'
                         }`} />
-                        <div className="font-medium">{q.label}</div>
+                        <div className="font-medium">{q.labelKey ? t(q.labelKey, q.label) : q.label}</div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{q.prompt}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{q.promptKey ? t(q.promptKey, q.prompt) : q.prompt}</p>
                     </button>
                   ))}
                 </div>
@@ -895,11 +899,11 @@ export default function AIPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
                 className="min-h-[54px] max-h-40 border-0 bg-transparent focus-visible:ring-0 resize-none text-sm"
-                placeholder="Ask AI anything…"
+                placeholder={t('aiPage.inputPlaceholder', 'Ask AI anything…')}
                 data-testid="ai-input"
               />
               <div className="flex justify-end p-1.5 border-t border-border">
-                <Button size="sm" onClick={() => send()} disabled={!input.trim() || loading} data-testid="ai-send-btn"><Send className="h-4 w-4 mr-1" /> Send</Button>
+                <Button size="sm" onClick={() => send()} disabled={!input.trim() || loading} data-testid="ai-send-btn"><Send className="h-4 w-4 mr-1" /> {t('aiPage.send', 'Send')}</Button>
               </div>
             </div>
           </div>

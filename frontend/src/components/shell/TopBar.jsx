@@ -31,6 +31,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { notifApi, orgApi } from '@/lib/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getSocket } from '@/lib/socket';
@@ -54,6 +56,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
 
   const { user, currentOrg, memberships, switchOrg, logout } = useAuth();
   const { theme, toggle } = useTheme();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -237,13 +240,13 @@ export function TopBar({ onMenuClick, onSearchClick }) {
         data-testid="global-search-trigger"
       >
         <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-        <span className="flex-1 text-left truncate">Search anything...</span>
+        <span className="flex-1 text-left truncate">{t('topbar.searchPlaceholder', 'Search anything...')}</span>
         <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground shadow-2xs">
           Ctrl K
         </kbd>
       </button>
 
-      {/* Right: Actions, AI Shortcut, Theme Toggle, Notifications, Profile */}
+      {/* Right: Actions, AI Shortcut, Language Switcher, Theme Toggle, Notifications, Profile */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Super Admin Command Hub Shortcut */}
         {user?.systemRole === 'SUPER_ADMIN' && (
@@ -255,7 +258,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
             title="Super Admin Command Hub"
           >
             <ShieldAlert className="h-3.5 w-3.5" />
-            <span>Command Hub</span>
+            <span>{t('topbar.commandHub', 'Command Hub')}</span>
           </Button>
         )}
 
@@ -265,11 +268,14 @@ export function TopBar({ onMenuClick, onSearchClick }) {
           size="sm"
           onClick={() => navigate('/app/ai')}
           className="hidden md:flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 h-8 rounded-lg px-2.5 transition-colors"
-          title={currentOrg?.role === 'STUDENT' || user?.email?.toLowerCase().includes('student') ? 'Study Buddy' : 'AI Assistant'}
+          title={currentOrg?.role === 'STUDENT' || user?.email?.toLowerCase().includes('student') ? t('topbar.studyBuddy', 'Study Buddy') : t('topbar.aiAssistant', 'AI Assistant')}
         >
           <Sparkles className="h-3.5 w-3.5 text-purple-500" />
-          <span>{currentOrg?.role === 'STUDENT' || user?.email?.toLowerCase().includes('student') ? 'Study Buddy' : 'AI Assistant'}</span>
+          <span>{currentOrg?.role === 'STUDENT' || user?.email?.toLowerCase().includes('student') ? t('topbar.studyBuddy', 'Study Buddy') : t('topbar.aiAssistant', 'AI Assistant')}</span>
         </Button>
+
+        {/* Multi-language Switcher (English / Hindi) */}
+        <LanguageSwitcher />
 
         {/* Dark/Light Theme Toggle */}
         <Button
@@ -277,7 +283,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
           size="icon"
           onClick={toggle}
           className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
-          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+          title={theme === 'dark' ? t('topbar.switchToLight', 'Switch to Light mode') : t('topbar.switchToDark', 'Switch to Dark mode')}
           data-testid="theme-toggle-btn"
         >
           {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-700" />}
@@ -306,17 +312,19 @@ export function TopBar({ onMenuClick, onSearchClick }) {
           <DropdownMenuContent align="end" className="w-80 shadow-xl border-border/80">
             <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
               <DropdownMenuLabel className="p-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Notifications
+                {t('topbar.notifications', 'Notifications')}
               </DropdownMenuLabel>
               {notifs.unreadCount > 0 && (
                 <Button variant="link" size="sm" onClick={markAll} className="h-auto p-0 text-xs text-primary font-medium">
-                  Mark all read
+                  {t('topbar.markAllRead', 'Mark all read')}
                 </Button>
               )}
             </div>
             <div className="max-h-80 overflow-y-auto">
               {notifs.notifications.length === 0 && (
-                <div className="px-3 py-6 text-center text-xs text-muted-foreground">No new notifications</div>
+                <div className="px-3 py-6 text-center text-xs text-muted-foreground">
+                  {t('topbar.noNotifications', 'No new notifications')}
+                </div>
               )}
               {notifs.notifications.slice(0, 20).map((n) => (
                 <DropdownMenuItem
@@ -360,7 +368,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
               <div className="text-[10px] text-muted-foreground truncate">{user?.email}</div>
               {currentOrg && (
                 <Badge variant="outline" className="mt-1 text-[9px] px-1.5 py-0 h-4 border-primary/30 text-primary font-semibold uppercase">
-                  {currentOrg.role}
+                  {t(`roles.${(currentOrg.role || '').toLowerCase()}`, currentOrg.role)}
                 </Badge>
               )}
             </div>
@@ -368,13 +376,13 @@ export function TopBar({ onMenuClick, onSearchClick }) {
             <div className="p-1">
               <DropdownMenuItem onClick={() => navigate('/app/profile')} className="cursor-pointer text-xs flex items-center gap-2">
                 <User className="h-3.5 w-3.5 text-muted-foreground" />
-                <span>My Profile</span>
+                <span>{t('topbar.profile', 'My Profile')}</span>
               </DropdownMenuItem>
 
               {isOwner && (
                 <DropdownMenuItem onClick={() => navigate('/app/role-permissions')} className="cursor-pointer text-xs flex items-center gap-2">
                   <ShieldCheck className="h-3.5 w-3.5 text-amber-500" />
-                  <span>Role Permissions</span>
+                  <span>{t('topbar.rolePermissions', 'Role Permissions')}</span>
                 </DropdownMenuItem>
               )}
             </div>
@@ -383,7 +391,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="px-3 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  Switch Workspace
+                  {t('topbar.switchWorkspace', 'Switch Workspace')}
                 </DropdownMenuLabel>
                 <div className="max-h-32 overflow-y-auto p-1">
                   {memberships.map((m) => (
@@ -406,7 +414,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
             <div className="p-1">
               <DropdownMenuItem onClick={logout} className="cursor-pointer text-xs text-destructive flex items-center gap-2 focus:bg-destructive/10 focus:text-destructive">
                 <LogOut className="h-3.5 w-3.5" />
-                <span>Log Out</span>
+                <span>{t('topbar.logout', 'Log Out')}</span>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>
@@ -418,7 +426,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
-              <UserPlus className="h-5 w-5 text-primary" /> Organization Invitation
+              <UserPlus className="h-5 w-5 text-primary" /> {t('topbar.orgInvitation', 'Organization Invitation')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-sm text-foreground/90">
               {inviteModal?.body || `You have been invited to join ${inviteModal?.orgName} as a ${inviteModal?.role}.`}
@@ -427,31 +435,31 @@ export function TopBar({ onMenuClick, onSearchClick }) {
 
           <div className="rounded-lg border border-border bg-secondary/30 p-3 my-2 space-y-1.5 text-xs">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Organization:</span>
+              <span className="text-muted-foreground">{t('topbar.organization', 'Organization:')}</span>
               <span className="font-medium">{inviteModal?.orgName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Role:</span>
+              <span className="text-muted-foreground">{t('topbar.role', 'Role:')}</span>
               <Badge variant="outline" className="text-[10px] uppercase font-semibold">
-                {inviteModal?.role}
+                {t(`roles.${(inviteModal?.role || '').toLowerCase()}`, inviteModal?.role)}
               </Badge>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Invited by:</span>
+              <span className="text-muted-foreground">{t('topbar.invitedBy', 'Invited by:')}</span>
               <span className="font-medium">{inviteModal?.inviterName}</span>
             </div>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" disabled={responding} onClick={() => handleRespondInvite('DECLINE')} className="w-full sm:w-auto">
-              <X className="h-4 w-4 mr-1 text-destructive" /> Decline
+              <X className="h-4 w-4 mr-1 text-destructive" /> {t('topbar.decline', 'Decline')}
             </Button>
             <Button
               disabled={responding}
               onClick={() => handleRespondInvite('ACCEPT')}
               className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
             >
-              <Check className="h-4 w-4 mr-1" /> Accept Invitation
+              <Check className="h-4 w-4 mr-1" /> {t('topbar.acceptInvitation', 'Accept Invitation')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -462,7 +470,7 @@ export function TopBar({ onMenuClick, onSearchClick }) {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold text-amber-500">
-              <Crown className="h-5 w-5" /> Workspace Ownership Transfer Request
+              <Crown className="h-5 w-5" /> {t('topbar.transferRequest', 'Workspace Ownership Transfer Request')}
             </DialogTitle>
             <DialogDescription className="pt-2 text-sm text-foreground/90">
               {transferModal?.body ||
@@ -473,11 +481,12 @@ export function TopBar({ onMenuClick, onSearchClick }) {
           </DialogHeader>
 
           <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 my-2 space-y-1.5 text-xs text-amber-600">
-            <div className="font-semibold">Important Authorization Notice</div>
+            <div className="font-semibold">{t('topbar.authNotice', 'Important Authorization Notice')}</div>
             <div>
-              Accepting this request will immediately assign you as the <strong>DIRECTOR</strong> of{' '}
-              <strong>{transferModal?.orgName}</strong>. The current director ({transferModal?.senderEmail}) will be shifted to
-              the <strong>ADMIN</strong> role.
+              {t('topbar.authNoticeDesc', `Accepting this request will immediately assign you as the DIRECTOR of ${transferModal?.orgName}. The current director (${transferModal?.senderEmail}) will be shifted to the ADMIN role.`, {
+                orgName: transferModal?.orgName,
+                senderEmail: transferModal?.senderEmail,
+              })}
             </div>
           </div>
 
@@ -488,14 +497,14 @@ export function TopBar({ onMenuClick, onSearchClick }) {
               disabled={respondingTransfer}
               className="flex items-center gap-1 text-destructive hover:bg-destructive/10"
             >
-              <X className="h-4 w-4" /> Reject Request
+              <X className="h-4 w-4" /> {t('topbar.rejectRequest', 'Reject Request')}
             </Button>
             <Button
               onClick={() => handleRespondTransfer('ACCEPT')}
               disabled={respondingTransfer}
               className="bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1 font-semibold"
             >
-              <Check className="h-4 w-4" /> Accept & Become Director
+              <Check className="h-4 w-4" /> {t('topbar.acceptDirector', 'Accept & Become Director')}
             </Button>
           </DialogFooter>
         </DialogContent>

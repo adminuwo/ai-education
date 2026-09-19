@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useOrgData } from '@/contexts/OrgDataContext';
 import { timetableApi } from '@/lib/api';
 import {
@@ -30,6 +31,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 export default function TimetablePage() {
   const { currentOrg, user, memberships } = useAuth();
   const { departments, members } = useOrgData();
+  const { t } = useLanguage();
+
+  const getDayLabel = useCallback((d) => {
+    const dayKeyMap = {
+      MONDAY: 'monday',
+      TUESDAY: 'tuesday',
+      WEDNESDAY: 'wednesday',
+      THURSDAY: 'thursday',
+      FRIDAY: 'friday',
+      SATURDAY: 'saturday',
+      SUNDAY: 'sunday',
+    };
+    return t(`timetable.${dayKeyMap[d] || d.toLowerCase()}`, d);
+  }, [t]);
 
   const [activeTab, setActiveTab] = useState('grid');
   const [loading, setLoading] = useState(true);
@@ -508,13 +523,13 @@ export default function TimetablePage() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Smart Timetable & Substitute Hub</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('timetable.title', 'Smart Timetable & Substitute Hub')}</h1>
               <span className="px-2.5 py-0.5 text-xs font-semibold bg-primary/10 text-primary border border-primary/20 rounded-full flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3" /> {role}
               </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              <span className="text-primary font-medium">{todayInfo.formattedDate}</span> • Live Class Timetable • 1-Click Proxy Substitution Engine
+              <span className="text-primary font-medium">{todayInfo.formattedDate}</span> • {t('timetable.subtitle', 'Live Class Timetable • 1-Click Proxy Substitution Engine')}
             </p>
           </div>
         </div>
@@ -526,7 +541,7 @@ export default function TimetablePage() {
                 onClick={handleOpenAddSlot}
                 className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-xl text-sm transition-all shadow-sm"
               >
-                <Plus className="w-4 h-4" /> Add Timetable Slot
+                <Plus className="w-4 h-4" /> {t('timetable.addSlot', 'Add Timetable Slot')}
               </button>
               <button
                 onClick={() => {
@@ -535,7 +550,7 @@ export default function TimetablePage() {
                 }}
                 className="flex items-center gap-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-medium rounded-xl text-sm transition-all"
               >
-                <AlertTriangle className="w-4 h-4 text-rose-500" /> Mark Teacher Leave
+                <AlertTriangle className="w-4 h-4 text-rose-500" /> {t('timetable.markTeacherLeave', 'Mark Teacher Leave')}
               </button>
             </>
           )}
@@ -548,7 +563,7 @@ export default function TimetablePage() {
               }}
               className="flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
             >
-              <AlertTriangle className="w-4 h-4 text-white" /> Mark Myself On Leave
+              <AlertTriangle className="w-4 h-4 text-white" /> {t('timetable.markMyselfOnLeave', 'Mark Myself On Leave')}
             </button>
           )}
           <button
@@ -556,7 +571,7 @@ export default function TimetablePage() {
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border font-medium rounded-xl text-sm transition-all"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> {t('common.refresh', 'Refresh')}
           </button>
         </div>
       </div>
@@ -565,34 +580,34 @@ export default function TimetablePage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
           <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-            <span>ACTIVE DAY SESSION</span>
+            <span>{t('timetable.activeDaySession', 'ACTIVE DAY SESSION')}</span>
             <Clock className="w-4 h-4 text-primary" />
           </div>
           <div className="text-xl font-bold text-foreground mt-2 flex items-center gap-2">
-            <span>{selectedDay}</span>
+            <span>{getDayLabel(selectedDay)}</span>
             {selectedDayInfo.isToday ? (
               <span className="px-2 py-0.5 text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 rounded-full font-semibold">
-                TODAY
+                {t('timetable.today', 'TODAY')}
               </span>
             ) : selectedDayInfo.isPast ? (
               <span className="px-2 py-0.5 text-[10px] bg-muted text-muted-foreground border border-border rounded-full font-semibold">
-                PAST SESSION
+                {t('timetable.pastSession', 'PAST SESSION')}
               </span>
             ) : (
               <span className="px-2 py-0.5 text-[10px] bg-primary/15 text-primary border border-primary/30 rounded-full font-semibold">
-                UPCOMING
+                {t('timetable.upcoming', 'UPCOMING')}
               </span>
             )}
           </div>
           <div className="text-xs text-muted-foreground mt-1">{selectedDayInfo.formattedDate}</div>
-          <div className="text-[11px] text-muted-foreground/80 mt-0.5">{displayedSlots.length} Classes Scheduled</div>
+          <div className="text-[11px] text-muted-foreground/80 mt-0.5">{displayedSlots.length} {t('timetable.classesScheduled', 'Classes Scheduled')}</div>
         </div>
 
         {isStudent ? (
           <>
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>MY CLASS SECTION</span>
+                <span>{t('timetable.myClassSection', 'MY CLASS SECTION')}</span>
                 <GraduationCap className="w-4 h-4 text-emerald-500" />
               </div>
               <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{studentClassName || 'Grade 10 - Sec A'}</div>
@@ -601,7 +616,7 @@ export default function TimetablePage() {
 
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>DAILY PERIODS</span>
+                <span>{t('timetable.dailyPeriods', 'DAILY PERIODS')}</span>
                 <BookOpen className="w-4 h-4 text-sky-500" />
               </div>
               <div className="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-2">{displayedSlots.length}</div>
@@ -610,7 +625,7 @@ export default function TimetablePage() {
 
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>TEACHER PROXIES</span>
+                <span>{t('timetable.teacherProxies', 'TEACHER PROXIES')}</span>
                 <CheckCircle2 className="w-4 h-4 text-primary" />
               </div>
               <div className="text-2xl font-bold text-primary mt-2">
@@ -623,7 +638,7 @@ export default function TimetablePage() {
           <>
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>{selectedDayInfo.isPast ? `TEACHERS ON LEAVE (${selectedDayInfo.shortDate})` : 'TEACHERS ON LEAVE TODAY'}</span>
+                <span>{t('timetable.teachersOnLeave', 'TEACHERS ON LEAVE')}</span>
                 <AlertTriangle className="w-4 h-4 text-rose-500" />
               </div>
               <div className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">{absences.length}</div>
@@ -634,7 +649,7 @@ export default function TimetablePage() {
 
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>UNASSIGNED PROXY SLOTS</span>
+                <span>{t('timetable.unassignedProxySlots', 'UNASSIGNED PROXY SLOTS')}</span>
                 <UserPlus className="w-4 h-4 text-amber-500" />
               </div>
               <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">
@@ -645,7 +660,7 @@ export default function TimetablePage() {
 
             <div className="bg-card border border-border p-5 rounded-2xl shadow-sm text-card-foreground">
               <div className="flex items-center justify-between text-muted-foreground text-xs font-medium">
-                <span>FREE FACULTY (PERIOD {selectedPeriod})</span>
+                <span>{t('timetable.freeFaculty', 'FREE FACULTY')} (PERIOD {selectedPeriod})</span>
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               </div>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{freeTeachers.length}</div>
@@ -725,7 +740,7 @@ export default function TimetablePage() {
               activeTab === 'grid' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
-            Timetable Grid
+            {t('timetable.tabWeeklyTimetable', 'Timetable Grid')}
           </button>
           {isManagement && (
             <>
@@ -735,7 +750,7 @@ export default function TimetablePage() {
                   activeTab === 'free' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
-                Free Teachers Grid ({freeTeachers.length})
+                {t('timetable.tabFreeTeachers', 'Free Teachers Grid')} ({freeTeachers.length})
               </button>
               <button
                 onClick={() => setActiveTab('absences')}
@@ -743,7 +758,7 @@ export default function TimetablePage() {
                   activeTab === 'absences' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
-                Substitute Oversight ({unassignedSlots.filter((s) => !s.isAssigned).length})
+                {t('timetable.tabSubstitutions', 'Substitute Oversight')} ({unassignedSlots.filter((s) => !s.isAssigned).length})
               </button>
             </>
           )}

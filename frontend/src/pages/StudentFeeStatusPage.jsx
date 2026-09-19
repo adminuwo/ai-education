@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrgData } from '@/contexts/OrgDataContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { financeApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ function initials(n) {
 }
 
 export default function StudentFeeStatusPage() {
+  const { t } = useLanguage();
   const { user, currentOrg } = useAuth();
   const { departments, members, loading: orgLoading } = useOrgData();
 
@@ -30,6 +32,7 @@ export default function StudentFeeStatusPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const userRole = currentOrg?.role || 'TEACHER';
+  const localizedRole = t('roles.' + userRole.toLowerCase(), userRole);
   const isFullAccess = ['DIRECTOR', 'OWNER', 'PRINCIPAL', 'ADMIN'].includes(userRole);
   const isDeptRole = ['DEAN', 'HOD'].includes(userRole);
 
@@ -157,7 +160,9 @@ export default function StudentFeeStatusPage() {
       <div className="p-8 flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground animate-pulse">Loading class-wise student fee statuses...</p>
+          <p className="text-sm text-muted-foreground animate-pulse">
+            {t('feeStatus.loading', 'Loading class-wise student fee statuses...')}
+          </p>
         </div>
       </div>
     );
@@ -173,12 +178,12 @@ export default function StudentFeeStatusPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold font-display tracking-tight flex items-center gap-2">
-              Student Fee Status Tracking
+              {t('feeStatus.title', 'Student Fee Status Tracking')}
             </h1>
             <p className="text-xs text-muted-foreground">
               {isDeptRole
-                ? `Department Scope (${userRole}): Class-wise student fee collection & pending dues tracking.`
-                : `Institutional View (${userRole}): All departments, school wings, and class fee status tracking.`}
+                ? t('feeStatus.deptSubtitle', `Department Scope (${userRole}): Class-wise student fee collection & pending dues tracking.`, { role: localizedRole })
+                : t('feeStatus.instSubtitle', `Institutional View (${userRole}): All departments, school wings, and class fee status tracking.`, { role: localizedRole })}
             </p>
           </div>
         </div>
@@ -186,7 +191,9 @@ export default function StudentFeeStatusPage() {
         <Badge variant="outline" className={`self-start sm:self-auto font-bold px-3 py-1 text-xs ${
           isDeptRole ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' : 'bg-amber-500/10 text-amber-500 border-amber-500/30'
         }`}>
-          {isDeptRole ? `🔒 Assigned Dept: ${userRole}` : `🌐 All Departments Access (${userRole})`}
+          {isDeptRole
+            ? t('feeStatus.assignedDept', `🔒 Assigned Dept: ${userRole}`, { role: localizedRole })
+            : t('feeStatus.allDeptsAccess', `🌐 All Departments Access (${userRole})`, { role: localizedRole })}
         </Badge>
       </div>
 
@@ -195,9 +202,13 @@ export default function StudentFeeStatusPage() {
         <Card className="bg-card/50 border-border">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Students</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                {t('feeStatus.totalStudents', 'Total Students')}
+              </div>
               <div className="text-2xl font-extrabold text-foreground mt-1 tabular-nums">{stats.total}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">Tracked in view</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">
+                {t('feeStatus.trackedInView', 'Tracked in view')}
+              </div>
             </div>
             <div className="h-10 w-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
               <GraduationCap className="h-5 w-5" />
@@ -208,7 +219,9 @@ export default function StudentFeeStatusPage() {
         <Card className="bg-card/50 border-border">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Paid In Full</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                {t('feeStatus.paidInFull', 'Paid In Full')}
+              </div>
               <div className="text-2xl font-extrabold text-emerald-400 mt-1 tabular-nums">{stats.paid}</div>
               <div className="text-[11px] text-emerald-400 font-semibold mt-0.5 flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3" /> ₹{stats.totalCollected.toLocaleString('en-IN')}
@@ -223,10 +236,12 @@ export default function StudentFeeStatusPage() {
         <Card className="bg-card/50 border-border">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Partial Dues</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                {t('feeStatus.partialDues', 'Partial Dues')}
+              </div>
               <div className="text-2xl font-extrabold text-amber-400 mt-1 tabular-nums">{stats.partial}</div>
               <div className="text-[11px] text-amber-400 font-semibold mt-0.5">
-                ₹{stats.partialPending.toLocaleString('en-IN')} Remaining
+                ₹{stats.partialPending.toLocaleString('en-IN')} {t('feeStatus.remaining', 'Remaining')}
               </div>
             </div>
             <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
@@ -238,12 +253,18 @@ export default function StudentFeeStatusPage() {
         <Card className="bg-card/50 border-border">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Outstanding</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                {t('feeStatus.totalOutstanding', 'Total Outstanding')}
+              </div>
               <div className="text-2xl font-extrabold text-rose-400 mt-1 tabular-nums">
                 ₹{stats.totalPending.toLocaleString('en-IN')}
               </div>
               <div className="text-[11px] text-rose-400/90 font-semibold mt-0.5">
-                {stats.partial + stats.unpaid} students ({stats.partial} partial{stats.unpaid > 0 ? `, ${stats.unpaid} unpaid` : ''})
+                {t('feeStatus.studentsCount', '{{count}} students ({{partial}}{{unpaid}})', {
+                  count: stats.partial + stats.unpaid,
+                  partial: t('feeStatus.partial', '{{count}} partial', { count: stats.partial }),
+                  unpaid: stats.unpaid > 0 ? t('feeStatus.unpaidSuffix', ', {{count}} unpaid', { count: stats.unpaid }) : ''
+                })}
               </div>
             </div>
             <div className="h-10 w-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
@@ -261,7 +282,7 @@ export default function StudentFeeStatusPage() {
             <div className="relative w-full sm:w-64">
               <Search className="h-4 w-4 absolute left-3 top-2.5 text-muted-foreground" />
               <Input
-                placeholder="Search student or roll no..."
+                placeholder={t('feeStatus.searchPlaceholder', 'Search student or roll no...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 h-9 text-xs"
@@ -272,10 +293,10 @@ export default function StudentFeeStatusPage() {
             {isFullAccess && (
               <Select value={selectedDeptId} onValueChange={setSelectedDeptId}>
                 <SelectTrigger className="h-9 w-44 text-xs">
-                  <SelectValue placeholder="All Departments" />
+                  <SelectValue placeholder={t('feeStatus.allDepartments', 'All Departments')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">All Departments</SelectItem>
+                  <SelectItem value="ALL">{t('feeStatus.allDepartments', 'All Departments')}</SelectItem>
                   {departments.map((d) => (
                     <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                   ))}
@@ -286,10 +307,10 @@ export default function StudentFeeStatusPage() {
             {/* Class Filter */}
             <Select value={selectedClassId} onValueChange={setSelectedClassId}>
               <SelectTrigger className="h-9 w-44 text-xs">
-                <SelectValue placeholder="All Classes" />
+                <SelectValue placeholder={t('feeStatus.allClasses', 'All Classes')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Classes</SelectItem>
+                <SelectItem value="ALL">{t('feeStatus.allClasses', 'All Classes')}</SelectItem>
                 {availableClasses.map((cls) => (
                   <SelectItem key={cls} value={cls}>{cls}</SelectItem>
                 ))}
@@ -299,13 +320,13 @@ export default function StudentFeeStatusPage() {
             {/* Payment Status Filter */}
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="h-9 w-40 text-xs">
-                <SelectValue placeholder="All Statuses" />
+                <SelectValue placeholder={t('feeStatus.allStatuses', 'All Statuses')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All Statuses</SelectItem>
-                <SelectItem value="PAID">🟢 Paid</SelectItem>
-                <SelectItem value="PARTIAL">🟡 Partial Dues</SelectItem>
-                <SelectItem value="OVERDUE">🔴 Pending / Overdue</SelectItem>
+                <SelectItem value="ALL">{t('feeStatus.allStatuses', 'All Statuses')}</SelectItem>
+                <SelectItem value="PAID">{t('feeStatus.filterPaid', '🟢 Paid')}</SelectItem>
+                <SelectItem value="PARTIAL">{t('feeStatus.filterPartial', '🟡 Partial Dues')}</SelectItem>
+                <SelectItem value="OVERDUE">{t('feeStatus.filterOverdue', '🔴 Pending / Overdue')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -317,7 +338,7 @@ export default function StudentFeeStatusPage() {
         <CardHeader className="bg-muted/20 border-b border-border py-3.5 px-4 flex flex-row items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Layers className="h-4 w-4 text-amber-500" />
-            Class-Wise Student Fee Ledger ({filteredRecords.length})
+            {t('feeStatus.ledgerTitle', 'Class-Wise Student Fee Ledger ({{count}})', { count: filteredRecords.length })}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -325,13 +346,13 @@ export default function StudentFeeStatusPage() {
             <table className="w-full text-xs">
               <thead className="border-b border-border bg-muted/40 text-muted-foreground font-semibold">
                 <tr>
-                  <th className="px-4 py-3 text-left">Student Info</th>
-                  <th className="px-4 py-3 text-left">Wing & Class</th>
-                  <th className="px-4 py-3 text-left">Fee Header</th>
-                  <th className="px-4 py-3 text-right">Total Fee (₹)</th>
-                  <th className="px-4 py-3 text-right">Paid (₹)</th>
-                  <th className="px-4 py-3 text-right">Balance Due (₹)</th>
-                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-left">{t('feeStatus.thStudentInfo', 'Student Info')}</th>
+                  <th className="px-4 py-3 text-left">{t('feeStatus.thWingClass', 'Wing & Class')}</th>
+                  <th className="px-4 py-3 text-left">{t('feeStatus.thFeeHeader', 'Fee Header')}</th>
+                  <th className="px-4 py-3 text-right">{t('feeStatus.thTotalFee', 'Total Fee (₹)')}</th>
+                  <th className="px-4 py-3 text-right">{t('feeStatus.thPaid', 'Paid (₹)')}</th>
+                  <th className="px-4 py-3 text-right">{t('feeStatus.thBalanceDue', 'Balance Due (₹)')}</th>
+                  <th className="px-4 py-3 text-center">{t('feeStatus.thStatus', 'Status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -361,7 +382,7 @@ export default function StudentFeeStatusPage() {
                     {/* Fee Header */}
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{r.feeHeader}</div>
-                      <div className="text-[10px] font-mono text-muted-foreground">Rec: {r.receiptNo || '-'}</div>
+                      <div className="text-[10px] font-mono text-muted-foreground">{t('feeStatus.receiptPrefix', 'Rec:')} {r.receiptNo || '-'}</div>
                     </td>
 
                     {/* Total Fee */}
@@ -391,7 +412,7 @@ export default function StudentFeeStatusPage() {
                             : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                         }`}
                       >
-                        {r.status === 'PAID' ? '🟢 PAID' : r.status === 'PARTIAL' ? '🟡 PARTIAL' : '🔴 UNPAID'}
+                        {r.status === 'PAID' ? t('feeStatus.statusPaid', '🟢 PAID') : r.status === 'PARTIAL' ? t('feeStatus.statusPartial', '🟡 PARTIAL') : t('feeStatus.statusUnpaid', '🔴 UNPAID')}
                       </Badge>
                     </td>
                   </tr>
@@ -399,7 +420,7 @@ export default function StudentFeeStatusPage() {
                 {filteredRecords.length === 0 && (
                   <tr>
                     <td colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
-                      No student fee records match the selected filters.
+                      {t('feeStatus.noRecords', 'No student fee records match the selected filters.')}
                     </td>
                   </tr>
                 )}
