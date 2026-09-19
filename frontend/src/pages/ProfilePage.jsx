@@ -26,6 +26,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
   Plus,
+  Scale,
 } from 'lucide-react';
 import BugReportModal from '@/components/profile/BugReportModal';
 
@@ -50,6 +51,19 @@ export default function ProfilePage() {
   // Password state
   const [passForm, setPassForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passSaving, setPassSaving] = useState(false);
+
+  // AI-Legal Credentials state
+  const hasAiLegalAddon = Boolean(
+    currentOrg?.hasAiLegal ||
+    user?.memberships?.some((m) => {
+      const desc = m.organization?.description || '';
+      return /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(desc);
+    })
+  );
+  const [aiLegalForm, setAiLegalForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [aiLegalSaving, setAiLegalSaving] = useState(false);
+  const [aiLegalStatus, setAiLegalStatus] = useState(null);
+  const [loadingAiLegalStatus, setLoadingAiLegalStatus] = useState(false);
 
   // Bug Reports state
   const [isBugModalOpen, setIsBugModalOpen] = useState(false);
@@ -200,6 +214,63 @@ export default function ProfilePage() {
       toast.error(err?.response?.data?.error || 'Failed to update password');
     } finally {
       setPassSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (hasAiLegalAddon) {
+      setLoadingAiLegalStatus(true);
+      userApi.getAiLegalStatus()
+        .then((res) => setAiLegalStatus(res))
+        .catch(() => setAiLegalStatus(null))
+        .finally(() => setLoadingAiLegalStatus(false));
+    }
+  }, [hasAiLegalAddon, currentOrg?.id]);
+
+  const handleAiLegalPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (aiLegalForm.newPassword !== aiLegalForm.confirmPassword) {
+      toast.error('AI-Legal passwords do not match.');
+      return;
+    }
+    if (aiLegalForm.newPassword.length < 6) {
+      toast.error('AI-Legal password must be at least 6 characters long.');
+      return;
+    }
+
+    setAiLegalSaving(true);
+    try {
+      const res = await userApi.setAiLegalPassword({
+        newPassword: aiLegalForm.newPassword,
+      });
+      toast.success(res?.message || 'AI-Legal password updated successfully!');
+      setAiLegalForm({ newPassword: '', confirmPassword: '' });
+      const statusRes = await userApi.getAiLegalStatus();
+      setAiLegalStatus(statusRes);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to update AI-Legal password');
+    } finally {
+      setAiLegalSaving(false);
+    }
+  };
+
+  const handleResetToDefaultAiLegalPassword = async () => {
+    if (!window.confirm('Reset your AI-Legal password to the default institutional password ("Demo1234!")?')) {
+      return;
+    }
+    setAiLegalSaving(true);
+    try {
+      const res = await userApi.setAiLegalPassword({
+        newPassword: 'Demo1234!',
+      });
+      toast.success(res?.message || 'AI-Legal password reset to Demo1234!');
+      setAiLegalForm({ newPassword: '', confirmPassword: '' });
+      const statusRes = await userApi.getAiLegalStatus();
+      setAiLegalStatus(statusRes);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to reset AI-Legal password');
+    } finally {
+      setAiLegalSaving(false);
     }
   };
 
@@ -496,6 +567,100 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* AI-Legal Credentials Card (Visible for organizations with AI-Legal Add-on) */}
+      {hasAiLegalAddon && (
+        <Card className="border-purple-500/30 bg-gradient-to-b from-purple-500/[0.04] to-transparent shadow-sm">
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
+                  <Scale className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base">{t('profile.aiLegalTitle', 'AI-Legal™ Platform Credentials')}</CardTitle>
+                    <Badge variant="outline" className="bg-purple-500/15 text-purple-300 border-purple-500/30 text-[11px] font-medium flex items-center gap-1">
+                      <Scale className="h-2.5 w-2.5" />
+                      {t('profile.aiLegalActive', 'Add-on Active')}
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs">
+                    {t('profile.aiLegalDesc', 'Set an independent password for logging directly into the standalone AI-Legal™ portal. This does not affect your Convee login password.')}
+                  </CardDescription>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div className="space-y-0.5">
+                <span className="text-purple-300 font-medium">{t('profile.aiLegalUsername', 'AI-Legal Direct Login ID / Email')}:</span>
+                <div className="font-mono font-semibold text-foreground">{user?.email}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                  ✓ {aiLegalStatus?.isRegistered ? t('profile.aiLegalSynced', 'Account Synced') : t('profile.aiLegalReady', 'Ready to Connect')}
+                </Badge>
+                {aiLegalStatus?.plan && (
+                  <Badge variant="secondary" className="text-[10px] font-mono">
+                    {aiLegalStatus.plan} PLAN
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={handleAiLegalPasswordSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="newAiLegalPassword">{t('profile.newAiLegalPassword', 'New AI-Legal Password')}</Label>
+                <Input
+                  id="newAiLegalPassword"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={aiLegalForm.newPassword}
+                  onChange={(e) => setAiLegalForm({ ...aiLegalForm, newPassword: e.target.value })}
+                  placeholder={t('profile.enterNewAiLegalPass', 'At least 6 characters')}
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirmAiLegalPassword">{t('profile.confirmAiLegalPassword', 'Confirm AI-Legal Password')}</Label>
+                <Input
+                  id="confirmAiLegalPassword"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={aiLegalForm.confirmPassword}
+                  onChange={(e) => setAiLegalForm({ ...aiLegalForm, confirmPassword: e.target.value })}
+                  placeholder={t('profile.reEnterNewAiLegalPass', 'Re-enter AI-Legal password')}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button
+                  type="submit"
+                  disabled={aiLegalSaving || !aiLegalForm.newPassword}
+                  className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm"
+                >
+                  {aiLegalSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+                  {aiLegalSaving ? t('profile.saving', 'Saving…') : t('profile.updateAiLegalPass', 'Update AI-Legal Password')}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={aiLegalSaving}
+                  onClick={handleResetToDefaultAiLegalPassword}
+                  className="text-xs border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:text-purple-200"
+                >
+                  {t('profile.resetDefaultPass', 'Reset to Institutional Default (Demo1234!)')}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Bug & Crash Reporting Card */}
       <Card className="border-border/80">

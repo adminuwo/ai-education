@@ -850,3 +850,110 @@ export async function updateAiLegalFeatureRequestStatus(
     return { success: false, error: err?.message || 'Failed to update feature request.' };
   }
 }
+
+/**
+ * Updates a user's password specifically in the AI-Legal platform (MongoDB users collection).
+ * If the user document does not exist yet, auto-provisions using student sync.
+ */
+export async function updateAiLegalPassword(
+  email: string,
+  newPassword: string,
+  userInfo?: {
+    name?: string;
+    studentId?: string;
+    organizationName?: string;
+    organizationSlug?: string;
+    role?: string;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const normalizedEmail = (email || '').toLowerCase().trim();
+    if (!normalizedEmail) {
+      return { success: false, error: 'User email is required.' };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
+    }
+
+    const client = await getMongoClient();
+    if (!client) {
+      return { success: false, error: 'AI-Legal database is temporarily unreachable. Please try again in a few moments.' };
+    }
+
+    const dbName = env.AI_LEGAL_DB_NAME || 'AISA';
+    const db = client.db(dbName);
+    const usersCol = db.collection('users');
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+
+    const existingUser = await usersCol.findOne({ email: normalizedEmail });
+    if (!existingUser) {
+      if (userInfo && userInfo.organizationName && userInfo.organizationSlug) {
+        await syncStudentToAiLegal({
+          studentName: userInfo.name || normalizedEmail.split('@')[0],
+          studentEmail: normalizedEmail,
+          rawPassword: newPassword,
+          studentId: userInfo.studentId || `STU-${new Date().getFullYear()}`,
+          organizationName: userInfo.organizationName,
+          organizationSlug: userInfo.organizationSlug,
+          role: userInfo.role || 'STUDENT',
+        });
+        logger.info(`[AI-Legal Sync] Auto-provisioned user ${normalizedEmail} in AI-Legal with requested password.`);
+        return { success: true };
+      } else {
+        return { success: false, error: 'Account not found in AI-Legal database.' };
+      }
+    }
+
+    await usersCol.updateOne(
+      { _id: existingUser._id },
+      {
+        $set: {
+          password: newHash,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    logger.info(`[AI-Legal Sync] Successfully updated AI-Legal password for ${normalizedEmail}.`);
+    return { success: true };
+  } catch (err: any) {
+    logger.error({ err: err?.message }, '[AI-Legal Sync] Error updating password in AI-Legal.');
+    return { success: false, error: err?.message || 'Failed to update AI-Legal password.' };
+  }
+}
+
+/**
+ * Checks AI-Legal account status for a given user email.
+ */
+export async function getAiLegalUserStatus(email: string): Promise<{
+  isRegistered: boolean;
+  role?: string;
+  plan?: string;
+  planStatus?: string;
+}> {
+  try {
+    const normalizedEmail = (email || '').toLowerCase().trim();
+    if (!normalizedEmail) return { isRegistered: false };
+
+    const client = await getMongoClient();
+    if (!client) return { isRegistered: false };
+
+    const db = client.db(env.AI_LEGAL_DB_NAME || 'AISA');
+    const userDoc = await db.collection('users').findOne({ email: normalizedEmail });
+
+    if (!userDoc) {
+      return { isRegistered: false };
+    }
+
+    return {
+      isRegistered: true,
+      role: userDoc.role || 'user',
+      plan: userDoc.subscription?.plan || userDoc.plan || 'BASIC',
+      planStatus: userDoc.subscription?.status || 'active',
+    };
+  } catch (err) {
+    return { isRegistered: false };
+  }
+}
+

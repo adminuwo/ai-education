@@ -2,6 +2,7 @@ import { Router } from 'express';
 import prisma from '../db/prisma';
 import { authenticate } from '../middleware/auth';
 import { hashPassword, verifyPassword } from '../utils/password';
+import { updateAiLegalPassword, getAiLegalUserStatus } from '../services/aiLegalSync.service';
 import { verifyEmailDomain, isEmailConfigured, sendVerificationEmail } from '../utils/email';
 
 const router = Router();
@@ -166,6 +167,105 @@ router.post('/me/password', async (req, res, next) => {
 
     res.json({ success: true, message: user.passwordHash ? 'Password changed successfully!' : 'Password created successfully! You can now sign in using your password or Director ID.' });
   } catch (e) { next(e); }
+});
+
+router.get('/me/ai-legal-status', async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      include: {
+        memberships: {
+          where: { isActive: true },
+          include: { organization: true },
+        },
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Find if user belongs to an org with AI_LEGAL addon
+    const aiLegalMembership = user.memberships.find((m) => {
+      const desc = m.organization.description || '';
+      return /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(desc);
+    });
+
+    const isSuperAdmin = req.user!.systemRole === 'SUPER_ADMIN' || (req.user as any).systemRole === 'SUPERADMIN';
+    const hasAiLegal = Boolean(aiLegalMembership) || isSuperAdmin;
+
+    if (!hasAiLegal) {
+      return res.json({
+        hasAiLegal: false,
+        message: 'AI-Legal add-on is not active for your organization.',
+      });
+    }
+
+    const aiLegalStatus = await getAiLegalUserStatus(user.email);
+
+    res.json({
+      hasAiLegal: true,
+      orgName: aiLegalMembership?.organization.name || 'Institutional Add-on',
+      orgSlug: aiLegalMembership?.organization.slug || 'institutional',
+      email: user.email,
+      isRegistered: aiLegalStatus.isRegistered,
+      plan: aiLegalStatus.plan || 'BASIC',
+      planStatus: aiLegalStatus.planStatus || 'active',
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/me/ai-legal-password', async (req, res, next) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'New AI-Legal password must be at least 6 characters long.' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      include: {
+        memberships: {
+          where: { isActive: true },
+          include: { organization: true },
+        },
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const aiLegalMembership = user.memberships.find((m) => {
+      const desc = m.organization.description || '';
+      return /\[ADDONS:[^\]]*AI_LEGAL[^\]]*\]/i.test(desc);
+    });
+
+    const isSuperAdmin = req.user!.systemRole === 'SUPER_ADMIN' || (req.user as any).systemRole === 'SUPERADMIN';
+    if (!aiLegalMembership && !isSuperAdmin) {
+      return res.status(403).json({ error: 'Your organization does not have the AI-Legal™ add-on enabled.' });
+    }
+
+    const prefix = aiLegalMembership?.role === 'STUDENT' ? 'STU' : (aiLegalMembership?.role === 'DIRECTOR' ? 'DIR' : (['ADMIN', 'OWNER', 'PRINCIPAL'].includes(aiLegalMembership?.role || '') ? 'ADM' : 'FAC'));
+    const memberId = aiLegalMembership?.title?.match(/\[(.*?)\]/)?.[1] || `${prefix}-${new Date().getFullYear()}-${user.id.substring(0, 4)}`;
+
+    const result = await updateAiLegalPassword(user.email, newPassword, {
+      name: user.fullName,
+      studentId: memberId,
+      organizationName: aiLegalMembership?.organization.name || 'Institutional Partner',
+      organizationSlug: aiLegalMembership?.organization.slug || 'institutional',
+      role: aiLegalMembership?.role || 'STUDENT',
+    });
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error || 'Failed to update AI-Legal password.' });
+    }
+
+    res.json({
+      success: true,
+      message: 'AI-Legal™ password updated successfully! You can now log into AI-Legal with your new password.',
+    });
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.post('/me/send-email-verification', async (req, res, next) => {
