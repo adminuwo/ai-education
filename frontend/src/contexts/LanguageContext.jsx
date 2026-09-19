@@ -22,8 +22,10 @@ function getNestedValue(obj, path) {
 function interpolate(text, params) {
   if (!params || typeof text !== 'string') return text;
   return Object.keys(params).reduce((str, key) => {
-    return str.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), params[key])
-              .replace(new RegExp(`{\\s*${key}\\s*}`, 'g'), params[key]);
+    const rawVal = params[key];
+    const val = rawVal !== undefined && rawVal !== null ? String(rawVal) : '';
+    return str.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), val)
+              .replace(new RegExp(`{\\s*${key}\\s*}`, 'g'), val);
   }, text);
 }
 
@@ -51,15 +53,22 @@ export function LanguageProvider({ children }) {
     }
   }, []);
 
-  const t = useCallback((key, paramsOrFallback, explicitFallback) => {
-    let params = null;
+  const t = useCallback((key, arg1, arg2) => {
     let fallback = '';
+    let params = null;
 
-    if (typeof paramsOrFallback === 'string') {
-      fallback = paramsOrFallback;
-    } else if (paramsOrFallback && typeof paramsOrFallback === 'object') {
-      params = paramsOrFallback;
-      fallback = explicitFallback || '';
+    if (typeof arg1 === 'string') {
+      fallback = arg1;
+      if (arg2 && typeof arg2 === 'object') {
+        params = arg2;
+      }
+    } else if (arg1 && typeof arg1 === 'object') {
+      params = arg1;
+      if (typeof arg2 === 'string') {
+        fallback = arg2;
+      }
+    } else if (typeof arg2 === 'string') {
+      fallback = arg2;
     }
 
     const currentDict = TRANSLATIONS[language] || TRANSLATIONS.en;

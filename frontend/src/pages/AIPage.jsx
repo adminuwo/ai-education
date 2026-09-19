@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -103,6 +103,14 @@ export default function AIPage() {
   const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.includes('alumni') || currentOrg?.title?.includes('Alumni');
   const isAccountant = currentOrg?.role === 'ACCOUNTANT' || user?.systemRole === 'ACCOUNTANT' || user?.email?.includes('accountant');
   const isAdminOrDirector = ['DIRECTOR', 'PRINCIPAL', 'ADMIN', 'OWNER'].includes(currentOrg?.role) || user?.systemRole === 'SUPER_ADMIN' || user?.systemRole === 'ADMIN';
+
+  const displayName = useMemo(() => {
+    if (!user?.fullName) return user?.email?.split('@')[0] || '';
+    const parts = user.fullName.trim().split(/\s+/).filter(Boolean);
+    const titles = ['prof.', 'prof', 'dr.', 'dr', 'mr.', 'mr', 'mrs.', 'mrs', 'ms.', 'ms', 'shri', 'smt'];
+    const firstNonTitle = parts.find((p) => !titles.includes(p.toLowerCase()));
+    return firstNonTitle || parts[0] || user.fullName;
+  }, [user]);
 
   const orgHasAiLegal = Boolean(
     currentOrg?.hasAiLegal ||
@@ -829,8 +837,8 @@ export default function AIPage() {
                   </div>
                   <h2 className="font-display text-2xl font-semibold">
                     {isStudent
-                      ? t('aiPage.greetingStudent', 'What shall we study today, {{name}}?', { name: user?.fullName?.split(' ')[0] })
-                      : t('aiPage.greetingGeneral', 'How can I help you today, {{name}}?', { name: user?.fullName?.split(' ')[0] })}
+                      ? t('aiPage.greetingStudent', 'What shall we study today, {{name}}?', { name: displayName || user?.fullName || 'there' })
+                      : t('aiPage.greetingGeneral', 'How can I help you today, {{name}}?', { name: displayName || user?.fullName || 'there' })}
                   </h2>
                   <p className="text-muted-foreground mt-1">
                     {isStudent
