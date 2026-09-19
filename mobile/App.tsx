@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { LanguageProvider } from './src/contexts/LanguageContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { DrawerProvider } from './src/contexts/DrawerContext';
 import RootNavigator from './src/navigation/RootNavigator';
@@ -17,14 +18,16 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <AuthProvider>
-          <DrawerProvider>
-            <ThemedStatusBar />
-            <RootNavigator />
-            <AppDrawer />
-            <NotificationsModal />
-          </DrawerProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <DrawerProvider>
+              <ThemedStatusBar />
+              <RootNavigator />
+              <AppDrawer />
+              <NotificationsModal />
+            </DrawerProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

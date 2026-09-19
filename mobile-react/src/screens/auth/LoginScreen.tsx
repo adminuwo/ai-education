@@ -14,11 +14,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { Sparkles, GraduationCap, UserCheck, ShieldCheck, Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const { login } = useAuth();
   const { colors } = useTheme();
+  const { t } = useLanguage();
 
   const [portalMode, setPortalMode] = useState<'faculty' | 'student' | 'parent'>('faculty');
   const [email, setEmail] = useState('');
@@ -29,7 +32,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      setErrorMsg('Please enter your email/ID and password.');
+      setErrorMsg(t('auth.errorEmptyCredentials', 'Please enter your email/ID and password.'));
       return;
     }
     setErrorMsg('');
@@ -37,7 +40,7 @@ export default function LoginScreen() {
     try {
       await login({ email: email.trim(), password: password.trim(), portalMode });
     } catch (e: any) {
-      setErrorMsg(e?.response?.data?.error || 'Authentication failed. Please check credentials.');
+      setErrorMsg(e?.response?.data?.error || t('auth.errorAuthFailed', 'Authentication failed. Please check credentials.'));
     } finally {
       setLoading(false);
     }
@@ -50,6 +53,11 @@ export default function LoginScreen() {
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          {/* Language Switcher Bar */}
+          <View style={{ alignItems: 'flex-end', marginBottom: 12 }}>
+            <LanguageSwitcher compact />
+          </View>
+
           {/* Brand Header */}
           <View style={styles.brandHeader}>
             <Image
@@ -57,9 +65,9 @@ export default function LoginScreen() {
               style={{ width: 72, height: 72, borderRadius: 18, marginBottom: 12 }}
               resizeMode="contain"
             />
-            <Text style={[styles.brandTitle, { color: colors.text }]}>AI Education</Text>
+            <Text style={[styles.brandTitle, { color: colors.text }]}>{t('auth.brandTitle', 'AI Education')}</Text>
             <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
-              Digital Campus & Academic Portal
+              {t('auth.brandSubtitle', 'Digital Campus & Academic Portal')}
             </Text>
           </View>
 
@@ -74,7 +82,7 @@ export default function LoginScreen() {
             >
               <UserCheck size={16} color={portalMode === 'faculty' ? colors.primary : colors.textMuted} />
               <Text style={[styles.tabText, { color: portalMode === 'faculty' ? colors.primary : colors.textMuted }]}>
-                Faculty
+                {t('auth.portalModeFaculty', 'Faculty')}
               </Text>
             </TouchableOpacity>
 
@@ -87,7 +95,7 @@ export default function LoginScreen() {
             >
               <GraduationCap size={16} color={portalMode === 'student' ? colors.emerald : colors.textMuted} />
               <Text style={[styles.tabText, { color: portalMode === 'student' ? colors.emerald : colors.textMuted }]}>
-                Student
+                {t('auth.portalModeStudent', 'Student')}
               </Text>
             </TouchableOpacity>
 
@@ -100,7 +108,7 @@ export default function LoginScreen() {
             >
               <ShieldCheck size={16} color={portalMode === 'parent' ? colors.purple : colors.textMuted} />
               <Text style={[styles.tabText, { color: portalMode === 'parent' ? colors.purple : colors.textMuted }]}>
-                Parent
+                {t('auth.portalModeParent', 'Parent')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -108,10 +116,14 @@ export default function LoginScreen() {
           {/* Login Card */}
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.cardHeading, { color: colors.text }]}>
-              {portalMode === 'faculty' ? 'Faculty & Staff Sign In' : portalMode === 'student' ? 'Student Portal Sign In' : 'Parent Portal Sign In'}
+              {portalMode === 'faculty'
+                ? t('auth.portalModeFaculty', 'Faculty & Staff')
+                : portalMode === 'student'
+                ? t('auth.portalModeStudent', 'Student Portal')
+                : t('auth.portalModeParent', 'Parent Portal')}
             </Text>
             <Text style={[styles.cardSubheading, { color: colors.textSecondary }]}>
-              Sign in with your institutional credentials.
+              {t('auth.credentialsNotice', 'Sign in with your institutional credentials.')}
             </Text>
 
             {errorMsg ? (
@@ -123,14 +135,24 @@ export default function LoginScreen() {
             {/* Email Field */}
             <View style={styles.inputGroup}>
               <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
-                {portalMode === 'student' ? 'Student ID or Email' : portalMode === 'parent' ? 'Registered Parent Email' : 'Institutional Email'}
+                {portalMode === 'student'
+                  ? t('auth.emailLabelStudent', 'Student ID or Email')
+                  : portalMode === 'parent'
+                  ? t('auth.emailLabelParent', 'Registered Parent Email')
+                  : t('auth.emailLabel', 'Work Email or Faculty / Staff ID')}
               </Text>
               <View style={[styles.inputWrapper, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
                 <Mail size={18} color={colors.textMuted} style={styles.inputIcon} />
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
-                  placeholder="e.g. director@demo.edu"
+                  placeholder={
+                    portalMode === 'student'
+                      ? t('auth.emailPlaceholderStudent', 'e.g. STU-2026-1001')
+                      : portalMode === 'parent'
+                      ? t('auth.emailPlaceholderParent', 'e.g. parent@example.com')
+                      : t('auth.emailPlaceholder', 'name@institution.edu or ID')
+                  }
                   placeholderTextColor={colors.textMuted}
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -141,13 +163,13 @@ export default function LoginScreen() {
 
             {/* Password Field */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Password</Text>
+              <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('auth.passwordLabel', 'Password')}</Text>
               <View style={[styles.inputWrapper, { backgroundColor: colors.cardSecondary, borderColor: colors.border }]}>
                 <Lock size={18} color={colors.textMuted} style={styles.inputIcon} />
                 <TextInput
                   value={password}
                   onChangeText={setPassword}
-                  placeholder="••••••••"
+                  placeholder={t('auth.passwordPlaceholder', '••••••••')}
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showPassword}
                   style={[styles.input, { color: colors.text }]}
@@ -171,7 +193,7 @@ export default function LoginScreen() {
               {loading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.submitButtonText}>Sign In to Portal</Text>
+                <Text style={styles.submitButtonText}>{t('auth.signIn', 'Sign In to Portal')}</Text>
               )}
             </TouchableOpacity>
           </View>

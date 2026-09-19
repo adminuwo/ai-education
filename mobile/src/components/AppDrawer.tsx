@@ -33,6 +33,8 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useDrawer } from '../contexts/DrawerContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 import { navigate } from '../navigation/navigationRef';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -42,6 +44,7 @@ export default function AppDrawer() {
   const { colors, isDark, toggleTheme } = useTheme();
   const { isDrawerOpen, closeDrawer } = useDrawer();
   const { user, currentOrg, logout } = useAuth();
+  const { t } = useLanguage();
 
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -110,13 +113,13 @@ export default function AppDrawer() {
     };
 
     if (Platform.OS === 'web') {
-      if (window.confirm('Are you sure you want to sign out?')) {
+      if (window.confirm(t('drawer.signOutConfirm', 'Are you sure you want to sign out?'))) {
         performLogout();
       }
     } else {
-      Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign Out', style: 'destructive', onPress: performLogout },
+      Alert.alert(t('drawer.signOut', 'Sign Out'), t('drawer.signOutConfirm', 'Are you sure you want to sign out?'), [
+        { text: t('drawer.cancel', 'Cancel'), style: 'cancel' },
+        { text: t('drawer.signOut', 'Sign Out'), style: 'destructive', onPress: performLogout },
       ]);
     }
   };
@@ -142,42 +145,42 @@ export default function AppDrawer() {
   const menuItems = [
     {
       id: 'home',
-      label: 'Home Dashboard',
+      label: t('nav.home', 'Home Dashboard'),
       subtitle: 'Overview & quick metrics',
       icon: Home,
       onPress: () => handleNavigate('MainTabs', { screen: 'Home' }),
     },
     {
       id: 'homework',
-      label: 'Homework & Rubrics',
+      label: t('nav.homework', 'Homework & Rubrics'),
       subtitle: 'Assignments & submissions',
       icon: BookOpen,
       onPress: () => handleNavigate('MainTabs', { screen: 'Homework' }),
     },
     {
       id: 'attendance',
-      label: 'Class Attendance',
+      label: t('nav.attendance', 'Class Attendance'),
       subtitle: 'Register & records',
       icon: CalendarCheck,
       onPress: () => handleNavigate('MainTabs', { screen: 'Attendance' }),
     },
     {
       id: 'messages',
-      label: 'Messages & Channels',
+      label: t('nav.messages', 'Messages & Channels'),
       subtitle: 'Classroom chat & staff',
       icon: MessageSquare,
       onPress: () => handleNavigate('MainTabs', { screen: 'Messages' }),
     },
     {
       id: 'analytics',
-      label: 'Academic Analytics',
+      label: t('nav.analytics', 'Academic Analytics'),
       subtitle: isStudentOrParent ? 'Personal progress & grades' : 'Campus trends & pipeline',
       icon: TrendingUp,
       onPress: () => handleNavigate('Analytics'),
     },
     {
       id: 'meetings',
-      label: 'Live Meetings & Classes',
+      label: t('nav.meetings', 'Live Meetings & Classes'),
       subtitle: 'Video classes & Jitsi huddles',
       icon: Video,
       onPress: () => handleNavigate('Meetings'),
@@ -186,7 +189,7 @@ export default function AppDrawer() {
       ? [
           {
             id: 'portal',
-            label: isParent ? 'Parent Portal' : 'Student Portal',
+            label: isParent ? t('nav.parentPortal', 'Parent Portal') : t('nav.studentPortal', 'Student Portal'),
             subtitle: isParent ? 'Child progress, mentors & report card' : 'Report card, mentors & records',
             icon: GraduationCap,
             onPress: () => handleNavigate('Portal'),
@@ -195,7 +198,7 @@ export default function AppDrawer() {
       : []),
     {
       id: 'ai',
-      label: 'AI Education Assistant',
+      label: t('nav.aiAssistant', 'AI Education Assistant'),
       subtitle: 'Smart lesson & grading helper',
       icon: Sparkles,
       badge: 'AI',
@@ -204,7 +207,7 @@ export default function AppDrawer() {
     },
     {
       id: 'legal',
-      label: 'Judicial & ADP Hub ⚖️',
+      label: t('nav.legalHub', 'Judicial & ADP Hub ⚖️'),
       subtitle: 'Bare acts, PYQs & transition engine',
       icon: Scale,
       badge: 'LEGAL',
@@ -213,7 +216,7 @@ export default function AppDrawer() {
     },
     {
       id: 'profile',
-      label: 'My Profile & Settings',
+      label: t('nav.profile', 'My Profile & Settings'),
       subtitle: 'Preferences & security',
       icon: User,
       onPress: () => handleNavigate('Profile'),
@@ -300,7 +303,9 @@ export default function AppDrawer() {
           {/* Navigation Links */}
           <ScrollView style={styles.menuScroll} showsVerticalScrollIndicator={false}>
             <View style={styles.menuSection}>
-              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>NAVIGATION</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
+                {t('drawer.title', 'NAVIGATION')}
+              </Text>
               {menuItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
@@ -339,7 +344,9 @@ export default function AppDrawer() {
 
             {/* Quick Settings Section */}
             <View style={[styles.menuSection, { marginTop: 8 }]}>
-              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>PREFERENCES</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>
+                {t('drawer.preferences', 'PREFERENCES')}
+              </Text>
               <TouchableOpacity
                 style={[styles.menuItem, { borderColor: colors.border }]}
                 onPress={toggleTheme}
@@ -354,13 +361,40 @@ export default function AppDrawer() {
                 </View>
                 <View style={styles.menuLabelCol}>
                   <Text style={[styles.menuLabel, { color: colors.text }]}>
-                    {isDark ? 'Light Theme' : 'Dark Theme'}
+                    {isDark ? t('drawer.lightTheme', 'Light Theme') : t('drawer.darkTheme', 'Dark Theme')}
                   </Text>
                   <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>
-                    Switch visual appearance
+                    {t('drawer.switchTheme', 'Switch visual appearance')}
                   </Text>
                 </View>
               </TouchableOpacity>
+
+              <View
+                style={[
+                  styles.menuItem,
+                  {
+                    borderColor: colors.border,
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingRight: 8,
+                  },
+                ]}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+                  <View style={[styles.menuIconWrap, { backgroundColor: colors.cardSecondary }]}>
+                    <Text style={{ fontSize: 16 }}>🌐</Text>
+                  </View>
+                  <View style={styles.menuLabelCol}>
+                    <Text style={[styles.menuLabel, { color: colors.text }]}>
+                      {t('drawer.language', 'Language')}
+                    </Text>
+                    <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>
+                      English / हिंदी
+                    </Text>
+                  </View>
+                </View>
+                <LanguageSwitcher />
+              </View>
             </View>
           </ScrollView>
 
@@ -372,10 +406,12 @@ export default function AppDrawer() {
               activeOpacity={0.7}
             >
               <LogOut size={16} color={colors.destructive} />
-              <Text style={[styles.logoutText, { color: colors.destructive }]}>Sign Out</Text>
+              <Text style={[styles.logoutText, { color: colors.destructive }]}>
+                {t('drawer.signOut', 'Sign Out')}
+              </Text>
             </TouchableOpacity>
             <Text style={[styles.versionText, { color: colors.textMuted }]}>
-              AI Education • Mobile & Web v1.0.0
+              {t('drawer.version', 'AI Education • Mobile & Web v1.0.0')}
             </Text>
           </View>
         </Animated.View>

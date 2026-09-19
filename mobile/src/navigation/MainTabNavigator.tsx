@@ -3,6 +3,7 @@ import { Platform, TouchableOpacity, View, Text, StyleSheet } from 'react-native
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from '../contexts/ThemeContext';
 import { useDrawer } from '../contexts/DrawerContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Menu, Bell, Home, BookOpen, CalendarCheck, MessageSquare } from 'lucide-react-native';
 
 import HomeScreen from '../screens/home/HomeScreen';
@@ -15,6 +16,7 @@ const Tab = createBottomTabNavigator();
 export default function MainTabNavigator() {
   const { colors } = useTheme();
   const { openDrawer, openNotifications, unreadCount } = useDrawer();
+  const { t } = useLanguage();
 
   return (
     <Tab.Navigator
@@ -83,8 +85,8 @@ export default function MainTabNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Home',
-          headerTitle: 'AI Education',
+          title: t('nav.home', 'Home'),
+          headerTitle: t('auth.brandTitle', 'AI Education'),
           tabBarIcon: ({ color, size }) => <Home size={size - 2} color={color} />,
         }}
       />
@@ -93,8 +95,8 @@ export default function MainTabNavigator() {
         name="Homework"
         component={HomeworkScreen}
         options={{
-          title: 'Homework',
-          headerTitle: 'Homework & Rubrics',
+          title: t('nav.homework', 'Homework'),
+          headerTitle: t('nav.homework', 'Homework'),
           tabBarIcon: ({ color, size }) => <BookOpen size={size - 2} color={color} />,
         }}
       />
@@ -103,8 +105,8 @@ export default function MainTabNavigator() {
         name="Attendance"
         component={AttendanceScreen}
         options={{
-          title: 'Attendance',
-          headerTitle: 'Class Attendance',
+          title: t('nav.attendance', 'Attendance'),
+          headerTitle: t('nav.attendance', 'Attendance'),
           tabBarIcon: ({ color, size }) => <CalendarCheck size={size - 2} color={color} />,
         }}
       />
@@ -113,8 +115,8 @@ export default function MainTabNavigator() {
         name="Messages"
         component={ChannelsScreen}
         options={{
-          title: 'Messages',
-          headerTitle: 'Channels & Direct Chats',
+          title: t('nav.channels', 'Messages'),
+          headerTitle: t('nav.channels', 'Channels & Direct Chats'),
           tabBarIcon: ({ color, size }) => <MessageSquare size={size - 2} color={color} />,
         }}
       />

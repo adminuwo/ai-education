@@ -1,10 +1,19 @@
-name: Build Bare React Native 0.77 (16 KB Page Aligned)
+name: Build Bare React Native 0.77 (16 KB Page Aligned & iOS IPA)
 
 on:
   workflow_dispatch:
     inputs:
+      platform:
+        description: 'Platform'
+        required: true
+        default: 'android'
+        type: choice
+        options:
+          - 'android'
+          - 'ios'
+          - 'all'
       profile:
-        description: 'Build Target'
+        description: 'Build Target (Android APK vs Bundle)'
         required: true
         default: 'apk'
         type: choice
@@ -13,8 +22,9 @@ on:
           - 'bundle'
 
 jobs:
-  build:
-    name: Build React Native 0.77 (${{ inputs.profile }})
+  build-android:
+    name: Build Android RN 0.77 (${{ inputs.profile }})
+    if: inputs.platform == 'android' || inputs.platform == 'all'
     runs-on: ubuntu-latest
 
     steps:
@@ -111,4 +121,57 @@ jobs:
           path: |
             mobile-react/android/app/build/outputs/apk/**/*.apk
             mobile-react/android/app/build/outputs/bundle/**/*.aab
+          if-no-files-found: error
+
+  build-ios:
+    name: Build iOS IPA (RN 0.77)
+    if: inputs.platform == 'ios' || inputs.platform == 'all'
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install NPM Dependencies
+        working-directory: mobile-react
+        run: |
+          npm install --legacy-peer-deps
+          node scripts/patch-rnsvg.js
+
+      - name: Install CocoaPods
+        working-directory: mobile-react/ios
+        run: pod install
+
+      - name: Compile iOS Archive
+        working-directory: mobile-react/ios
+        run: |
+          echo ">>> Building Xcode Release Archive for ConveeEducation..."
+          xcodebuild archive \
+            -workspace ConveeEducation.xcworkspace \
+            -scheme ConveeEducation \
+            -configuration Release \
+            -archivePath build/ConveeEducation.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Package IPA
+        working-directory: mobile-react/ios
+        run: |
+          mkdir -p Payload
+          cp -r build/ConveeEducation.xcarchive/Products/Applications/ConveeEducation.app Payload/
+          zip -r ConveeEducation-RN077.ipa Payload
+          mkdir -p ../dist
+          mv ConveeEducation-RN077.ipa ../dist/
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConveeEducation-React077-iOS-IPA
+          path: mobile-react/dist/ConveeEducation-RN077.ipa
           if-no-files-found: error

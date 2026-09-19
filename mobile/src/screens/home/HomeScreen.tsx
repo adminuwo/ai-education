@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { aiApi, dashboardApi, attendanceApi, parentApi, tasksApi, homeworkApi } from '../../lib/api';
 import {
   Sparkles,
@@ -29,6 +30,7 @@ import {
 export default function HomeScreen({ navigation }: any) {
   const { user, currentOrg } = useAuth();
   const { colors, isDark } = useTheme();
+  const { t } = useLanguage();
 
   const [briefing, setBriefing] = useState('');
   const [briefingLoading, setBriefingLoading] = useState(false);
@@ -138,7 +140,7 @@ export default function HomeScreen({ navigation }: any) {
       {/* Header Banner */}
       <View style={styles.header}>
         <View style={styles.headerTextWrap}>
-          <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back,</Text>
+          <Text style={[styles.greeting, { color: colors.textSecondary }]}>{t('home.welcomeBack', 'Welcome back')},</Text>
           <Text
             style={[styles.userName, { color: colors.text }]}
             numberOfLines={1}
@@ -163,7 +165,7 @@ export default function HomeScreen({ navigation }: any) {
             <View style={[styles.sparkleIcon, { backgroundColor: colors.primaryLight }]}>
               <Sparkles size={16} color={colors.primary} />
             </View>
-            <Text style={[styles.briefingTitle, { color: colors.text }]}>AI Daily Campus Briefing</Text>
+            <Text style={[styles.briefingTitle, { color: colors.text }]}>{t('home.aiBriefing', 'AI Daily Campus Briefing')}</Text>
           </View>
           <TouchableOpacity onPress={loadData} disabled={briefingLoading} style={styles.refreshIconBtn}>
             {briefingLoading ? (
@@ -174,7 +176,7 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
         <Text style={[styles.briefingContent, { color: colors.textSecondary }]}>
-          {briefing || (briefingLoading ? 'Generating AI daily briefing...' : 'No campus briefing generated yet today. Tap refresh to generate.')}
+          {briefing || (briefingLoading ? t('home.generatingBriefing', 'Generating AI daily briefing...') : t('home.noBriefing', 'No campus briefing generated yet today. Tap refresh to generate.'))}
         </Text>
       </View>
 
@@ -198,7 +200,7 @@ export default function HomeScreen({ navigation }: any) {
               : '—'}
           </Text>
           <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>
-            {isStudent ? 'My Attendance' : isParent ? 'Child Attendance' : 'Attendance Rate'}
+            {isStudent ? t('home.myAttendance', 'My Attendance') : isParent ? t('home.childAttendance', 'Child Attendance') : t('home.attendanceHealth', 'Attendance Rate')}
           </Text>
         </TouchableOpacity>
 
@@ -214,7 +216,7 @@ export default function HomeScreen({ navigation }: any) {
             {activeTasksCount !== null ? activeTasksCount : (dashboardData?.myTasks?.length ?? 0)}
           </Text>
           <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>
-            {isHigherAuthority ? 'Campus Tasks' : 'My Tasks'}
+            {isHigherAuthority ? t('home.campusTasks', 'Campus Tasks') : t('home.myTasks', 'My Tasks')}
           </Text>
         </TouchableOpacity>
 
@@ -230,13 +232,13 @@ export default function HomeScreen({ navigation }: any) {
             {activeHomeworkCount !== null ? activeHomeworkCount : 0}
           </Text>
           <Text style={[styles.kpiLabel, { color: colors.textSecondary }]}>
-            {isStudent ? 'Homework Due' : isParent ? "Child's Homework" : 'Homework Given'}
+            {isStudent ? t('home.homeworkDue', 'Homework Due') : isParent ? t('home.childHomework', "Child's Homework") : t('home.homeworkGiven', 'Homework Given')}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Quick Action Navigation */}
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('home.quickActions', 'Quick Actions')}</Text>
       <View style={styles.actionsList}>
         {/* Judicial & ADP Exam Hub (High-Priority Academic Action) */}
         <TouchableOpacity
@@ -255,7 +257,7 @@ export default function HomeScreen({ navigation }: any) {
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={[styles.actionName, { color: colors.text }]}>Judicial & ADP Exam Hub</Text>
+                <Text style={[styles.actionName, { color: colors.text }]}>{t('home.judicialHub', 'Judicial & ADP Exam Hub')}</Text>
                 <View style={{ backgroundColor: '#f59e0b', borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1 }}>
                   <Text style={{ color: '#000', fontSize: 9, fontWeight: 'bold' }}>LEGAL</Text>
                 </View>
@@ -277,7 +279,7 @@ export default function HomeScreen({ navigation }: any) {
               <CheckSquare size={18} color={colors.primary} />
             </View>
             <View>
-              <Text style={[styles.actionName, { color: colors.text }]}>Campus Tasks & Operations</Text>
+              <Text style={[styles.actionName, { color: colors.text }]}>{t('nav.tasks', 'Campus Tasks & Operations')}</Text>
               <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                 {isHigherAuthority
                   ? 'Assign, track & oversee departmental duties'
@@ -297,7 +299,7 @@ export default function HomeScreen({ navigation }: any) {
               <BookOpen size={18} color={colors.amber} />
             </View>
             <View>
-              <Text style={[styles.actionName, { color: colors.text }]}>Homework & Rubrics</Text>
+              <Text style={[styles.actionName, { color: colors.text }]}>{t('nav.homework', 'Homework & Rubrics')}</Text>
               <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                 {userRole === 'STUDENT' ? 'Submit assignment solutions' : 'Grade assignments with rubrics'}
               </Text>
@@ -315,7 +317,7 @@ export default function HomeScreen({ navigation }: any) {
               <CalendarCheck size={18} color={colors.emerald} />
             </View>
             <View>
-              <Text style={[styles.actionName, { color: colors.text }]}>Class Attendance</Text>
+              <Text style={[styles.actionName, { color: colors.text }]}>{t('nav.attendance', 'Class Attendance')}</Text>
               <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                 {userRole === 'PARENT' ? "Check child's attendance rate" : '1-Click section attendance logger'}
               </Text>
@@ -333,7 +335,7 @@ export default function HomeScreen({ navigation }: any) {
               <Video size={18} color={colors.primary} />
             </View>
             <View>
-              <Text style={[styles.actionName, { color: colors.text }]}>Live Meetings & Classes</Text>
+              <Text style={[styles.actionName, { color: colors.text }]}>{t('home.liveMeetings', 'Live Meetings & Classes')}</Text>
               <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                 Join audio/video classes with 1-tap Jitsi links
               </Text>
@@ -351,7 +353,7 @@ export default function HomeScreen({ navigation }: any) {
               <TrendingUp size={18} color={colors.emerald} />
             </View>
             <View>
-              <Text style={[styles.actionName, { color: colors.text }]}>Academic Analytics</Text>
+              <Text style={[styles.actionName, { color: colors.text }]}>{t('home.academicAnalytics', 'Academic Analytics')}</Text>
               <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                 {userRole === 'STUDENT' || userRole === 'PARENT'
                   ? 'Personal attendance %, rubric grades & feedback'
@@ -373,7 +375,7 @@ export default function HomeScreen({ navigation }: any) {
               </View>
               <View>
                 <Text style={[styles.actionName, { color: colors.text }]}>
-                  {userRole === 'PARENT' ? 'Parent Portal' : 'Student Portal'}
+                  {userRole === 'PARENT' ? t('home.parentPortal', 'Parent Portal') : t('home.studentPortal', 'Student Portal')}
                 </Text>
                 <Text style={[styles.actionDesc, { color: colors.textSecondary }]}>
                   Mentors, 30-day attendance health & report card

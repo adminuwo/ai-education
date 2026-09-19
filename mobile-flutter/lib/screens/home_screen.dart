@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants/theme.dart';
 import '../services/api_service.dart';
+import '../services/language_service.dart';
+import '../components/language_switcher.dart';
 import 'login_screen.dart';
 import 'tasks_screen.dart';
 import 'homework_screen.dart';
@@ -95,9 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return LanguageService.tr('home.goodMorning', fallback: 'Good morning');
+    if (hour < 17) return LanguageService.tr('home.goodAfternoon', fallback: 'Good afternoon');
+    return LanguageService.tr('home.goodEvening', fallback: 'Good evening');
   }
 
   @override
@@ -121,13 +123,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              orgName,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            Expanded(
+              child: Text(
+                orgName,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
         actions: [
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.only(right: 4.0),
+              child: LanguageSwitcher(compact: true),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh, color: ConveeColors.textSecondary),
             onPressed: () {
@@ -223,13 +235,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.auto_awesome, color: ConveeColors.primary, size: 18),
-                            SizedBox(width: 6),
+                            const Icon(Icons.auto_awesome, color: ConveeColors.primary, size: 18),
+                            const SizedBox(width: 6),
                             Text(
-                              'AI Daily Academic Briefing',
-                              style: TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
+                              LanguageService.tr('home.aiBriefing', fallback: 'AI Daily Academic Briefing'),
+                              style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
                             ),
                           ],
                         ),
@@ -246,8 +258,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       _briefing != null && _briefing!.isNotEmpty
                           ? _briefing!
                           : _briefingLoading
-                              ? 'Connecting to campus intelligence engine...'
-                              : 'No urgent announcements or scheduling updates for your cohort today.',
+                              ? LanguageService.tr('home.generatingBriefing', fallback: 'Connecting to campus intelligence engine...')
+                              : LanguageService.tr('home.noBriefing', fallback: 'No urgent announcements or scheduling updates for your cohort today.'),
                       style: TextStyle(
                         color: _briefing != null ? ConveeColors.text : ConveeColors.textSecondary,
                         fontSize: 13,
@@ -274,9 +286,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [
-                        const Color(0xFF2E1C05),
+                        Color(0xFF2E1C05),
                         ConveeColors.card,
                       ],
                       begin: Alignment.topLeft,
@@ -302,9 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Row(
                               children: [
-                                const Text(
-                                  'Judicial & ADP Exam Hub',
-                                  style: TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
+                                Text(
+                                  LanguageService.tr('home.judicialHub', fallback: 'Judicial & ADP Exam Hub'),
+                                  style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
                                 ),
                                 const SizedBox(width: 6),
                                 Container(
@@ -336,15 +348,15 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
 
               // Live Status KPI Cards (Attendance, Tasks, Homework)
-              const Text(
-                'Live Campus Analytics',
-                style: TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                LanguageService.tr('home.digitalCampus', fallback: 'Live Campus Analytics'),
+                style: const TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   _buildStatCard(
-                    label: 'Attendance',
+                    label: LanguageService.tr('nav.attendance', fallback: 'Attendance'),
                     value: _attendanceStats?['percentage'] != null
                         ? '${_attendanceStats!['percentage']}%'
                         : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : '--'),
@@ -352,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 10),
                   _buildStatCard(
-                    label: 'Campus Tasks',
+                    label: LanguageService.tr('home.campusTasks', fallback: 'Campus Tasks'),
                     value: _statsLoaded ? '$_activeTaskCount' : '--',
                     color: ConveeColors.primary,
                     onTap: () {
@@ -364,7 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 10),
                   _buildStatCard(
-                    label: 'Homework',
+                    label: LanguageService.tr('nav.homework', fallback: 'Homework'),
                     value: _statsLoaded ? '$_pendingHomeworkCount' : '--',
                     color: ConveeColors.amber,
                     onTap: () {
@@ -379,9 +391,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
 
               // Quick Actions Grid
-              const Text(
-                'Academic Modules',
-                style: TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                LanguageService.tr('home.quickActions', fallback: 'Academic Modules'),
+                style: const TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
 
@@ -394,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 childAspectRatio: 1.35,
                 children: [
                   _buildModuleItem(
-                    'Campus Tasks',
+                    LanguageService.tr('home.activeTasks', fallback: 'Campus Tasks'),
                     'Operations & Duties',
                     Icons.task_alt_outlined,
                     ConveeColors.primary,
@@ -406,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   _buildModuleItem(
-                    'Homework',
+                    LanguageService.tr('nav.homework', fallback: 'Homework'),
                     'Assignments & Rubrics',
                     Icons.menu_book_outlined,
                     ConveeColors.amber,
@@ -418,31 +430,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   _buildModuleItem(
-                    'Daily Attendance',
+                    LanguageService.tr('home.logAttendance', fallback: 'Daily Attendance'),
                     'Roster & Records',
                     Icons.fact_check_outlined,
                     ConveeColors.emerald,
                   ),
                   _buildModuleItem(
-                    'Class Channels',
+                    LanguageService.tr('nav.messages', fallback: 'Class Channels'),
                     'Messaging & Chat',
                     Icons.chat_bubble_outline,
                     ConveeColors.purple,
                   ),
                   _buildModuleItem(
-                    'Live Meetings',
+                    LanguageService.tr('home.liveMeetings', fallback: 'Live Meetings'),
                     'Classroom Video',
                     Icons.videocam_outlined,
                     ConveeColors.destructive,
                   ),
                   _buildModuleItem(
-                    'Campus Portal',
+                    LanguageService.tr('nav.portal', fallback: 'Campus Portal'),
                     'Parent & Student',
                     Icons.badge_outlined,
                     ConveeColors.textSecondary,
                   ),
                   _buildModuleItem(
-                    'Judicial Hub',
+                    LanguageService.tr('home.judicialHub', fallback: 'Judicial Hub'),
                     'Bare Acts & PYQs',
                     Icons.balance,
                     ConveeColors.amber,

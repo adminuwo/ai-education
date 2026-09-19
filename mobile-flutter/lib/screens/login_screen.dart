@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../constants/theme.dart';
 import '../services/api_service.dart';
+import '../services/language_service.dart';
+import '../components/language_switcher.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       setState(() {
-        _errorMsg = 'Please enter your email/ID and password.';
+        _errorMsg = LanguageService.tr('auth.errorEmptyCredentials', fallback: 'Please enter your email/ID and password.');
       });
       return;
     }
@@ -57,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on DioException catch (e) {
-      String msg = 'Authentication failed. Please check credentials.';
+      String msg = LanguageService.tr('auth.errorAuthFailed', fallback: 'Authentication failed. Please check credentials.');
       if (e.response?.data is Map && e.response?.data['error'] != null) {
         msg = e.response!.data['error'].toString();
       } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
@@ -82,20 +84,27 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final heading = _portalMode == 'faculty'
-        ? 'Faculty & Staff Sign In'
+        ? LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty & Staff Sign In')
         : _portalMode == 'student'
-            ? 'Student Portal Sign In'
-            : 'Parent Portal Sign In';
+            ? LanguageService.tr('auth.portalModeStudent', fallback: 'Student Portal Sign In')
+            : LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In');
 
     return Scaffold(
       backgroundColor: ConveeColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 28.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Top Language Switcher Bar
+                Align(
+                  alignment: Alignment.topRight,
+                  child: const LanguageSwitcher(compact: true),
+                ),
+                const SizedBox(height: 12),
+
                 // Real Brand Header
                 ClipRRect(
                   borderRadius: BorderRadius.circular(18),
@@ -116,9 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'AI Education',
-                  style: TextStyle(
+                Text(
+                  LanguageService.tr('auth.brandTitle', fallback: 'AI Education'),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: ConveeColors.text,
@@ -126,9 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Digital Campus & Academic Portal',
-                  style: TextStyle(
+                Text(
+                  LanguageService.tr('auth.brandSubtitle', fallback: 'Digital Campus & Academic Portal'),
+                  style: const TextStyle(
                     fontSize: 14,
                     color: ConveeColors.textSecondary,
                   ),
@@ -145,9 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Row(
                     children: [
-                      _buildPortalTab('faculty', 'Faculty', Icons.verified_user_outlined, ConveeColors.primary),
-                      _buildPortalTab('student', 'Student', Icons.school_outlined, ConveeColors.emerald),
-                      _buildPortalTab('parent', 'Parent', Icons.family_restroom_outlined, ConveeColors.purple),
+                      _buildPortalTab('faculty', LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty'), Icons.verified_user_outlined, ConveeColors.primary),
+                      _buildPortalTab('student', LanguageService.tr('auth.portalModeStudent', fallback: 'Student'), Icons.school_outlined, ConveeColors.emerald),
+                      _buildPortalTab('parent', LanguageService.tr('auth.portalModeParent', fallback: 'Parent'), Icons.family_restroom_outlined, ConveeColors.purple),
                     ],
                   ),
                 ),
@@ -174,9 +183,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Sign in with your institutional credentials.',
-                        style: TextStyle(
+                      Text(
+                        LanguageService.tr('auth.credentialsNotice', fallback: 'Sign in with your institutional credentials.'),
+                        style: const TextStyle(
                           fontSize: 13,
                           color: ConveeColors.textSecondary,
                         ),
@@ -201,9 +210,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
 
                       // Email / ID Input
-                      const Text(
-                        'Email or Institutional ID',
-                        style: TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+                      Text(
+                        _portalMode == 'student'
+                            ? LanguageService.tr('auth.emailLabelStudent', fallback: 'Student ID or Email')
+                            : _portalMode == 'parent'
+                                ? LanguageService.tr('auth.emailLabelParent', fallback: 'Registered Parent Email')
+                                : LanguageService.tr('auth.emailLabel', fallback: 'Email or Institutional ID'),
+                        style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 6),
                       TextField(
@@ -211,7 +224,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: const TextStyle(color: ConveeColors.text),
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'name@institution.edu',
+                          hintText: _portalMode == 'student'
+                              ? LanguageService.tr('auth.emailPlaceholderStudent', fallback: 'e.g. STU-2026-1001')
+                              : _portalMode == 'parent'
+                                  ? LanguageService.tr('auth.emailPlaceholderParent', fallback: 'e.g. parent@example.com')
+                                  : LanguageService.tr('auth.emailPlaceholder', fallback: 'name@institution.edu'),
                           hintStyle: const TextStyle(color: ConveeColors.textMuted, fontSize: 14),
                           prefixIcon: const Icon(Icons.mail_outline, color: ConveeColors.textSecondary, size: 20),
                           filled: true,
@@ -234,9 +251,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 16),
 
                       // Password Input
-                      const Text(
-                        'Password',
-                        style: TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+                      Text(
+                        LanguageService.tr('auth.passwordLabel', fallback: 'Password'),
+                        style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 6),
                       TextField(
@@ -244,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: !_showPassword,
                         style: const TextStyle(color: ConveeColors.text),
                         decoration: InputDecoration(
-                          hintText: '••••••••',
+                          hintText: LanguageService.tr('auth.passwordPlaceholder', fallback: '••••••••'),
                           hintStyle: const TextStyle(color: ConveeColors.textMuted, fontSize: 14),
                           prefixIcon: const Icon(Icons.lock_outline, color: ConveeColors.textSecondary, size: 20),
                           suffixIcon: IconButton(
@@ -298,9 +315,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 20,
                                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                 )
-                              : const Text(
-                                  'Sign In',
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              : Text(
+                                  LanguageService.tr('auth.signIn', fallback: 'Sign In'),
+                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                                 ),
                         ),
                       ),

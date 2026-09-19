@@ -1,10 +1,19 @@
-name: Build Flutter Mobile App (16 KB Page Aligned)
+name: Build Flutter Mobile App (16 KB Page Aligned & iOS IPA)
 
 on:
   workflow_dispatch:
     inputs:
+      platform:
+        description: 'Platform'
+        required: true
+        default: 'android'
+        type: choice
+        options:
+          - 'android'
+          - 'ios'
+          - 'all'
       target:
-        description: 'Build Target'
+        description: 'Build Target (Android APK vs Bundle)'
         required: true
         default: 'apk'
         type: choice
@@ -13,8 +22,9 @@ on:
           - 'appbundle'
 
 jobs:
-  build:
-    name: Build Flutter (${{ inputs.target }})
+  build-android:
+    name: Build Android Flutter (${{ inputs.target }})
+    if: inputs.platform == 'android' || inputs.platform == 'all'
     runs-on: ubuntu-latest
 
     steps:
@@ -125,4 +135,53 @@ jobs:
           path: |
             mobile-flutter/build/app/outputs/flutter-apk/**/*.apk
             mobile-flutter/build/app/outputs/bundle/**/*.aab
+          if-no-files-found: error
+
+  build-ios:
+    name: Build iOS IPA (Flutter)
+    if: inputs.platform == 'ios' || inputs.platform == 'all'
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter 3.24+
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Configure Flutter Native iOS Platform
+        working-directory: mobile-flutter
+        run: |
+          cp pubspec.yaml pubspec.yaml.bak
+          flutter create . --org com.ai.education --project-name ai_education --platforms ios
+          cp pubspec.yaml.bak pubspec.yaml
+          rm -f pubspec.yaml.bak
+          flutter pub get
+          cd ios && pod install
+
+      - name: Build iOS Application Package
+        working-directory: mobile-flutter
+        run: |
+          echo ">>> Building iOS release app without codesigning..."
+          flutter build ios --release --no-codesign
+
+      - name: Package IPA
+        working-directory: mobile-flutter
+        run: |
+          echo ">>> Packaging Runner.app into AIEducation-Flutter.ipa..."
+          mkdir -p Payload
+          cp -r build/ios/iphoneos/Runner.app Payload/
+          zip -r AIEducation-Flutter.ipa Payload
+          mkdir -p dist
+          mv AIEducation-Flutter.ipa dist/
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIEducation-Flutter-iOS-IPA
+          path: mobile-flutter/dist/AIEducation-Flutter.ipa
           if-no-files-found: error
