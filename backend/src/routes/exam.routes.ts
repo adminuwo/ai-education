@@ -19,8 +19,8 @@ function calculateGrade(percentage: number): string {
 // 1. List exams for an organization / department / teacher
 router.get('/', async (req, res, next) => {
   try {
-    const { orgId, departmentId, status, teamId } = req.query as {
-      orgId?: string;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
+    const { departmentId, status, teamId } = req.query as {
       departmentId?: string;
       status?: string;
       teamId?: string;
@@ -734,7 +734,7 @@ router.post('/:id/generate-report-cards', async (req, res, next) => {
 router.get('/student/:studentId/report-cards', async (req, res, next) => {
   try {
     const { studentId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
 
     const whereClause: any = { studentId };
     if (orgId) whereClause.orgId = orgId;

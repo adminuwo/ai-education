@@ -179,7 +179,7 @@ router.get('/:id/download', async (req, res, next) => {
 // 3. List Files with direct access URLs
 router.get('/', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string | undefined;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
     const channelId = req.query.channelId as string | undefined;
 
     if (orgId) {

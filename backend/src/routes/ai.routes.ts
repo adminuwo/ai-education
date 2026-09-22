@@ -1434,7 +1434,7 @@ function resolveStudentSkillTier(score: number, totalQuizzes: number = 1): { tie
 // 1. Get Daily Quiz Status & Skill Metrics
 router.get('/student/daily-quiz', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
     const userId = req.user!.id;
 
     // Find student membership

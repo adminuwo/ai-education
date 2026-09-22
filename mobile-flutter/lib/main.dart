@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'constants/theme.dart';
 import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
 import 'services/api_service.dart';
 import 'services/language_service.dart';
 
@@ -8,11 +9,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiService.init();
   await LanguageService.init();
-  runApp(const AiEducationApp());
+  final loggedIn = await ApiService.isLoggedIn();
+  runApp(AiEducationApp(initialLoggedIn: loggedIn));
 }
 
 class AiEducationApp extends StatelessWidget {
-  const AiEducationApp({super.key});
+  final bool initialLoggedIn;
+
+  const AiEducationApp({super.key, this.initialLoggedIn = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,7 @@ class AiEducationApp extends StatelessWidget {
           title: 'AI Education',
           debugShowCheckedModeBanner: false,
           theme: aiEducationDarkTheme,
-          home: const LoginScreen(),
+          home: initialLoggedIn ? const HomeScreen() : const LoginScreen(),
         );
       },
     );

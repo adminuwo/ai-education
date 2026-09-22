@@ -7,6 +7,12 @@ import 'login_screen.dart';
 import 'tasks_screen.dart';
 import 'homework_screen.dart';
 import 'legal_study_hub_screen.dart';
+import 'attendance_screen.dart';
+import 'chat_channels_screen.dart';
+import 'meetings_screen.dart';
+import 'parent_student_portal_screen.dart';
+import 'finance_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -102,6 +108,180 @@ class _HomeScreenState extends State<HomeScreen> {
     return LanguageService.tr('home.goodEvening', fallback: 'Good evening');
   }
 
+  Drawer _buildDrawer(BuildContext context, String userName, String role, String orgName) {
+    return Drawer(
+      backgroundColor: ConveeColors.card,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF062E22), ConveeColors.cardLight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border(bottom: BorderSide(color: ConveeColors.border)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: ConveeColors.primary.withOpacity(0.2),
+                      child: Text(
+                        userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                        style: const TextStyle(color: ConveeColors.primary, fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userName,
+                            style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 16),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            orgName,
+                            style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 12),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: ConveeColors.primary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: ConveeColors.primary.withOpacity(0.3)),
+                  ),
+                  child: Text(
+                    role.toUpperCase(),
+                    style: const TextStyle(color: ConveeColors.primary, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard_outlined, color: ConveeColors.primary, size: 22),
+            title: const Text('Dashboard', style: TextStyle(color: ConveeColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
+            onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.fact_check_outlined, color: ConveeColors.emerald, size: 22),
+            title: const Text('Class Attendance', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Rosters & Standing', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => AttendanceScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.menu_book_outlined, color: ConveeColors.amber, size: 22),
+            title: const Text('Homework & Rubrics', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Grading & Assignments', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => HomeworkScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat_bubble_outline, color: ConveeColors.purple, size: 22),
+            title: const Text('Messages & Channels', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Cohort Direct Messaging', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ChatChannelsScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.videocam_outlined, color: ConveeColors.destructive, size: 22),
+            title: const Text('Live Meetings', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Video Classes & Sessions', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => MeetingsScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.family_restroom_outlined, color: ConveeColors.textSecondary, size: 22),
+            title: const Text('Parent & Student Portal', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Academic Ward Directory', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.account_balance_wallet_outlined, color: ConveeColors.emerald, size: 22),
+            title: const Text('Finance & Payslips', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Fee Ledgers & Salaries', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.task_alt_outlined, color: ConveeColors.primary, size: 22),
+            title: const Text('Campus Tasks & Operations', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Delegated Duties', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.balance, color: ConveeColors.amber, size: 22),
+            title: const Text('Judicial & ADP Exam Hub', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Bare Acts & PYQs', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          const Divider(color: ConveeColors.border),
+          ListTile(
+            leading: const Icon(Icons.person_outline, color: ConveeColors.textSecondary, size: 22),
+            title: const Text('Account & Settings', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: const Text('Security, Password & 16KB Info', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileScreen(orgData: _org, userData: _user)));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: ConveeColors.destructive, size: 22),
+            title: const Text('Sign Out', style: TextStyle(color: ConveeColors.destructive, fontSize: 14, fontWeight: FontWeight.w600)),
+            onTap: () async {
+              Navigator.pop(context);
+              await ApiService.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName = _user?['fullName'] ?? _user?['email']?.toString().split('@').first ?? 'Faculty';
@@ -110,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: ConveeColors.background,
+      drawer: _buildDrawer(context, userName, role, orgName),
       appBar: AppBar(
         title: Row(
           children: [
@@ -148,14 +329,12 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.logout, color: ConveeColors.textSecondary),
-            onPressed: () async {
-              await ApiService.logout();
-              if (mounted) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              }
+            icon: const Icon(Icons.person_outline, color: ConveeColors.textSecondary),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ProfileScreen(orgData: _org, userData: _user)),
+              );
             },
           ),
         ],
@@ -169,49 +348,58 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User Greeting Banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: ConveeColors.card,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: ConveeColors.border),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${_getGreeting()},',
-                            style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 13),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            userName,
-                            style: const TextStyle(color: ConveeColors.text, fontSize: 20, fontWeight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+              // User Greeting Banner (Clickable -> ProfileScreen)
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ProfileScreen(orgData: _org, userData: _user)),
+                  );
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: ConveeColors.card,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: ConveeColors.border),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_getGreeting()},',
+                              style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 13),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              userName,
+                              style: const TextStyle(color: ConveeColors.text, fontSize: 20, fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: ConveeColors.primaryLight,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: ConveeColors.primary.withOpacity(0.4)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: ConveeColors.primaryLight,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: ConveeColors.primary.withOpacity(0.4)),
+                        ),
+                        child: Text(
+                          role.toString().toUpperCase(),
+                          style: const TextStyle(color: ConveeColors.primary, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      child: Text(
-                        role.toString().toUpperCase(),
-                        style: const TextStyle(color: ConveeColors.primary, fontSize: 11, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -361,6 +549,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? '${_attendanceStats!['percentage']}%'
                         : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : '--'),
                     color: ConveeColors.emerald,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AttendanceScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                   const SizedBox(width: 10),
                   _buildStatCard(
@@ -390,7 +584,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Quick Actions Grid
+              // Quick Actions Grid (All Modules Connected)
               Text(
                 LanguageService.tr('home.quickActions', fallback: 'Academic Modules'),
                 style: const TextStyle(color: ConveeColors.text, fontSize: 16, fontWeight: FontWeight.bold),
@@ -434,24 +628,60 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Roster & Records',
                     Icons.fact_check_outlined,
                     ConveeColors.emerald,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AttendanceScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                   _buildModuleItem(
                     LanguageService.tr('nav.messages', fallback: 'Class Channels'),
                     'Messaging & Chat',
                     Icons.chat_bubble_outline,
                     ConveeColors.purple,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ChatChannelsScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                   _buildModuleItem(
                     LanguageService.tr('home.liveMeetings', fallback: 'Live Meetings'),
                     'Classroom Video',
                     Icons.videocam_outlined,
                     ConveeColors.destructive,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => MeetingsScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                   _buildModuleItem(
                     LanguageService.tr('nav.portal', fallback: 'Campus Portal'),
                     'Parent & Student',
-                    Icons.badge_outlined,
+                    Icons.family_restroom_outlined,
                     ConveeColors.textSecondary,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)),
+                      );
+                    },
+                  ),
+                  _buildModuleItem(
+                    'Campus Finance',
+                    'Fees & Staff Payslips',
+                    Icons.account_balance_wallet_outlined,
+                    ConveeColors.emerald,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)),
+                      );
+                    },
                   ),
                   _buildModuleItem(
                     LanguageService.tr('home.judicialHub', fallback: 'Judicial Hub'),

@@ -5,6 +5,45 @@ import { authenticate } from '../middleware/auth';
 const router = Router();
 router.use(authenticate);
 
+// In-memory bounded TTL cache for heavy multi-query dashboards
+interface CacheEntry<T> {
+  data: T;
+  expiresAt: number;
+}
+const dashboardCache = new Map<string, CacheEntry<any>>();
+
+export function getDashboardCache<T>(key: string): T | null {
+  const entry = dashboardCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    dashboardCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+export function setDashboardCache<T>(key: string, data: T, ttlSeconds: number = 30): void {
+  if (dashboardCache.size > 500) {
+    const firstKey = dashboardCache.keys().next().value;
+    if (firstKey) dashboardCache.delete(firstKey);
+  }
+  dashboardCache.set(key, { data, expiresAt: Date.now() + ttlSeconds * 1000 });
+}
+
+export function clearDashboardCache(prefix?: string): void {
+  if (!prefix) {
+    dashboardCache.clear();
+    return;
+  }
+  for (const key of dashboardCache.keys()) {
+    if (key.startsWith(prefix)) dashboardCache.delete(key);
+  }
+}
+
+function extractOrgId(req: any): string | undefined {
+  return (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
+}
+
 // Common metrics helper
 async function orgMetrics(orgId: string, userId: string) {
   const [members, departments, teams, projects, channels, tasks, tasksByStatus, meetings, files] = await Promise.all([
@@ -33,7 +72,7 @@ async function orgMetrics(orgId: string, userId: string) {
 
 router.get('/employee', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const [myTasks, myMeetings, unread, channels, aiConvos, tasksByStatus] = await Promise.all([
       prisma.task.findMany({
@@ -77,7 +116,7 @@ router.get('/employee', async (req, res, next) => {
 
 router.get('/manager', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId } });
     if (!m || !['DIRECTOR', 'ADMIN', 'PRINCIPAL', 'DEAN', 'HOD', 'TEACHER'].includes(m.role)) return res.status(403).json({ error: 'Insufficient role' });
@@ -140,10 +179,19 @@ router.get('/manager', async (req, res, next) => {
 
 router.get('/org-admin', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId } });
     if (!m || !['OWNER', 'ADMIN', 'PRINCIPAL', 'DIRECTOR'].includes(m.role)) return res.status(403).json({ error: 'Insufficient role' });
+
+    const cacheKey = `org-admin:${orgId}`;
+    const bypassCache = req.query.refresh === 'true' || req.headers['cache-control'] === 'no-cache';
+    if (!bypassCache) {
+      const cached = getDashboardCache(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
+    }
 
     const now = new Date();
     const monthIndices = [5, 4, 3, 2, 1, 0];
@@ -161,13 +209,15 @@ router.get('/org-admin', async (req, res, next) => {
       prisma.channel.count({ where: { orgId, deletedAt: null } }),
     ]);
 
-    res.json({ metrics, growth, aiUsage, channelsActive });
+    const result = { metrics, growth, aiUsage, channelsActive };
+    setDashboardCache(cacheKey, result, 30);
+    res.json(result);
   } catch (e) { next(e); }
 });
 
 router.get('/director', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId } });
     if (!m || !['OWNER', 'ADMIN', 'PRINCIPAL', 'DIRECTOR'].includes(m.role)) return res.status(403).json({ error: 'Insufficient role' });
@@ -268,7 +318,7 @@ router.get('/super-admin', async (req, res, next) => {
 
 router.get('/analytics', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId } });
     if (!m || !['DIRECTOR', 'ADMIN', 'PRINCIPAL', 'DEAN', 'HOD', 'TEACHER'].includes(m.role)) return res.status(403).json({ error: 'Insufficient role' });

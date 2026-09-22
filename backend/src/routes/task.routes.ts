@@ -24,7 +24,7 @@ const CreateTaskSchema = z.object({
 
 router.get('/', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
     const m = await prisma.membership.findFirst({ where: { userId: req.user!.id, orgId, isActive: true } });
     if (!m && req.user?.systemRole !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Not a member' });

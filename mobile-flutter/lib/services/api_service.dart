@@ -25,7 +25,7 @@ class ApiService {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
     if (orgId != null) {
-      dio.options.headers['X-Organization-Id'] = orgId;
+      dio.options.headers['x-org-id'] = orgId;
     }
 
     dio.interceptors.add(
@@ -38,7 +38,7 @@ class ApiService {
             options.headers['Authorization'] = 'Bearer $t';
           }
           if (o != null) {
-            options.headers['X-Organization-Id'] = o;
+            options.headers['x-org-id'] = o;
           }
           return handler.next(options);
         },
@@ -95,10 +95,15 @@ class ApiService {
     }
     if (data['org'] != null && data['org']['id'] != null) {
       await prefs.setString('currentOrgId', data['org']['id'].toString());
-      dio.options.headers['X-Organization-Id'] = data['org']['id'].toString();
+      dio.options.headers['x-org-id'] = data['org']['id'].toString();
     }
 
     return data;
+  }
+
+  static Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accessToken') != null;
   }
 
   static Future<Map<String, dynamic>?> getMe() async {
@@ -394,12 +399,171 @@ class ApiService {
     }
   }
 
+  // ==================== ATTENDANCE ====================
+  static Future<List<dynamic>> getDepartments(String orgId) async {
+    try {
+      final res = await dio.get('/orgs/$orgId/departments');
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> batchLogAttendance({
+    required String orgId,
+    required String teamId,
+    String? date,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    try {
+      final res = await dio.post('/attendance/batch', data: {
+        'orgId': orgId,
+        'teamId': teamId,
+        if (date != null) 'date': date,
+        'records': records,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getTeamAttendance({
+    required String teamId,
+    String? date,
+  }) async {
+    try {
+      final res = await dio.get('/attendance/team/$teamId', queryParameters: {
+        if (date != null) 'date': date,
+      });
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ==================== CHANNELS & MESSAGES ====================
+  static Future<List<dynamic>> getChannels(String orgId) async {
+    try {
+      final res = await dio.get('/channels', queryParameters: {'orgId': orgId});
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> getMessages(String channelId) async {
+    try {
+      final res = await dio.get('/channels/$channelId/messages');
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> sendMessage(String channelId, String content) async {
+    try {
+      final res = await dio.post('/channels/$channelId/messages', data: {'content': content});
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createDM(String orgId, String targetUserId) async {
+    try {
+      final res = await dio.post('/channels/dm', data: {'orgId': orgId, 'targetUserId': targetUserId});
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ==================== LIVE MEETINGS ====================
+  static Future<List<dynamic>> getMeetings(String orgId) async {
+    try {
+      final res = await dio.get('/meetings', queryParameters: {'orgId': orgId});
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createMeeting(Map<String, dynamic> data) async {
+    try {
+      final res = await dio.post('/meetings', data: data);
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ==================== PARENT & STUDENT PORTAL ====================
+  static Future<List<dynamic>> getMyChildren() async {
+    try {
+      final res = await dio.get('/parent/my-children');
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getChildReport(String studentId, {String? orgId}) async {
+    try {
+      final res = await dio.get(
+        '/parent/child/$studentId/report',
+        queryParameters: orgId != null ? {'orgId': orgId} : null,
+      );
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ==================== FINANCE & PAYSLIPS ====================
+  static Future<Map<String, dynamic>?> getFeeStatus(String orgId) async {
+    try {
+      final res = await dio.get('/finance/fee-status', queryParameters: {'orgId': orgId});
+      return res.data as Map<String, dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<List<dynamic>> getMyPayslips() async {
+    try {
+      final res = await dio.get('/finance/my-payslips');
+      if (res.data is List) return res.data as List<dynamic>;
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  // ==================== USER & PROFILE ====================
+  static Future<bool> changePassword(String currentPassword, String newPassword) async {
+    try {
+      await dio.post('/auth/change-password', data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
     await prefs.remove('refreshToken');
     await prefs.remove('currentOrgId');
     dio.options.headers.remove('Authorization');
-    dio.options.headers.remove('X-Organization-Id');
+    dio.options.headers.remove('x-org-id');
   }
 }

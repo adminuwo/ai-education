@@ -22,7 +22,7 @@ Detailed architecture specifications, functional modules, REST API reference, da
 | **Interactive API Documentation** | Swagger OpenAPI 3.0 | `http://localhost:8001/api/docs` | `8001` |
 | **LLM Bridge AI Microservice** | Python 3.11, FastAPI, Google Vertex AI | `http://localhost:8002/health` | `8002` |
 | **Frontend Web App** | React 19, Tailwind CSS, Lucide Icons | `http://localhost:3000` | `3000` |
-| **Mobile App (Android / iOS)** | React Native (Expo SDK 52) / Flutter | `http://localhost:8081` | `8081` |
+| **Mobile App (Android / iOS)** | Flutter 3.x (16 KB Page Aligned / Android 15 & iOS 13+) | `mobile-flutter/` | N/A |
 | **Live Cloud Run Deployment** | GCP Asia-South1 Managed Containers | [Production Web Portal](https://convee-education-977864306871.asia-south1.run.app) | `443` |
 
 ---
@@ -42,8 +42,7 @@ AI - Education/
 ├── frontend/                    # React 19 + Tailwind CSS desktop & responsive web dashboard
 │   └── src/pages/               # 28 role-tailored pages (Admin, Accountant, Teacher, Student, Parent, etc.)
 ├── llm_bridge/                  # Python 3.11 FastAPI proxy to Google Cloud Vertex AI & OpenAI
-├── mobile/                      # React Native (Expo SDK 52) cross-platform mobile application
-├── mobile-flutter/              # Alternative Flutter client implementation
+├── mobile-flutter/              # Production Cross-Platform Mobile App (Flutter 3.x, 16 KB Page Aligned, Android 15 & iOS 13+)
 ├── Dockerfile                   # Unified full-stack single-container deployment
 ├── docker-compose.yml           # Local multi-container development environment
 ├── deploy-cloudrun.ps1          # 1-Click GCP Cloud Run automated deployment script (PowerShell)

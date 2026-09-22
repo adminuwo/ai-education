@@ -9,7 +9,7 @@ router.use(authenticate);
 router.get('/', async (req, res, next) => {
   try {
     const q = (req.query.q as string) || '';
-    const orgId = req.query.orgId as string | undefined;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
     if (q.length < 2) return res.json({ users: [], messages: [], tasks: [], projects: [], channels: [], files: [] });
     const like = { contains: q, mode: 'insensitive' as const };
     const orgFilter = orgId ? { orgId } : {};

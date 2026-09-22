@@ -11,7 +11,7 @@ router.use(authenticate);
 router.get('/', async (req, res, next) => {
   try {
     const q = (req.query.q as string) || '';
-    const orgId = req.query.orgId as string | undefined;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
     const callerId = req.user!.id;
     const isSuperAdmin = req.user!.systemRole === 'SUPER_ADMIN' || (req.user as any).systemRole === 'SUPERADMIN';
 

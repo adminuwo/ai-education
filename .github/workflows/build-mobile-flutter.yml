@@ -67,13 +67,12 @@ jobs:
           ndk-version: r27b
           link-to-sdk: true
 
-      - name: Configure Flutter Native Platform (v2 Embedding)
+      - name: Configure Flutter Native Dependencies
         working-directory: mobile-flutter
         run: |
-          cp pubspec.yaml pubspec.yaml.bak
-          flutter create . --org com.ai.education --project-name ai_education --platforms android
-          cp pubspec.yaml.bak pubspec.yaml
-          rm -f pubspec.yaml.bak
+          if [ ! -d "android" ]; then
+            flutter create . --org com.convee.education --project-name ai_education --platforms android
+          fi
           flutter pub get
           echo ">>> Generating AI Education branded launcher icons..."
           dart run flutter_launcher_icons
@@ -156,10 +155,9 @@ jobs:
       - name: Configure Flutter Native iOS Platform
         working-directory: mobile-flutter
         run: |
-          cp pubspec.yaml pubspec.yaml.bak
-          flutter create . --org com.ai.education --project-name ai_education --platforms ios
-          cp pubspec.yaml.bak pubspec.yaml
-          rm -f pubspec.yaml.bak
+          if [ ! -d "ios" ]; then
+            flutter create . --org com.convee.education --project-name ai_education --platforms ios
+          fi
           flutter pub get
           cd ios && pod install
 

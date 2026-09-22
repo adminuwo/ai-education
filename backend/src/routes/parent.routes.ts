@@ -36,7 +36,7 @@ router.get('/my-children', async (req, res, next) => {
 router.get('/child/:studentId/report', async (req, res, next) => {
   try {
     const { studentId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
 
     const studentMem = await prisma.membership.findFirst({
       where: { userId: studentId, ...(orgId ? { orgId } : {}) },

@@ -5,6 +5,10 @@ import { authenticate } from '../middleware/auth';
 const router = Router();
 router.use(authenticate);
 
+function extractOrgId(req: any): string | undefined {
+  return (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
+}
+
 // 1. Batch log attendance for a class section (Class Teacher / Admin action)
 router.post('/batch', async (req, res, next) => {
   try {
@@ -130,7 +134,7 @@ router.get('/team/:teamId', async (req, res, next) => {
 // 3. Compute overall monthly attendance statistics and flag low-attendance (<75%) alerts
 router.get('/stats', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
 
     const membership = await prisma.membership.findFirst({
@@ -245,7 +249,7 @@ router.get('/stats', async (req, res, next) => {
 router.get('/department/:departmentId/analytics', async (req, res, next) => {
   try {
     const { departmentId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId || !departmentId) return res.status(400).json({ error: 'orgId and departmentId required' });
 
     const userMembership = await prisma.membership.findFirst({
@@ -419,7 +423,7 @@ router.get('/department/:departmentId/analytics', async (req, res, next) => {
 router.get('/team/:teamId/analytics', async (req, res, next) => {
   try {
     const { teamId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId || !teamId) return res.status(400).json({ error: 'orgId and teamId required' });
 
     const userMembership = await prisma.membership.findFirst({

@@ -87,7 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ? LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty & Staff Sign In')
         : _portalMode == 'student'
             ? LanguageService.tr('auth.portalModeStudent', fallback: 'Student Portal Sign In')
-            : LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In');
+            : _portalMode == 'parent'
+                ? LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In')
+                : LanguageService.tr('auth.portalModeAccountant', fallback: 'Accountant & Finance Sign In');
 
     return Scaffold(
       backgroundColor: ConveeColors.background,
@@ -120,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: ConveeColors.cardSecondary,
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      child: const Icon(Icons.school, color: ConveeColors.primary, size: 36),
+                      child: const Icon(Icons.school, size: 36, color: ConveeColors.primary),
                     ),
                   ),
                 ),
@@ -128,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   LanguageService.tr('auth.brandTitle', fallback: 'AI Education'),
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: ConveeColors.text,
                     letterSpacing: -0.5,
@@ -138,13 +140,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   LanguageService.tr('auth.brandSubtitle', fallback: 'Digital Campus & Academic Portal'),
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: ConveeColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
-                // Portal Switcher Tabs
+                // Portal Switcher Tabs (4 Portals: Faculty, Student, Parent, Accountant)
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -157,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _buildPortalTab('faculty', LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty'), Icons.verified_user_outlined, ConveeColors.primary),
                       _buildPortalTab('student', LanguageService.tr('auth.portalModeStudent', fallback: 'Student'), Icons.school_outlined, ConveeColors.emerald),
                       _buildPortalTab('parent', LanguageService.tr('auth.portalModeParent', fallback: 'Parent'), Icons.family_restroom_outlined, ConveeColors.purple),
+                      _buildPortalTab('accountant', LanguageService.tr('auth.portalModeAccountant', fallback: 'Finance'), Icons.account_balance_wallet_outlined, const Color(0xFFF59E0B)),
                     ],
                   ),
                 ),
@@ -215,7 +218,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? LanguageService.tr('auth.emailLabelStudent', fallback: 'Student ID or Email')
                             : _portalMode == 'parent'
                                 ? LanguageService.tr('auth.emailLabelParent', fallback: 'Registered Parent Email')
-                                : LanguageService.tr('auth.emailLabel', fallback: 'Email or Institutional ID'),
+                                : _portalMode == 'accountant'
+                                    ? LanguageService.tr('auth.emailLabelAccountant', fallback: 'Accountant Email')
+                                    : LanguageService.tr('auth.emailLabel', fallback: 'Email or Institutional ID'),
                         style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 6),
@@ -228,7 +233,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? LanguageService.tr('auth.emailPlaceholderStudent', fallback: 'e.g. STU-2026-1001')
                               : _portalMode == 'parent'
                                   ? LanguageService.tr('auth.emailPlaceholderParent', fallback: 'e.g. parent@example.com')
-                                  : LanguageService.tr('auth.emailPlaceholder', fallback: 'name@institution.edu'),
+                                  : _portalMode == 'accountant'
+                                      ? LanguageService.tr('auth.emailPlaceholderAccountant', fallback: 'e.g. accountant@demo.edu')
+                                      : LanguageService.tr('auth.emailPlaceholder', fallback: 'name@institution.edu'),
                           hintStyle: const TextStyle(color: ConveeColors.textMuted, fontSize: 14),
                           prefixIcon: const Icon(Icons.mail_outline, color: ConveeColors.textSecondary, size: 20),
                           filled: true,

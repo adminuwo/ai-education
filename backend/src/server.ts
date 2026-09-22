@@ -38,7 +38,7 @@ import promotionRoutes from './routes/promotion.routes';
 import examRoutes from './routes/exam.routes';
 import bugRoutes from './routes/bug.routes';
 import legalRoutes from './routes/legal.routes';
-import { startAiLegalMonthlyQuotaCron } from './services/aiLegalSync.service';
+import { startAiLegalMonthlyQuotaCron, warmUpAiLegalMongoConnection } from './services/aiLegalSync.service';
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -206,6 +206,7 @@ if (process.env.NODE_ENV !== 'test') {
     logger.info(`🚀 Backend listening on 0.0.0.0:${env.PORT}`);
     logger.info(`📖 API Docs at /api/docs`);
     startAiLegalMonthlyQuotaCron();
+    warmUpAiLegalMongoConnection().catch(() => {});
   });
 }
 

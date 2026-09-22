@@ -37,6 +37,22 @@ async function getMongoClient(): Promise<MongoClient | null> {
   return mongoClient;
 }
 
+/**
+ * Asynchronously warms up the MongoDB Atlas connection during server startup
+ * to eliminate the ~2.8s DNS SRV/TLS handshake cold start on the first user request.
+ */
+export async function warmUpAiLegalMongoConnection(): Promise<void> {
+  if (!env.AI_LEGAL_MONGODB_URI) return;
+  try {
+    const client = await getMongoClient();
+    if (client) {
+      logger.info('[AI-Legal Sync] Pre-warmed MongoDB Atlas connection pool.');
+    }
+  } catch (err: any) {
+    logger.warn({ err: err?.message }, '[AI-Legal Sync] MongoDB pre-warmup skipped or delayed.');
+  }
+}
+
 export interface StudentSyncPayload {
   studentName: string;
   studentEmail: string;

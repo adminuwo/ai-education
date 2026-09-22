@@ -13,6 +13,8 @@ dependencies:
   dio: ^5.7.0
   shared_preferences: ^2.3.3
   google_fonts: ^6.2.1
+  intl: ^0.19.0
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
@@ -23,7 +25,7 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true
-  ios: false
+  ios: true
   image_path: "assets/app_icon.png"
   min_sdk_android: 21
   adaptive_icon_background: "#090B0E"
@@ -33,7 +35,7 @@ flutter_native_splash:
   color: "#090B0E"
   image: "assets/logo.png"
   android: true
-  ios: false
+  ios: true
   android_12:
     color: "#090B0E"
     image: "assets/logo.png"

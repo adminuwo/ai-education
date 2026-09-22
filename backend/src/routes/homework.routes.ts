@@ -5,12 +5,16 @@ import { authenticate } from '../middleware/auth';
 const router = Router();
 router.use(authenticate);
 
+function extractOrgId(req: any): string | undefined {
+  return (req.query.orgId as string) || (req.headers['x-org-id'] as string) || (req.headers['org-id'] as string) || req.currentOrgId;
+}
+
 // ==================== OVERSIGHT ROUTES ====================
 
 // 1. Department Overview for Principal / Director / Admin (Lists departments with teacher counts and total homework given)
 router.get('/oversight/departments-overview', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
 
     const isSuperAdmin = req.user?.systemRole === 'SUPER_ADMIN';
@@ -93,7 +97,7 @@ router.get('/oversight/departments-overview', async (req, res, next) => {
 // 2. Department Teachers List for HOD / Dean / Principal (Lists teachers in department with individual homework metrics)
 router.get('/oversight/department-teachers', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     const departmentId = req.query.departmentId as string | undefined;
     if (!orgId) return res.status(400).json({ error: 'orgId required' });
 
@@ -181,7 +185,7 @@ router.get('/oversight/department-teachers', async (req, res, next) => {
 // 3. Specific Teacher Homework Assignments (Drill-down view of all homework given by a teacher)
 router.get('/oversight/teacher-assignments', async (req, res, next) => {
   try {
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     const teacherId = req.query.teacherId as string;
     if (!orgId || !teacherId) return res.status(400).json({ error: 'orgId and teacherId required' });
 
@@ -423,7 +427,7 @@ router.post('/:taskId/submissions/:submissionId/grade', async (req, res, next) =
 router.get('/department/:departmentId/analytics', async (req, res, next) => {
   try {
     const { departmentId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId || !departmentId) return res.status(400).json({ error: 'orgId and departmentId required' });
 
     const userMembership = await prisma.membership.findFirst({
@@ -624,7 +628,7 @@ router.get('/department/:departmentId/analytics', async (req, res, next) => {
 router.get('/team/:teamId/analytics', async (req, res, next) => {
   try {
     const { teamId } = req.params;
-    const orgId = req.query.orgId as string;
+    const orgId = extractOrgId(req);
     if (!orgId || !teamId) return res.status(400).json({ error: 'orgId and teamId required' });
 
     const userMembership = await prisma.membership.findFirst({
