@@ -1,6 +1,15 @@
-name: Deploy to Google Cloud Run (Production)
+name: Deploy Web Application to Google Cloud Run (Production)
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'llm_bridge/**'
+      - 'cloudbuild.yaml'
+      - '.github/workflows/deploy-cloudrun.yml'
   workflow_dispatch:
     inputs:
       service:
@@ -35,7 +44,7 @@ jobs:
         id: check-auth
         run: |
           if [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
-            echo "::warning ::GCP_SA_KEY secret not found in GitHub Repository Secrets. Automatic deployment requires GCP_SA_KEY."
+            echo "::warning ::GCP_SA_KEY secret not found in GitHub Repository Secrets. Automatic Cloud Run deployment requires GCP_SA_KEY."
             echo "has_secret=false" >> $GITHUB_OUTPUT
           else
             echo "has_secret=true" >> $GITHUB_OUTPUT
@@ -58,8 +67,25 @@ jobs:
         run: |
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
+      - name: Deploy LLM Bridge to Cloud Run
+        if: steps.check-auth.outputs.has_secret == 'true' && (github.event_name == 'push' || inputs.service == 'all' || inputs.service == 'llm_bridge')
+        run: |
+          echo ">>> Deploying ai-education-llm-bridge to Cloud Run..."
+          gcloud builds submit ./llm_bridge --tag asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-llm-bridge:latest
+          gcloud run deploy ai-education-llm-bridge \
+            --image asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-llm-bridge:latest \
+            --region asia-south1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --cpu 1 \
+            --memory 1Gi \
+            --min-instances 0 \
+            --max-instances 10 \
+            --set-env-vars "VERTEX_PROJECT_ID=${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }},VERTEX_LOCATION=asia-south1,VERTEX_GEMINI_MODEL=gemini-2.5-flash" \
+            --quiet
+
       - name: Deploy Backend to Cloud Run
-        if: steps.check-auth.outputs.has_secret == 'true' && (inputs.service == 'all' || inputs.service == 'backend')
+        if: steps.check-auth.outputs.has_secret == 'true' && (github.event_name == 'push' || inputs.service == 'all' || inputs.service == 'backend')
         run: |
           echo ">>> Deploying ai-education-backend to Cloud Run..."
           gcloud builds submit ./backend --tag asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-backend:latest
@@ -67,10 +93,15 @@ jobs:
             --image asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-backend:latest \
             --region asia-south1 \
             --platform managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --cpu 1 \
+            --memory 1Gi \
+            --min-instances 0 \
+            --max-instances 10 \
+            --quiet
 
       - name: Deploy Frontend to Cloud Run
-        if: steps.check-auth.outputs.has_secret == 'true' && (inputs.service == 'all' || inputs.service == 'frontend')
+        if: steps.check-auth.outputs.has_secret == 'true' && (github.event_name == 'push' || inputs.service == 'all' || inputs.service == 'frontend')
         run: |
           echo ">>> Deploying ai-education-frontend to Cloud Run..."
           gcloud builds submit ./frontend --tag asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-frontend:latest
@@ -78,15 +109,22 @@ jobs:
             --image asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-frontend:latest \
             --region asia-south1 \
             --platform managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --cpu 1 \
+            --memory 512Mi \
+            --min-instances 0 \
+            --max-instances 10 \
+            --quiet
 
       - name: Deployment Instructions Notice
         if: steps.check-auth.outputs.has_secret != 'true'
         run: |
           echo "================================================================================="
+          echo "Notice: Automatic push deployment requires 'GCP_SA_KEY' in GitHub Repository Secrets."
           echo "To enable automated Cloud Run deployments directly from GitHub Actions:"
           echo "1. Create a Service Account in GCP with 'Cloud Run Admin' & 'Artifact Registry Admin' roles."
-          echo "2. Download its JSON key."
+          echo "2. Generate and download its JSON key."
           echo "3. Add it to GitHub Repo -> Settings -> Secrets and variables -> Actions -> GCP_SA_KEY."
-          echo "Alternatively, you can run automated deployments locally using: ./deploy-cloudrun.ps1"
+          echo ""
+          echo "Alternatively, you can run deployments locally anytime with: .\deploy-cloudrun.ps1"
           echo "================================================================================="

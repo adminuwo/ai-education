@@ -1,12 +1,6 @@
 name: Build Flutter Mobile App (16 KB Page Aligned & iOS IPA)
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'mobile-flutter/**'
-      - '.github/workflows/build-mobile-flutter.yml'
   workflow_dispatch:
     inputs:
       platform:
@@ -30,8 +24,8 @@ on:
 
 jobs:
   build-android:
-    name: Build Android Flutter (${{ inputs.profile || 'preview' }})
-    if: github.event_name == 'push' || inputs.platform == 'android' || inputs.platform == 'all'
+    name: Build Android Flutter (${{ inputs.profile }})
+    if: inputs.platform == 'android' || inputs.platform == 'all'
     runs-on: ubuntu-latest
 
     steps:
@@ -109,7 +103,7 @@ jobs:
       - name: Build Android Package
         working-directory: mobile-flutter
         run: |
-          PROFILE="${{ inputs.profile || 'preview' }}"
+          PROFILE="${{ inputs.profile }}"
           echo ">>> Building Android package with profile: $PROFILE (16 KB Aligned)..."
           if [ "$PROFILE" = "production" ]; then
             echo ">>> Building Production Release AAB for Google Play Store..."
@@ -141,15 +135,15 @@ jobs:
       - name: Upload Flutter Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AIEducation-Flutter-Android-${{ inputs.profile || 'preview' }}
+          name: AIEducation-Flutter-Android-${{ inputs.profile }}
           path: |
             mobile-flutter/build/app/outputs/flutter-apk/**/*.apk
             mobile-flutter/build/app/outputs/bundle/**/*.aab
           if-no-files-found: error
 
   build-ios:
-    name: Build iOS IPA Flutter (${{ inputs.profile || 'preview' }})
-    if: github.event_name == 'push' || inputs.platform == 'ios' || inputs.platform == 'all'
+    name: Build iOS IPA Flutter (${{ inputs.profile }})
+    if: inputs.platform == 'ios' || inputs.platform == 'all'
     runs-on: macos-14
 
     steps:
@@ -175,7 +169,7 @@ jobs:
       - name: Build iOS Application Package
         working-directory: mobile-flutter
         run: |
-          PROFILE="${{ inputs.profile || 'preview' }}"
+          PROFILE="${{ inputs.profile }}"
           echo ">>> Building iOS application with profile: $PROFILE..."
           if [ "$PROFILE" = "development" ]; then
             flutter build ios --debug --no-codesign
@@ -186,7 +180,7 @@ jobs:
       - name: Package IPA
         working-directory: mobile-flutter
         run: |
-          PROFILE="${{ inputs.profile || 'preview' }}"
+          PROFILE="${{ inputs.profile }}"
           echo ">>> Packaging Runner.app into AIEducation-Flutter-${PROFILE}.ipa..."
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
@@ -197,6 +191,6 @@ jobs:
       - name: Upload iOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIEducation-Flutter-iOS-${{ inputs.profile || 'preview' }}
-          path: mobile-flutter/dist/AIEducation-Flutter-${{ inputs.profile || 'preview' }}.ipa
+          name: AIEducation-Flutter-iOS-${{ inputs.profile }}
+          path: mobile-flutter/dist/AIEducation-Flutter-${{ inputs.profile }}.ipa
           if-no-files-found: error
