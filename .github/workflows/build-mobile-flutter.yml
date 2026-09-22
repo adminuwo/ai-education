@@ -163,10 +163,10 @@ jobs:
           echo ">>> Generating Flutter iOS native platform scaffolding and Runner.xcodeproj..."
           flutter create . --org com.convee.education --project-name ai_education --platforms ios
           flutter pub get
-          echo ">>> Generating AI Education branded launcher icons..."
-          dart run flutter_launcher_icons
-          echo ">>> Generating AI Education dark splash screen..."
-          dart run flutter_native_splash:create
+          echo ">>> Generating AI Education branded iOS launcher icons..."
+          dart run flutter_launcher_icons -f flutter_launcher_icons_ios.yaml
+          echo ">>> Generating AI Education dark iOS splash screen..."
+          dart run flutter_native_splash:create --path=flutter_native_splash_ios.yaml
           cd ios && pod install --repo-update
 
       - name: Build iOS Application Package

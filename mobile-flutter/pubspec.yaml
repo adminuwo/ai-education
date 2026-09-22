@@ -25,8 +25,7 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: true
-  ios: true
-  remove_alpha_ios: true
+  ios: false
   image_path: "assets/app_icon.png"
   min_sdk_android: 21
   adaptive_icon_background: "#090B0E"
@@ -36,7 +35,7 @@ flutter_native_splash:
   color: "#090B0E"
   image: "assets/logo.png"
   android: true
-  ios: true
+  ios: false
   android_12:
     color: "#090B0E"
     image: "assets/logo.png"
