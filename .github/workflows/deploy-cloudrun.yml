@@ -1,0 +1,92 @@
+name: Deploy to Google Cloud Run (Production)
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'backend'
+          - 'frontend'
+          - 'llm_bridge'
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - 'production'
+          - 'staging'
+
+jobs:
+  deploy-cloudrun:
+    name: Deploy to Google Cloud Run (${{ inputs.service || 'all' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check GCP Authentication Secret
+        id: check-auth
+        run: |
+          if [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
+            echo "::warning ::GCP_SA_KEY secret not found in GitHub Repository Secrets. Automatic deployment requires GCP_SA_KEY."
+            echo "has_secret=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_secret=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Authenticate to Google Cloud
+        if: steps.check-auth.outputs.has_secret == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        if: steps.check-auth.outputs.has_secret == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}
+
+      - name: Configure Docker for Artifact Registry
+        if: steps.check-auth.outputs.has_secret == 'true'
+        run: |
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+
+      - name: Deploy Backend to Cloud Run
+        if: steps.check-auth.outputs.has_secret == 'true' && (inputs.service == 'all' || inputs.service == 'backend')
+        run: |
+          echo ">>> Deploying ai-education-backend to Cloud Run..."
+          gcloud builds submit ./backend --tag asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-backend:latest
+          gcloud run deploy ai-education-backend \
+            --image asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-backend:latest \
+            --region asia-south1 \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Deploy Frontend to Cloud Run
+        if: steps.check-auth.outputs.has_secret == 'true' && (inputs.service == 'all' || inputs.service == 'frontend')
+        run: |
+          echo ">>> Deploying ai-education-frontend to Cloud Run..."
+          gcloud builds submit ./frontend --tag asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-frontend:latest
+          gcloud run deploy ai-education-frontend \
+            --image asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID || 'convee-education-977864306871' }}/ai-education-docker-repo/ai-education-frontend:latest \
+            --region asia-south1 \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Deployment Instructions Notice
+        if: steps.check-auth.outputs.has_secret != 'true'
+        run: |
+          echo "================================================================================="
+          echo "To enable automated Cloud Run deployments directly from GitHub Actions:"
+          echo "1. Create a Service Account in GCP with 'Cloud Run Admin' & 'Artifact Registry Admin' roles."
+          echo "2. Download its JSON key."
+          echo "3. Add it to GitHub Repo -> Settings -> Secrets and variables -> Actions -> GCP_SA_KEY."
+          echo "Alternatively, you can run automated deployments locally using: ./deploy-cloudrun.ps1"
+          echo "================================================================================="
