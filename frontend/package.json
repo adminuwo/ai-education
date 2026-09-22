@@ -74,7 +74,8 @@
     "start": "craco start",
     "dev": "craco start",
     "build": "craco build",
-    "test": "craco test --watchAll=false --passWithNoTests"
+    "test": "craco test --watchAll=false --passWithNoTests",
+    "lint": "eslint src"
   },
   "browserslist": {
     "production": [

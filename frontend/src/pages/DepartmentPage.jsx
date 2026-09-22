@@ -259,7 +259,7 @@ export default function DepartmentPage() {
       });
       toast.success('Project created');
       setNewProject({ open: false, name: '', description: '', teamIds: [] });
-      load();
+      refreshOrgData();
     } catch (e) {
       toast.error(e?.response?.data?.error || 'Failed to create project');
     }
@@ -269,7 +269,7 @@ export default function DepartmentPage() {
     try {
       await orgApi.updateMemberRole(currentOrg.id, membershipId, newRole);
       toast.success('Role updated');
-      load();
+      refreshOrgData();
     } catch (e) {
       toast.error(e?.response?.data?.error || 'Failed to update role');
     }
@@ -281,7 +281,7 @@ export default function DepartmentPage() {
       await orgApi.removeMember(currentOrg.id, removeDialog.member.id);
       toast.success('Member removed');
       setRemoveDialog({ open: false, member: null });
-      load();
+      refreshOrgData();
     } catch (e) {
       toast.error(e?.response?.data?.error || 'Failed to remove member');
     }
