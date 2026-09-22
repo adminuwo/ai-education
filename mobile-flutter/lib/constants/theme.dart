@@ -4,6 +4,7 @@ class ConveeColors {
   static const Color background = Color(0xFF090B0E);
   static const Color card = Color(0xFF0E1117);
   static const Color cardSecondary = Color(0xFF151921);
+  static const Color cardLight = Color(0xFF151921);
   static const Color border = Color(0xFF1B2230);
   static const Color text = Color(0xFFF9FAFB);
   static const Color textSecondary = Color(0xFF9CA3AF);
