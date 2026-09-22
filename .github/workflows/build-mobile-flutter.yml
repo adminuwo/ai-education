@@ -12,18 +12,19 @@ on:
           - 'android'
           - 'ios'
           - 'all'
-      target:
-        description: 'Android Target (Ignored for iOS: apk = Installable APK, appbundle = Play Store AAB)'
+      profile:
+        description: 'Build Profile (preview = Installable APK/IPA, production = Play Store AAB/Release IPA, development = Debug)'
         required: true
-        default: 'apk'
+        default: 'preview'
         type: choice
         options:
-          - 'apk'
-          - 'appbundle'
+          - 'preview'
+          - 'production'
+          - 'development'
 
 jobs:
   build-android:
-    name: Build Android Flutter (${{ inputs.target }})
+    name: Build Android Flutter (${{ inputs.profile }})
     if: inputs.platform == 'android' || inputs.platform == 'all'
     runs-on: ubuntu-latest
 
@@ -102,12 +103,16 @@ jobs:
       - name: Build Android Package
         working-directory: mobile-flutter
         run: |
-          TARGET="${{ inputs.target }}"
-          if [ "$TARGET" = "appbundle" ]; then
-            echo ">>> Building Production Release AAB (Flutter 16 KB Aligned)..."
+          PROFILE="${{ inputs.profile }}"
+          echo ">>> Building Android package with profile: $PROFILE (16 KB Aligned)..."
+          if [ "$PROFILE" = "production" ]; then
+            echo ">>> Building Production Release AAB for Google Play Store..."
             flutter build appbundle --release -v
+          elif [ "$PROFILE" = "development" ]; then
+            echo ">>> Building Development Debug APK..."
+            flutter build apk --debug -v
           else
-            echo ">>> Building Standalone Release APK (Flutter 16 KB Aligned)..."
+            echo ">>> Building Standalone Preview Release APK for Testing..."
             flutter build apk --release -v
           fi
 
@@ -130,14 +135,14 @@ jobs:
       - name: Upload Flutter Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AIEducation-Flutter-${{ inputs.target }}
+          name: AIEducation-Flutter-Android-${{ inputs.profile }}
           path: |
             mobile-flutter/build/app/outputs/flutter-apk/**/*.apk
             mobile-flutter/build/app/outputs/bundle/**/*.aab
           if-no-files-found: error
 
   build-ios:
-    name: Build iOS IPA (Flutter)
+    name: Build iOS IPA Flutter (${{ inputs.profile }})
     if: inputs.platform == 'ios' || inputs.platform == 'all'
     runs-on: macos-14
 
@@ -164,22 +169,28 @@ jobs:
       - name: Build iOS Application Package
         working-directory: mobile-flutter
         run: |
-          echo ">>> Building iOS release app without codesigning..."
-          flutter build ios --release --no-codesign
+          PROFILE="${{ inputs.profile }}"
+          echo ">>> Building iOS application with profile: $PROFILE..."
+          if [ "$PROFILE" = "development" ]; then
+            flutter build ios --debug --no-codesign
+          else
+            flutter build ios --release --no-codesign
+          fi
 
       - name: Package IPA
         working-directory: mobile-flutter
         run: |
-          echo ">>> Packaging Runner.app into AIEducation-Flutter.ipa..."
+          PROFILE="${{ inputs.profile }}"
+          echo ">>> Packaging Runner.app into AIEducation-Flutter-${PROFILE}.ipa..."
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r AIEducation-Flutter.ipa Payload
+          zip -r AIEducation-Flutter-${PROFILE}.ipa Payload
           mkdir -p dist
-          mv AIEducation-Flutter.ipa dist/
+          mv AIEducation-Flutter-${PROFILE}.ipa dist/
 
       - name: Upload iOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIEducation-Flutter-iOS-IPA
-          path: mobile-flutter/dist/AIEducation-Flutter.ipa
+          name: AIEducation-Flutter-iOS-${{ inputs.profile }}
+          path: mobile-flutter/dist/AIEducation-Flutter-${{ inputs.profile }}.ipa
           if-no-files-found: error
