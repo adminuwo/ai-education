@@ -98,8 +98,12 @@ function RequireRole({ allowedRoles = [], fallback, children }) {
   if (loading) return <PageLoader />;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
 
-  // 0. Super Admin Global Pass
+  // 0. Super Admin Global Pass (redirect personal/domain-specific portals to super-admin)
   if (user?.systemRole === 'SUPER_ADMIN') {
+    const domainSpecificPortals = ['/app/parent', '/app/accountant', '/app/my-payslips'];
+    if (domainSpecificPortals.includes(location.pathname)) {
+      return <Navigate to="/app/super-admin" replace />;
+    }
     return children;
   }
 
@@ -322,7 +326,7 @@ export default function App() {
                 <Route
                   path="super-admin"
                   element={
-                    <RequireRole allowedRoles={['SUPERADMIN', 'DIRECTOR', 'OWNER']}>
+                    <RequireRole allowedRoles={['SUPERADMIN']}>
                       <SuperAdminPage />
                     </RequireRole>
                   }

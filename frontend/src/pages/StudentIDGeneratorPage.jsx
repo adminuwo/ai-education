@@ -11,9 +11,9 @@ const GeneratorComponent = StudentIDGenerator || NamedStudentIDGenerator;
 
 export function StudentIDGeneratorPage() {
   const { t } = useLanguage();
-  const { currentOrg } = useAuth();
+  const { currentOrg, user } = useAuth();
   const [departments, setDepartments] = useState([]);
-  const isAdmin = ['ADMIN', 'DIRECTOR', 'OWNER', 'PRINCIPAL', 'DEAN'].includes(currentOrg?.role);
+  const isAdmin = ['ADMIN', 'DIRECTOR', 'OWNER', 'PRINCIPAL'].includes(currentOrg?.role) || user?.systemRole === 'SUPER_ADMIN';
 
   const load = useCallback(async () => {
     if (!currentOrg?.id || !isAdmin) return;

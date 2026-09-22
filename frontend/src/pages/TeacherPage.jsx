@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { orgApi, attendanceApi, financeApi } from '@/lib/api';
+import { orgApi, attendanceApi } from '@/lib/api';
 import { useOrgData } from '@/contexts/OrgDataContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,19 +40,6 @@ export default function TeacherPage() {
   const [attendanceMap, setAttendanceMap] = useState({});
   const [attendanceStats, setAttendanceStats] = useState(null);
   const [savingAttendance, setSavingAttendance] = useState(false);
-  const [salaryData, setSalaryData] = useState([]);
-
-  useEffect(() => {
-    async function loadSalary() {
-      try {
-        const data = await financeApi.getFacultySalary();
-        setSalaryData(data?.payrolls || []);
-      } catch (err) {
-        console.error('Error fetching faculty salary:', err);
-      }
-    }
-    loadSalary();
-  }, []);
 
   // Fetch low attendance stats for alerts
   const loadAttendanceStats = useCallback(async () => {

@@ -40,8 +40,18 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await login({ email, password, portalMode });
-      const from = location.state?.from?.pathname || '/app/home';
+      const res = await login({ email, password, portalMode });
+      const roleUpper = (res?.user?.systemRole || '').toUpperCase();
+      const isAccountantUser = portalMode === 'accountant' || roleUpper === 'ACCOUNTANT' || email.toLowerCase().includes('accountant');
+      const isParentUser = portalMode === 'parent' || email.toLowerCase().includes('parent');
+      const isSuperAdminUser = roleUpper === 'SUPER_ADMIN';
+
+      let defaultLanding = '/app/home';
+      if (isAccountantUser) defaultLanding = '/app/accountant';
+      else if (isParentUser) defaultLanding = '/app/parent';
+      else if (isSuperAdminUser) defaultLanding = '/app/super-admin';
+
+      const from = location.state?.from?.pathname || defaultLanding;
       navigate(from, { replace: true });
     } catch (err) {
       const code = err?.response?.data?.code;
@@ -62,8 +72,18 @@ export default function LoginPage({ initialPortal = 'faculty' }) {
     setPassword(demoPw);
     setLoading(true);
     try {
-      await login({ email: demoEmail, password: demoPw, portalMode: targetPortal });
-      const from = location.state?.from?.pathname || '/app/home';
+      const res = await login({ email: demoEmail, password: demoPw, portalMode: targetPortal });
+      const roleUpper = (res?.user?.systemRole || '').toUpperCase();
+      const isAccountantUser = targetPortal === 'accountant' || roleUpper === 'ACCOUNTANT' || demoEmail.toLowerCase().includes('accountant');
+      const isParentUser = targetPortal === 'parent' || demoEmail.toLowerCase().includes('parent');
+      const isSuperAdminUser = roleUpper === 'SUPER_ADMIN';
+
+      let defaultLanding = '/app/home';
+      if (isAccountantUser) defaultLanding = '/app/accountant';
+      else if (isParentUser) defaultLanding = '/app/parent';
+      else if (isSuperAdminUser) defaultLanding = '/app/super-admin';
+
+      const from = location.state?.from?.pathname || defaultLanding;
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.error || 'Login failed');

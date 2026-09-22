@@ -209,20 +209,24 @@ export function Sidebar({ onNavigate }) {
     return false;
   };
 
+  const isSuperAdmin = user?.systemRole === 'SUPER_ADMIN';
   const isStudent = currentOrg?.role === 'STUDENT';
   const isParent = currentOrg?.role === 'PARENT';
   const isAlumni = currentOrg?.role === 'ALUMNI' || user?.email?.toLowerCase().includes('alumni') || currentOrg?.title?.toLowerCase().includes('alumni');
   const isAccountant = currentOrg?.role === 'ACCOUNTANT' || user?.systemRole === 'ACCOUNTANT' || user?.email?.toLowerCase().includes('accountant');
-  const isLeadershipOrDept = ['DIRECTOR', 'OWNER', 'PRINCIPAL', 'ADMIN', 'DEAN', 'HOD'].includes(currentOrg?.role);
+  const isLeadershipOrDept = ['DIRECTOR', 'OWNER', 'PRINCIPAL', 'ADMIN', 'DEAN', 'HOD'].includes(currentOrg?.role) || isSuperAdmin;
   const navItems = PRIMARY_NAV.filter((it) => {
+    if (isSuperAdmin) {
+      return ['home', 'analytics', 'ai', 'meetings', 'files'].includes(it.key);
+    }
     if (isAccountant) {
-      return ['accountant', 'ai'].includes(it.key);
+      return ['accountant', 'fee-status', 'my-payslips', 'ai'].includes(it.key);
     }
     if (isParent) {
       return ['parent', 'homework', 'ai', 'meetings'].includes(it.key);
     }
     if (isAlumni) {
-      return ['ai', 'meetings', 'files'].includes(it.key);
+      return ['home', 'ai'].includes(it.key);
     }
     if (it.key === 'parent') return false;
     if (it.key === 'accountant') return false;
@@ -415,12 +419,12 @@ export function Sidebar({ onNavigate }) {
                 />
               ) : (
                 <div className="flex h-8 w-8 items-center justify-center rounded-md gradient-brand text-white font-semibold text-sm shrink-0">
-                  {initials(currentOrg?.name)}
+                  {initials(currentOrg?.name || (isSuperAdmin ? 'Global Platform' : 'Workspace'))}
                 </div>
               )}
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-sm font-semibold truncate font-display">{currentOrg?.name}</div>
-                <div className="text-xs text-muted-foreground truncate">{t(`roles.${(currentOrg?.role || '').toLowerCase()}`, currentOrg?.role)}</div>
+                <div className="text-sm font-semibold truncate font-display">{currentOrg?.name || (isSuperAdmin ? 'Global SaaS Platform' : 'Workspace')}</div>
+                <div className="text-xs text-muted-foreground truncate">{currentOrg ? t(`roles.${(currentOrg?.role || '').toLowerCase()}`, currentOrg?.role) : (isSuperAdmin ? 'Super Admin' : '')}</div>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
             </button>
@@ -481,7 +485,20 @@ export function Sidebar({ onNavigate }) {
                 </button>
               );
             })}
-            {!isAccountant && isFullAccessRole ? (
+            {!isAccountant && ['DIRECTOR', 'OWNER', 'PRINCIPAL', 'ADMIN', 'DEAN', 'HOD', 'TEACHER'].includes(currentOrg?.role) && (
+              <button
+                onClick={() => go('/app/department')}
+                className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                  active('/app/department')
+                    ? 'bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active))] font-medium'
+                    : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+                data-testid="nav-department"
+              >
+                <Building2 className="h-4 w-4" /> {t('nav.department', 'Department')}
+              </button>
+            )}
+            {!isAccountant && isFullAccessRole && (
               <>
                 <button
                   onClick={() => go('/app/admin')}
@@ -506,19 +523,7 @@ export function Sidebar({ onNavigate }) {
                   <Key className="h-4 w-4 text-amber-400" /> {t('nav.studentIdGenerator', 'Student ID Generator')}
                 </button>
               </>
-            ) : (!isAccountant && ['DEAN', 'HOD'].includes(currentOrg?.role)) ? (
-              <button
-                onClick={() => go('/app/department')}
-                className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-                  active('/app/department') || active('/app/admin')
-                    ? 'bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active))] font-medium'
-                    : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-                data-testid="nav-department"
-              >
-                <Building2 className="h-4 w-4" /> {t('nav.department', 'Department')}
-              </button>
-            ) : null}
+            )}
             {!isAccountant && ['TEACHER', 'HOD', 'DEAN', 'PRINCIPAL', 'ADMIN', 'DIRECTOR', 'OWNER'].includes(currentOrg?.role) && currentOrg?.role !== 'STUDENT' && (
               <button
                 onClick={() => go('/app/classroom')}
@@ -546,18 +551,31 @@ export function Sidebar({ onNavigate }) {
               </button>
             )}
             {user?.systemRole === 'SUPER_ADMIN' && (
-              <button
-                onClick={() => go('/app/super-admin')}
-                className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
-                  active('/app/super-admin')
-                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold'
-                    : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-                data-testid="nav-super-admin"
-              >
-                <ShieldAlert className="h-4 w-4 text-amber-500" />
-                <span>{t('topbar.commandHub', 'Command Hub')}</span>
-              </button>
+              <>
+                <button
+                  onClick={() => go('/app/super-admin')}
+                  className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                    active('/app/super-admin')
+                      ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold'
+                      : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                  data-testid="nav-super-admin"
+                >
+                  <ShieldAlert className="h-4 w-4 text-amber-500" />
+                  <span>{t('topbar.commandHub', 'Command Hub')}</span>
+                </button>
+                <button
+                  onClick={() => go('/app/admin')}
+                  className={`w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors ${
+                    active('/app/admin')
+                      ? 'bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active))] font-medium'
+                      : 'text-[hsl(var(--sidebar-foreground))] hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                  data-testid="nav-admin"
+                >
+                  <Shield className="h-4 w-4" /> {t('nav.admin', 'Admin')}
+                </button>
+              </>
             )}
           </div>          {/* Classes / School Wings group */}
           {!isAccountant && !isParent && (

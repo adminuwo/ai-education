@@ -449,7 +449,7 @@ router.get('/department/:departmentId/analytics', async (req, res, next) => {
 
     // RBAC: Leadership or HOD/Dean of this department
     const roleUpper = (userMembership.role || '').toUpperCase();
-    const isLeadership = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'OWNER'].includes(roleUpper) || req.user?.systemRole === 'SUPER_ADMIN';
+    const isLeadership = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'OWNER', 'DEAN'].includes(roleUpper) || req.user?.systemRole === 'SUPER_ADMIN';
     const isDeptHead = department.headId === req.user!.id;
     const isDeptHODorDean = userMembership.departmentId === departmentId && ['HOD', 'DEAN'].includes(roleUpper);
 
@@ -644,7 +644,7 @@ router.get('/team/:teamId/analytics', async (req, res, next) => {
 
     // RBAC
     const roleUpper = (userMembership.role || '').toUpperCase();
-    const isLeadership = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'OWNER'].includes(roleUpper) || req.user?.systemRole === 'SUPER_ADMIN';
+    const isLeadership = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'OWNER', 'DEAN'].includes(roleUpper) || req.user?.systemRole === 'SUPER_ADMIN';
     const isHOD = (userMembership.departmentId === team.departmentId && ['HOD', 'DEAN'].includes(roleUpper)) || team.department?.headId === req.user!.id;
     const isClassTeacher = team.managerId === req.user!.id;
     const isAssignedTeacher = userMembership.teamId === teamId;
