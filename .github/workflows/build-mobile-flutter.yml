@@ -71,7 +71,7 @@ jobs:
       - name: Configure Flutter Native Dependencies
         working-directory: mobile-flutter
         run: |
-          if [ ! -d "android" ]; then
+          if [ ! -d "android/app/src" ]; then
             flutter create . --org com.convee.education --project-name ai_education --platforms android
           fi
           flutter pub get
@@ -160,11 +160,14 @@ jobs:
       - name: Configure Flutter Native iOS Platform
         working-directory: mobile-flutter
         run: |
-          if [ ! -d "ios" ]; then
-            flutter create . --org com.convee.education --project-name ai_education --platforms ios
-          fi
+          echo ">>> Generating Flutter iOS native platform scaffolding and Runner.xcodeproj..."
+          flutter create . --org com.convee.education --project-name ai_education --platforms ios
           flutter pub get
-          cd ios && pod install
+          echo ">>> Generating AI Education branded launcher icons..."
+          dart run flutter_launcher_icons
+          echo ">>> Generating AI Education dark splash screen..."
+          dart run flutter_native_splash:create
+          cd ios && pod install --repo-update
 
       - name: Build iOS Application Package
         working-directory: mobile-flutter

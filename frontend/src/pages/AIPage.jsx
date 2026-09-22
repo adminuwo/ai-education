@@ -181,7 +181,7 @@ export default function AIPage() {
         setActiveSessionKey(list[0].sessionKey);
         loadMessagesForSession(list[0].sessionKey);
       } else {
-        const defaultKey = `ai-session-${user?.id}-${Date.now()}`;
+        const defaultKey = `user-${user?.id || 'anon'}-${Date.now()}`;
         setActiveSessionKey(defaultKey);
       }
     })();
@@ -195,26 +195,27 @@ export default function AIPage() {
   const handleNewChat = async () => {
     try {
       const newConvo = await aiApi.createConversation('New Conversation');
-      const key = newConvo?.sessionKey || `ai-session-${user?.id}-${Date.now()}`;
+      const key = newConvo?.sessionKey || `user-${user?.id || 'anon'}-${Date.now()}`;
       setActiveSessionKey(key);
       setMessages([]);
       await loadConversations();
     } catch (e) {
-      const fallbackKey = `ai-session-${user?.id}-${Date.now()}`;
+      const fallbackKey = `user-${user?.id || 'anon'}-${Date.now()}`;
       setActiveSessionKey(fallbackKey);
       setMessages([]);
     }
   };
 
   const [deletingKeys, setDeletingKeys] = useState(new Set());
+  const [clearingAll, setClearingAll] = useState(false);
 
   const handleDeleteSession = async (key, e) => {
-    e.stopPropagation();
-    if (deletingKeys.has(key)) return;
+    if (e) e.stopPropagation();
+    if (!key || deletingKeys.has(key)) return;
 
     setDeletingKeys((prev) => new Set(prev).add(key));
 
-    const remaining = conversations.filter((c) => c.sessionKey !== key);
+    const remaining = conversations.filter((c) => c.sessionKey !== key && c.id !== key);
     setConversations(remaining);
 
     if (activeSessionKey === key) {
@@ -228,8 +229,9 @@ export default function AIPage() {
 
     try {
       await aiApi.deleteConversation(key);
-      toast.success('Chat deleted');
+      toast.success(t('aiPage.chatDeleted', 'Chat deleted'));
     } catch (err) {
+      console.error('Failed to delete chat session:', err);
       loadConversations();
     } finally {
       setDeletingKeys((prev) => {
@@ -237,6 +239,27 @@ export default function AIPage() {
         next.delete(key);
         return next;
       });
+    }
+  };
+
+  const handleClearAllSessions = async () => {
+    if (!conversations.length || clearingAll) return;
+    const confirmed = window.confirm(t('aiPage.clearAllConfirm', `Are you sure you want to delete all ${conversations.length} chat sessions? This cannot be undone.`));
+    if (!confirmed) return;
+
+    setClearingAll(true);
+    setConversations([]);
+    setMessages([]);
+    try {
+      await aiApi.clearAllConversations();
+      toast.success(t('aiPage.allChatsDeleted', 'All chat sessions deleted'));
+      handleNewChat();
+    } catch (err) {
+      console.error('Failed to clear conversations:', err);
+      toast.error('Failed to delete all conversations');
+      loadConversations();
+    } finally {
+      setClearingAll(false);
     }
   };
 
@@ -706,9 +729,24 @@ export default function AIPage() {
           )}
 
           {studentTab === 'chat' && (
-            <Button onClick={handleNewChat} size="sm" className="gap-1.5 font-medium shadow-xs">
-              <Plus className="h-4 w-4" /> {t('aiPage.newChat', 'New Chat')}
-            </Button>
+            <div className="flex items-center gap-2">
+              {activeSessionKey && messages.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => handleDeleteSession(activeSessionKey, e)}
+                  disabled={deletingKeys.has(activeSessionKey)}
+                  className="gap-1.5 text-xs text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-destructive/10 h-8 font-medium shadow-xs"
+                  title={t('aiPage.deleteChat', 'Delete Chat')}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  <span className="hidden sm:inline">{t('aiPage.deleteChat', 'Delete Chat')}</span>
+                </Button>
+              )}
+              <Button onClick={handleNewChat} size="sm" className="gap-1.5 font-medium shadow-xs h-8">
+                <Plus className="h-4 w-4" /> {t('aiPage.newChat', 'New Chat')}
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -733,9 +771,24 @@ export default function AIPage() {
         {/* Left History Sidebar */}
         {sidebarOpen && (
           <div className="w-64 border-r border-border bg-card flex flex-col shrink-0">
-            <div className="p-3 border-b border-border flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('aiPage.chatHistory', 'Chat History')}</span>
-              <span className="text-[10px] text-muted-foreground font-normal">{t('aiPage.sessionCount', '{{count}} sessions', { count: conversations.length })}</span>
+            <div className="p-3 border-b border-border flex items-center justify-between gap-2">
+              <div>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('aiPage.chatHistory', 'Chat History')}</span>
+                <span className="block text-[10px] text-muted-foreground font-normal">{t('aiPage.sessionCount', '{{count}} sessions', { count: conversations.length })}</span>
+              </div>
+              {conversations.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearAllSessions}
+                  disabled={clearingAll}
+                  className="h-6 px-2 text-[10px] font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                  title={t('aiPage.clearAll', 'Delete all chat sessions')}
+                >
+                  <Trash2 className="h-3 w-3 mr-1 text-destructive/80" />
+                  {t('aiPage.clearAll', 'Clear All')}
+                </Button>
+              )}
             </div>
 
             <ScrollArea className="flex-1 p-2">
@@ -760,10 +813,13 @@ export default function AIPage() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteSession(c.sessionKey, e)}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all shrink-0"
+                        disabled={deletingKeys.has(c.sessionKey)}
+                        className={`p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/15 transition-all shrink-0 ${
+                          isSelected ? 'opacity-80 hover:opacity-100 text-foreground' : 'opacity-0 group-hover:opacity-100 focus:opacity-100'
+                        }`}
                         title={t('aiPage.deleteSession', 'Delete chat session')}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   );

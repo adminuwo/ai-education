@@ -137,8 +137,8 @@ router.post('/chat', async (req, res, next) => {
 
     // Ensure sessionKey is always securely scoped to current authenticated user
     const key = sessionKey
-      ? (sessionKey.startsWith(`user-${req.user!.id}-`) ? sessionKey : `user-${req.user!.id}-${sessionKey.replace(/^user-[^-]+-/, '')}`)
-      : `user-${req.user!.id}-default`;
+      ? (sessionKey.includes(req.user!.id) ? sessionKey : `user-${req.user!.id}-${sessionKey.replace(/^user-[^-]+-/, '')}`)
+      : `user-${req.user!.id}-${Date.now()}`;
 
     let convo = await prisma.aIConversation.findFirst({ where: { sessionKey: key, userId: req.user!.id } }).catch(() => null);
     if (!convo) {
@@ -1000,8 +1000,10 @@ YOUR MISSION & CAPABILITIES:
 // Create new chat session
 router.post('/conversations', async (req, res, next) => {
   try {
-    const { title } = req.body;
-    const sessionKey = `ai-${req.user!.id}-${Date.now()}`;
+    const { title, sessionKey: customKey } = req.body;
+    const sessionKey = customKey && customKey.includes(req.user!.id)
+      ? customKey
+      : `user-${req.user!.id}-${Date.now()}`;
     const convo = await prisma.aIConversation.create({
       data: {
         userId: req.user!.id,
@@ -1018,7 +1020,7 @@ router.get('/conversations', async (req, res, next) => {
     const convos = await prisma.aIConversation.findMany({
       where: { userId: req.user!.id },
       orderBy: { updatedAt: 'desc' },
-      take: 50,
+      take: 100,
     });
     res.json(convos);
   } catch (e) { next(e); }
@@ -1026,8 +1028,17 @@ router.get('/conversations', async (req, res, next) => {
 
 router.get('/conversations/:sessionKey/messages', async (req, res, next) => {
   try {
+    const rawKey = req.params.sessionKey;
+    const decodedKey = decodeURIComponent(rawKey);
     const convo = await prisma.aIConversation.findFirst({
-      where: { sessionKey: req.params.sessionKey, userId: req.user!.id },
+      where: {
+        userId: req.user!.id,
+        OR: [
+          { sessionKey: rawKey },
+          { sessionKey: decodedKey },
+          { id: rawKey },
+        ],
+      },
       include: { messages: { orderBy: { createdAt: 'asc' } } },
     });
     if (!convo) return res.json({ messages: [] });
@@ -1035,11 +1046,30 @@ router.get('/conversations/:sessionKey/messages', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// Delete chat session
-router.delete('/conversations/:sessionKey', async (req, res, next) => {
+// Delete all chat sessions for user
+router.delete('/conversations', async (req, res, next) => {
   try {
     await prisma.aIConversation.deleteMany({
-      where: { sessionKey: req.params.sessionKey, userId: req.user!.id },
+      where: { userId: req.user!.id },
+    });
+    res.json({ success: true, message: 'All chat sessions deleted successfully' });
+  } catch (e) { next(e); }
+});
+
+// Delete chat session by sessionKey or conversation ID
+router.delete('/conversations/:sessionKey', async (req, res, next) => {
+  try {
+    const rawKey = req.params.sessionKey;
+    const decodedKey = decodeURIComponent(rawKey);
+    await prisma.aIConversation.deleteMany({
+      where: {
+        userId: req.user!.id,
+        OR: [
+          { sessionKey: rawKey },
+          { sessionKey: decodedKey },
+          { id: rawKey },
+        ],
+      },
     });
     res.json({ success: true });
   } catch (e) { next(e); }

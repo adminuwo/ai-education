@@ -171,8 +171,9 @@ export const aiApi = {
   sprintPlan: (orgId, goal, durationDays) => api.post('/ai/sprint-plan', { orgId, goal, durationDays }).then((r) => r.data),
   conversations: () => api.get('/ai/conversations').then((r) => r.data),
   createConversation: (title) => api.post('/ai/conversations', { title }).then((r) => r.data),
-  deleteConversation: (sessionKey) => api.delete(`/ai/conversations/${sessionKey}`).then((r) => r.data),
-  history: (sessionKey) => api.get(`/ai/conversations/${sessionKey}/messages`).then((r) => r.data),
+  deleteConversation: (sessionKey) => api.delete(`/ai/conversations/${encodeURIComponent(sessionKey)}`).then((r) => r.data),
+  clearAllConversations: () => api.delete('/ai/conversations').then((r) => r.data),
+  history: (sessionKey) => api.get(`/ai/conversations/${encodeURIComponent(sessionKey)}/messages`).then((r) => r.data),
 };
 
 export const userApi = {
