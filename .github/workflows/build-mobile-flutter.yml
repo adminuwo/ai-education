@@ -173,7 +173,7 @@ jobs:
           echo ">>> Generating AI Education dark iOS splash screen..."
           dart run flutter_native_splash:create --path=flutter_native_splash_ios.yaml
           echo ">>> Generating Flutter iOS configurations and plugin registrants..."
-          flutter build ios --config-only
+          flutter build ios --config-only --no-codesign
           echo ">>> Installing CocoaPods dependencies..."
           cd ios && pod install --repo-update
 
