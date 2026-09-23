@@ -546,7 +546,10 @@ class ApiService {
   }
 
   // ==================== USER & PROFILE ====================
-  static Future<bool> changePassword(String currentPassword, String newPassword) async {
+  static Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
     try {
       await dio.post('/auth/change-password', data: {
         'currentPassword': currentPassword,

@@ -181,7 +181,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
             )
           : null,
       body: _loading
-          ? const Center(child: ActivityIndicator(color: ConveeColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
           : RefreshIndicator(
               onRefresh: _loadMeetings,
               color: ConveeColors.primary,

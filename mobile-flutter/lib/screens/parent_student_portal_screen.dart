@@ -64,7 +64,7 @@ class _ParentStudentPortalScreenState extends State<ParentStudentPortalScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: ActivityIndicator(color: ConveeColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

@@ -163,7 +163,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: ActivityIndicator(color: ConveeColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
           : RefreshIndicator(
               onRefresh: _loadData,
               color: ConveeColors.primary,

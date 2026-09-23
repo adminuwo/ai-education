@@ -112,7 +112,7 @@ class _ChatChannelsScreenState extends State<ChatChannelsScreen> {
 
   Widget _buildChannelsListView() {
     if (_loading) {
-      return const Center(child: ActivityIndicator(color: ConveeColors.primary));
+      return const Center(child: CircularProgressIndicator(color: ConveeColors.primary));
     }
     if (_channels.isEmpty) {
       return Center(
@@ -193,7 +193,7 @@ class _ChatChannelsScreenState extends State<ChatChannelsScreen> {
       children: [
         Expanded(
           child: _loadingMessages
-              ? const Center(child: ActivityIndicator(color: ConveeColors.primary))
+              ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
               : _messages.isEmpty
                   ? const Center(child: Text('No messages here yet. Say hello!', style: TextStyle(color: ConveeColors.textMuted)))
                   : ListView.builder(

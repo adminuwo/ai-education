@@ -67,7 +67,7 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
         ),
       ),
       body: _loading
-          ? const Center(child: ActivityIndicator(color: ConveeColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
           : TabBarView(
               controller: _tabController,
               children: [
