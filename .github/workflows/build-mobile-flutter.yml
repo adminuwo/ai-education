@@ -77,12 +77,9 @@ jobs:
           flutter pub get
           echo ">>> Ensuring Android colors.xml exists for adaptive icons..."
           mkdir -p android/app/src/main/res/values
-          cat << 'EOF' > android/app/src/main/res/values/colors.xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="icon_background">#090B0E</color>
-</resources>
-EOF
+          if [ ! -f "android/app/src/main/res/values/colors.xml" ]; then
+            printf '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="icon_background">#090B0E</color>\n</resources>\n' > android/app/src/main/res/values/colors.xml
+          fi
           echo ">>> Generating AI Education branded launcher icons..."
           dart run flutter_launcher_icons
           echo ">>> Generating AI Education dark splash screen..."
