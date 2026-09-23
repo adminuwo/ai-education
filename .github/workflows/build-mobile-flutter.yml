@@ -75,6 +75,14 @@ jobs:
             flutter create . --org com.convee.education --project-name ai_education --platforms android
           fi
           flutter pub get
+          echo ">>> Ensuring Android colors.xml exists for adaptive icons..."
+          mkdir -p android/app/src/main/res/values
+          cat << 'EOF' > android/app/src/main/res/values/colors.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="icon_background">#090B0E</color>
+</resources>
+EOF
           echo ">>> Generating AI Education branded launcher icons..."
           dart run flutter_launcher_icons
           echo ">>> Generating AI Education dark splash screen..."
@@ -167,6 +175,9 @@ jobs:
           dart run flutter_launcher_icons -f flutter_launcher_icons_ios.yaml
           echo ">>> Generating AI Education dark iOS splash screen..."
           dart run flutter_native_splash:create --path=flutter_native_splash_ios.yaml
+          echo ">>> Generating Flutter iOS configurations and plugin registrants..."
+          flutter build ios --config-only
+          echo ">>> Installing CocoaPods dependencies..."
           cd ios && pod install --repo-update
 
       - name: Build iOS Application Package
