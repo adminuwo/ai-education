@@ -27,12 +27,14 @@ class AiEducationApp extends StatelessWidget {
           key: ValueKey(locale),
           title: 'AI Education',
           debugShowCheckedModeBanner: false,
+          theme: aiEducationDarkTheme,
           home: initialLoggedIn
               ? HomeScreen(
                   userData: ApiService.currentUser,
                   orgData: ApiService.currentOrg,
                 )
               : const LoginScreen(),
+        );
       },
     );
   }
