@@ -26,10 +26,16 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    _role = (widget.orgData?['role'] ??
+            widget.userData?['role'] ??
+            widget.userData?['systemRole'] ??
+            ApiService.currentRole)
+        .toString()
+        .toUpperCase();
     _isStudentOrParent = _role == 'STUDENT' || _role == 'PARENT';
     _canViewCampusFees = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'ACCOUNTANT', 'OWNER'].contains(_role) ||
-        (widget.userData?['systemRole']?.toString().toUpperCase() == 'SUPER_ADMIN');
+        (widget.userData?['systemRole']?.toString().toUpperCase() == 'SUPER_ADMIN') ||
+        (ApiService.currentUser?['systemRole']?.toString().toUpperCase() == 'SUPER_ADMIN');
 
     final tabLength = _canViewCampusFees ? 2 : 1;
     _tabController = TabController(length: tabLength, vsync: this);
@@ -44,10 +50,10 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
 
   Future<void> _loadFinanceData() async {
     setState(() => _loading = true);
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
 
     final feeRes = _canViewCampusFees ? await ApiService.getFeeStatus(orgId) : null;
-    final payslipRes = await ApiService.getMyPayslips();
+    final payslipRes = await ApiService.getMyPayslips(orgId: orgId);
 
     if (mounted) {
       setState(() {
@@ -201,13 +207,14 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                 itemBuilder: (ctx, i) {
                   final s = students[i];
                   final name = s['studentName'] ?? s['name'] ?? 'Student';
-                  final roll = s['rollNo'] ?? 'STU-100$i';
-                  final amount = s['amount'] ?? 50000;
+                  final roll = s['studentRollNo'] ?? s['rollNo'] ?? 'STU-100$i';
+                  final header = s['feeHeader']?.toString() ?? 'Tuition Fee';
+                  final amount = s['totalAmount'] ?? s['amount'] ?? 50000;
                   final status = (s['status'] ?? 'PAID').toString().toUpperCase();
 
                   Color statusColor = ConveeColors.emerald;
                   if (status == 'OVERDUE') statusColor = ConveeColors.destructive;
-                  if (status == 'PARTIAL') statusColor = ConveeColors.amber;
+                  if (status == 'PARTIAL' || status == 'PENDING') statusColor = ConveeColors.amber;
 
                   return Container(
                     padding: const EdgeInsets.all(14),
@@ -230,7 +237,7 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                             children: [
                               Text(name, style: const TextStyle(fontWeight: FontWeight.bold, color: ConveeColors.text, fontSize: 14)),
                               const SizedBox(height: 2),
-                              Text('Roll: $roll', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+                              Text('$header • Roll: $roll', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
                             ],
                           ),
                         ),
@@ -281,11 +288,15 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (ctx, i) {
                 final p = _payslips[i];
-                final month = p['month'] ?? 'March 2026';
-                final basic = p['basicPay'] ?? 45000;
-                final hra = p['hra'] ?? 15000;
-                final deductions = p['deductions'] ?? 6000;
-                final net = p['netPayable'] ?? (basic + hra - deductions);
+                final month = p['month'] != null ? '${p['month']} ${p['year'] ?? ''}'.trim() : 'Current Term';
+                final basic = (p['basicPay'] as num?)?.toDouble() ?? 45000.0;
+                final hra = (p['allowances'] as num?)?.toDouble() ?? (p['hra'] as num?)?.toDouble() ?? 15000.0;
+                final deductions = (p['deductions'] as num?)?.toDouble() ?? 6000.0;
+                final net = (p['netSalary'] as num?)?.toDouble() ?? (p['netPayable'] as num?)?.toDouble() ?? (basic + hra - deductions);
+                final status = (p['status'] ?? 'DISBURSED').toString().toUpperCase();
+
+                Color statusColor = status == 'DISBURSED' ? ConveeColors.emerald : ConveeColors.amber;
+                Color statusBg = status == 'DISBURSED' ? ConveeColors.emeraldLight : ConveeColors.amber.withOpacity(0.15);
 
                 return Container(
                   padding: const EdgeInsets.all(16),
@@ -303,8 +314,8 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                           Text(month, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: ConveeColors.text)),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: ConveeColors.emeraldLight, borderRadius: BorderRadius.circular(6)),
-                            child: const Text('DISBURSED', style: TextStyle(color: ConveeColors.emerald, fontSize: 10, fontWeight: FontWeight.bold)),
+                            decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(6)),
+                            child: Text(status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -312,8 +323,8 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Basic Pay + HRA', style: TextStyle(color: ConveeColors.textSecondary, fontSize: 13)),
-                          Text('₹${basic + hra}', style: const TextStyle(color: ConveeColors.text, fontSize: 13)),
+                          const Text('Basic Pay + Allowances', style: TextStyle(color: ConveeColors.textSecondary, fontSize: 13)),
+                          Text('₹${(basic + hra).toStringAsFixed(0)}', style: const TextStyle(color: ConveeColors.text, fontSize: 13)),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -321,7 +332,7 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Statutory Deductions (PF/Tax)', style: TextStyle(color: ConveeColors.textSecondary, fontSize: 13)),
-                          Text('-₹$deductions', style: const TextStyle(color: ConveeColors.destructive, fontSize: 13)),
+                          Text('-₹${deductions.toStringAsFixed(0)}', style: const TextStyle(color: ConveeColors.destructive, fontSize: 13)),
                         ],
                       ),
                       const Divider(color: ConveeColors.border, height: 20),
@@ -329,7 +340,7 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Net Salary Disbursed', style: TextStyle(fontWeight: FontWeight.bold, color: ConveeColors.text, fontSize: 14)),
-                          Text('₹$net', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: ConveeColors.emerald)),
+                          Text('₹${net.toStringAsFixed(0)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: ConveeColors.emerald)),
                         ],
                       ),
                     ],

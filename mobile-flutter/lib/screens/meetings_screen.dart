@@ -40,7 +40,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
 
   Future<void> _loadMeetings() async {
     setState(() => _loading = true);
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
     final list = await ApiService.getMeetings(orgId);
     if (mounted) {
       setState(() {
@@ -123,7 +123,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                   onPressed: _creating ? null : () async {
                     if (_titleController.text.trim().isEmpty) return;
                     setModalState(() => _creating = true);
-                    final orgId = widget.orgData?['id']?.toString() ?? '';
+                    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
                     final roomName = 'convee-${DateTime.now().millisecondsSinceEpoch}';
                     final jitsiUrl = 'https://meet.jit.si/$roomName';
 
@@ -158,7 +158,12 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final role = (widget.orgData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    final role = (widget.orgData?['role'] ??
+            widget.userData?['role'] ??
+            widget.userData?['systemRole'] ??
+            ApiService.currentRole)
+        .toString()
+        .toUpperCase();
     final canSchedule = !['STUDENT', 'PARENT'].contains(role);
 
     return Scaffold(

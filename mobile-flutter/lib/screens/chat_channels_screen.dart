@@ -40,7 +40,7 @@ class _ChatChannelsScreenState extends State<ChatChannelsScreen> {
 
   Future<void> _loadChannels() async {
     setState(() => _loading = true);
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
     final channels = await ApiService.getChannels(orgId);
     if (mounted) {
       setState(() {

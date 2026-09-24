@@ -24,14 +24,19 @@ class _ParentStudentPortalScreenState extends State<ParentStudentPortalScreen> {
   @override
   void initState() {
     super.initState();
-    _role = (widget.orgData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    _role = (widget.orgData?['role'] ??
+            widget.userData?['role'] ??
+            widget.userData?['systemRole'] ??
+            ApiService.currentRole)
+        .toString()
+        .toUpperCase();
     _isParent = _role == 'PARENT';
     _loadPortalData();
   }
 
   Future<void> _loadPortalData() async {
     setState(() => _loading = true);
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
 
     if (_isParent) {
       final kids = await ApiService.getMyChildren();
@@ -40,7 +45,7 @@ class _ParentStudentPortalScreenState extends State<ParentStudentPortalScreen> {
         _selectedStudentId = kids[0]['userId']?.toString() ?? kids[0]['user']?['id']?.toString();
       }
     } else {
-      _selectedStudentId = widget.userData?['id']?.toString() ?? '';
+      _selectedStudentId = widget.userData?['id']?.toString() ?? ApiService.currentUser?['id']?.toString() ?? '';
     }
 
     if (_selectedStudentId != null && _selectedStudentId!.isNotEmpty) {

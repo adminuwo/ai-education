@@ -1,9 +1,21 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String baseUrl = 'https://education.uwo24.com/api/v1';
   static const String fallbackBaseUrl = 'https://convee-education-977864306871.asia-south1.run.app/api/v1';
+
+  static Map<String, dynamic>? currentUser;
+  static Map<String, dynamic>? currentOrg;
+
+  static String? get currentOrgId =>
+      currentOrg?['id']?.toString() ?? dio.options.headers['x-org-id']?.toString();
+
+  static String get currentRole =>
+      (currentOrg?['role'] ?? currentUser?['role'] ?? currentUser?['systemRole'] ?? 'STUDENT')
+          .toString()
+          .toUpperCase();
 
   static final Dio dio = Dio(
     BaseOptions(
@@ -20,24 +32,39 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('accessToken');
     final orgId = prefs.getString('currentOrgId');
+    final userJson = prefs.getString('currentUser');
+    final orgJson = prefs.getString('currentOrg');
 
-    if (token != null) {
+    if (userJson != null) {
+      try {
+        currentUser = jsonDecode(userJson) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+    if (orgJson != null) {
+      try {
+        currentOrg = jsonDecode(orgJson) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+
+    if (token != null && token.isNotEmpty) {
       dio.options.headers['Authorization'] = 'Bearer $token';
     }
-    if (orgId != null) {
-      dio.options.headers['x-org-id'] = orgId;
+    final activeOrgId = orgId ?? currentOrg?['id']?.toString();
+    if (activeOrgId != null && activeOrgId.isNotEmpty) {
+      dio.options.headers['x-org-id'] = activeOrgId;
     }
 
+    dio.interceptors.clear();
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final p = await SharedPreferences.getInstance();
           final t = p.getString('accessToken');
-          final o = p.getString('currentOrgId');
-          if (t != null) {
+          final o = p.getString('currentOrgId') ?? currentOrg?['id']?.toString();
+          if (t != null && t.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $t';
           }
-          if (o != null) {
+          if (o != null && o.isNotEmpty) {
             options.headers['x-org-id'] = o;
           }
           return handler.next(options);
@@ -111,11 +138,21 @@ class ApiService {
               data['org'] = orgMap;
             }
           }
+          if (data['user'] == null) {
+            data['user'] = meData;
+          }
         }
       } catch (_) {}
     }
 
+    if (data['user'] != null) {
+      currentUser = Map<String, dynamic>.from(data['user'] as Map);
+      await prefs.setString('currentUser', jsonEncode(currentUser));
+    }
+
     if (data['org'] != null && data['org']['id'] != null) {
+      currentOrg = Map<String, dynamic>.from(data['org'] as Map);
+      await prefs.setString('currentOrg', jsonEncode(currentOrg));
       await prefs.setString('currentOrgId', data['org']['id'].toString());
       dio.options.headers['x-org-id'] = data['org']['id'].toString();
     }
@@ -131,7 +168,41 @@ class ApiService {
   static Future<Map<String, dynamic>?> getMe() async {
     try {
       final res = await dio.get('/auth/me');
-      return res.data as Map<String, dynamic>;
+      if (res.data is Map) {
+        final meData = res.data as Map<String, dynamic>;
+        final prefs = await SharedPreferences.getInstance();
+
+        // Hydrate and cache user profile
+        final userMap = meData.containsKey('email')
+            ? Map<String, dynamic>.from(meData)
+            : (meData['user'] is Map ? Map<String, dynamic>.from(meData['user'] as Map) : null);
+        if (userMap != null) {
+          currentUser = userMap;
+          await prefs.setString('currentUser', jsonEncode(userMap));
+        }
+
+        // Hydrate and cache active organization with role
+        final memberships = meData['memberships'] as List<dynamic>?;
+        if (memberships != null && memberships.isNotEmpty) {
+          final cur = memberships.first as Map<String, dynamic>;
+          final org = cur['organization'] as Map<String, dynamic>?;
+          if (org != null) {
+            final orgMap = Map<String, dynamic>.from(org);
+            orgMap['role'] = cur['role'];
+            orgMap['directorId'] = cur['directorId'];
+            orgMap['userUniqueId'] = cur['userUniqueId'];
+            currentOrg = orgMap;
+            await prefs.setString('currentOrg', jsonEncode(orgMap));
+            if (orgMap['id'] != null) {
+              final oId = orgMap['id'].toString();
+              await prefs.setString('currentOrgId', oId);
+              dio.options.headers['x-org-id'] = oId;
+            }
+          }
+        }
+        return meData;
+      }
+      return null;
     } catch (_) {
       return null;
     }
@@ -139,11 +210,18 @@ class ApiService {
 
   static Future<String?> getDailyBriefing(String orgId) async {
     try {
-      final res = await dio.get('/ai/daily-briefing', queryParameters: {'orgId': orgId});
-      return res.data['briefing']?.toString();
+      // Backend route is registered as POST /ai/daily-briefing with { orgId }
+      final res = await dio.post('/ai/daily-briefing', data: {'orgId': orgId});
+      if (res.data is Map && res.data['briefing'] != null) {
+        return res.data['briefing'].toString();
+      }
     } catch (_) {
-      return null;
+      try {
+        final fallbackRes = await dio.get('/ai/daily-briefing', queryParameters: {'orgId': orgId});
+        return fallbackRes.data['briefing']?.toString();
+      } catch (_) {}
     }
+    return null;
   }
 
   static Future<Map<String, dynamic>?> getDashboard(String orgId) async {
@@ -451,7 +529,7 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> getTeamAttendance({
+  static Future<List<dynamic>> getTeamAttendance({
     required String teamId,
     String? date,
   }) async {
@@ -459,9 +537,11 @@ class ApiService {
       final res = await dio.get('/attendance/team/$teamId', queryParameters: {
         if (date != null) 'date': date,
       });
-      return res.data as Map<String, dynamic>?;
+      if (res.data is List) return res.data as List<dynamic>;
+      if (res.data is Map && res.data['records'] is List) return res.data['records'] as List<dynamic>;
+      return [];
     } catch (_) {
-      return null;
+      return [];
     }
   }
 
@@ -548,19 +628,63 @@ class ApiService {
   }
 
   // ==================== FINANCE & PAYSLIPS ====================
-  static Future<Map<String, dynamic>?> getFeeStatus(String orgId) async {
+  static Future<Map<String, dynamic>?> getFeeOverview(String orgId) async {
     try {
-      final res = await dio.get('/finance/fee-status', queryParameters: {'orgId': orgId});
-      return res.data as Map<String, dynamic>?;
+      final res = await dio.get('/finance/overview', queryParameters: {'orgId': orgId});
+      if (res.data is Map) return res.data as Map<String, dynamic>;
+      return null;
     } catch (_) {
       return null;
     }
   }
 
-  static Future<List<dynamic>> getMyPayslips() async {
+  static Future<List<dynamic>> getFees(String orgId) async {
     try {
-      final res = await dio.get('/finance/my-payslips');
+      final res = await dio.get('/finance/fees', queryParameters: {'orgId': orgId});
+      if (res.data is Map && res.data['fees'] is List) {
+        return res.data['fees'] as List<dynamic>;
+      } else if (res.data is List) {
+        return res.data as List<dynamic>;
+      }
+      return [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getFeeStatus(String orgId) async {
+    try {
+      final results = await Future.wait([
+        getFeeOverview(orgId),
+        getFees(orgId),
+      ]);
+      final overview = results[0] as Map<String, dynamic>?;
+      final fees = results[1] as List<dynamic>? ?? [];
+      final summary = (overview?['summary'] as Map<String, dynamic>?) ?? {};
+      final totalCollected = (summary['totalFeesCollected'] as num?)?.toDouble() ?? 0.0;
+      final totalPending = (summary['totalPendingDues'] as num?)?.toDouble() ?? 0.0;
+      return {
+        'totals': {
+          'totalBilled': (totalCollected + totalPending).round(),
+          'totalCollected': totalCollected.round(),
+          'totalOutstanding': totalPending.round(),
+        },
+        'students': fees,
+        'overview': overview,
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<List<dynamic>> getMyPayslips({String? orgId}) async {
+    try {
+      final res = await dio.get(
+        '/finance/my-payslips',
+        queryParameters: orgId != null ? {'orgId': orgId} : null,
+      );
       if (res.data is List) return res.data as List<dynamic>;
+      if (res.data is Map && res.data['payrolls'] is List) return res.data['payrolls'] as List<dynamic>;
       return [];
     } catch (_) {
       return [];
@@ -588,6 +712,10 @@ class ApiService {
     await prefs.remove('accessToken');
     await prefs.remove('refreshToken');
     await prefs.remove('currentOrgId');
+    await prefs.remove('currentUser');
+    await prefs.remove('currentOrg');
+    currentUser = null;
+    currentOrg = null;
     dio.options.headers.remove('Authorization');
     dio.options.headers.remove('x-org-id');
   }

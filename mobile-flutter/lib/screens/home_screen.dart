@@ -62,8 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _user = widget.userData;
-    _org = widget.orgData;
+    _user = widget.userData ?? ApiService.currentUser;
+    _org = widget.orgData ?? ApiService.currentOrg;
     _loadData();
   }
 
@@ -73,31 +73,28 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      // If user/org wasn't passed, fetch from /auth/me
-      if (_user == null || _org == null) {
+      // If user/org wasn't passed or role is missing, fetch full context from /auth/me
+      if (_user == null || _org == null || _org!['role'] == null || _org!['id'] == null) {
         final me = await ApiService.getMe();
         if (me != null) {
-          _user = me['user'] ?? (me.containsKey('email') ? me : null);
-          if (me['memberships'] is List && (me['memberships'] as List).isNotEmpty) {
-            final firstMem = (me['memberships'] as List).first;
-            _org = firstMem['organization'] ?? {'id': firstMem['orgId'], 'name': 'Institution', 'role': firstMem['role']};
-          }
+          _user = ApiService.currentUser ?? _user;
+          _org = ApiService.currentOrg ?? _org;
         }
       }
 
-      final orgId = _org?['id']?.toString();
+      final orgId = _org?['id']?.toString() ?? ApiService.currentOrgId;
       if (orgId != null && orgId.isNotEmpty) {
         final results = await Future.wait([
-          ApiService.getDailyBriefing(orgId),
-          ApiService.getDashboard(orgId),
-          ApiService.getAttendanceStats(orgId),
-          ApiService.getTasks(orgId: orgId, isHomework: false),
-          ApiService.getTasks(orgId: orgId, isHomework: true),
+          ApiService.getDailyBriefing(orgId).catchError((_) => null),
+          ApiService.getDashboard(orgId).catchError((_) => null),
+          ApiService.getAttendanceStats(orgId).catchError((_) => null),
+          ApiService.getTasks(orgId: orgId, isHomework: false).catchError((_) => <dynamic>[]),
+          ApiService.getTasks(orgId: orgId, isHomework: true).catchError((_) => <dynamic>[]),
         ]);
 
         if (mounted) {
-          final tasksList = results[3] as List<dynamic>? ?? [];
-          final homeworkList = results[4] as List<dynamic>? ?? [];
+          final tasksList = (results[3] as List<dynamic>?) ?? [];
+          final homeworkList = (results[4] as List<dynamic>?) ?? [];
 
           final activeTasks = tasksList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
           final pendingHw = homeworkList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
@@ -590,8 +587,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildStatCard(
                     label: LanguageService.tr('nav.attendance', fallback: 'Attendance'),
                     value: (_isStudent || _isParent)
-                        ? (_attendancePercentage > 0 ? '${_attendancePercentage.toStringAsFixed(0)}%' : (_attendanceStats?['percentage'] != null ? '${_attendanceStats!['percentage']}%' : '--'))
-                        : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : (_attendanceStats?['percentage'] != null ? '${_attendanceStats!['percentage']}%' : '--')),
+                        ? (_attendancePercentage > 0
+                            ? '${_attendancePercentage.toStringAsFixed(0)}%'
+                            : (_attendanceStats?['percentage'] != null
+                                ? '${_attendanceStats!['percentage']}%'
+                                : '--'))
+                        : (_attendanceStats?['overallCampusPercentage'] != null
+                            ? '${_attendanceStats!['overallCampusPercentage']}%'
+                            : (_attendanceStats?['percentage'] != null
+                                ? '${_attendanceStats!['percentage']}%'
+                                : (_attendanceStats?['present'] != null
+                                    ? '${_attendanceStats!['present']}'
+                                    : '--'))),
                     color: ConveeColors.emerald,
                     onTap: () {
                       Navigator.push(

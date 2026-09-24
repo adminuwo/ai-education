@@ -43,7 +43,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   void initState() {
     super.initState();
-    _role = (widget.orgData?['role'] ?? widget.userData?['systemRole'] ?? 'FACULTY').toString().toUpperCase();
+    _role = (widget.orgData?['role'] ??
+            widget.userData?['role'] ??
+            widget.userData?['systemRole'] ??
+            ApiService.currentRole)
+        .toString()
+        .toUpperCase();
     _isStudent = _role == 'STUDENT';
     _isParent = _role == 'PARENT';
     _isLeadership = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER'].contains(_role) ||
@@ -54,7 +59,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   Future<void> _loadData() async {
     setState(() => _loading = true);
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
 
     if (_isStudent || _isParent) {
       if (_isParent) {
@@ -99,24 +104,55 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   Future<void> _loadTeamStudents(String teamId) async {
     final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-    final data = await ApiService.getTeamAttendance(teamId: teamId, date: dateStr);
-    if (data != null && data['records'] != null) {
-      final recs = data['records'] as List<dynamic>;
-      _students = recs.map((r) => Map<String, dynamic>.from(r)).toList();
-      _attendanceMap.clear();
-      for (final s in _students) {
-        final sid = s['studentId']?.toString() ?? s['id']?.toString() ?? '';
-        _attendanceMap[sid] = (s['status'] ?? 'PRESENT').toString().toUpperCase();
+    final records = await ApiService.getTeamAttendance(teamId: teamId, date: dateStr);
+
+    final existingMap = <String, String>{};
+    for (final r in records) {
+      if (r is Map) {
+        final sid = (r['studentId'] ?? r['userId'] ?? '').toString();
+        final status = (r['status'] ?? 'PRESENT').toString().toUpperCase();
+        if (sid.isNotEmpty) existingMap[sid] = status;
       }
-    } else {
-      _students = [];
-      _attendanceMap.clear();
+    }
+
+    final section = _sections.firstWhere((s) => s['id']?.toString() == teamId, orElse: () => null);
+    final memberships = (section?['memberships'] as List<dynamic>?) ?? [];
+    final roster = <Map<String, dynamic>>[];
+
+    for (final m in memberships) {
+      if (m is Map) {
+        final role = (m['role'] ?? '').toString().toUpperCase();
+        final user = m['user'] as Map<String, dynamic>? ?? {};
+        final sid = (user['id'] ?? m['userId'] ?? m['id'] ?? '').toString();
+        if (sid.isNotEmpty && (role == 'STUDENT' || role == 'MEMBER' || role.isEmpty)) {
+          roster.add({
+            'studentId': sid,
+            'id': sid,
+            'name': user['fullName'] ?? user['name'] ?? m['title'] ?? 'Student',
+            'email': user['email'] ?? '',
+            'rollNo': m['userUniqueId'] ?? m['title'] ?? '',
+            'role': role,
+          });
+        }
+      }
+    }
+
+    _attendanceMap.clear();
+    for (final s in roster) {
+      final sid = s['studentId'].toString();
+      _attendanceMap[sid] = existingMap[sid] ?? 'PRESENT';
+    }
+
+    if (mounted) {
+      setState(() {
+        _students = roster;
+      });
     }
   }
 
   Future<void> _saveAttendanceBatch() async {
     if (_selectedTeamId == null || _students.isEmpty) return;
-    final orgId = widget.orgData?['id']?.toString() ?? '';
+    final orgId = widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
     setState(() {
       _saving = true;
       _message = null;

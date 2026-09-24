@@ -23,8 +23,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _user = widget.userData;
-    _org = widget.orgData;
+    _user = widget.userData ?? ApiService.currentUser;
+    _org = widget.orgData ?? ApiService.currentOrg;
     _fetchProfile();
   }
 
@@ -34,11 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final me = await ApiService.getMe();
       if (me != null && mounted) {
         setState(() {
-          _user = me['user'] ?? (me.containsKey('email') ? me : _user);
-          if (me['memberships'] is List && (me['memberships'] as List).isNotEmpty) {
-            final firstMem = (me['memberships'] as List).first;
-            _org = firstMem['organization'] ?? {'id': firstMem['orgId'], 'name': 'Institution', 'role': firstMem['role']};
-          }
+          _user = ApiService.currentUser ?? _user;
+          _org = ApiService.currentOrg ?? _org;
         });
       }
     } catch (_) {

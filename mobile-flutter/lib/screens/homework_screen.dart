@@ -21,8 +21,8 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
 
   final TextEditingController _searchController = TextEditingController();
 
-  String get _orgId => widget.orgData?['id']?.toString() ?? '';
-  bool get _isStudent => (widget.orgData?['role'] ?? widget.userData?['role'] ?? '').toString().toUpperCase() == 'STUDENT';
+  String get _orgId => widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
+  bool get _isStudent => (widget.orgData?['role'] ?? widget.userData?['role'] ?? ApiService.currentRole).toString().toUpperCase() == 'STUDENT';
 
   @override
   void initState() {

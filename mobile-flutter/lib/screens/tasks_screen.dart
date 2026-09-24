@@ -23,18 +23,18 @@ class _TasksScreenState extends State<TasksScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   bool get _isHigherAuthority {
-    final role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? '').toString().toUpperCase();
-    final systemRole = (widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    final role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? ApiService.currentRole).toString().toUpperCase();
+    final systemRole = (widget.userData?['systemRole'] ?? ApiService.currentUser?['systemRole'] ?? '').toString().toUpperCase();
     if (systemRole == 'SUPER_ADMIN') return true;
     return ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER'].any((r) => role.contains(r));
   }
 
   bool get _isStudentOrParent {
-    final role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    final role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? widget.userData?['systemRole'] ?? ApiService.currentRole).toString().toUpperCase();
     return role == 'STUDENT' || role == 'PARENT';
   }
 
-  String get _orgId => widget.orgData?['id']?.toString() ?? '';
+  String get _orgId => widget.orgData?['id']?.toString() ?? ApiService.currentOrgId ?? '';
 
   @override
   void initState() {
