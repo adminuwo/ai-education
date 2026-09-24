@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://convee-education-977864306871.asia-south1.run.app/api/v1';
-  static const String fallbackBaseUrl = 'https://education.uwo24.com/api/v1';
+  static const String baseUrl = 'https://education.uwo24.com/api/v1';
+  static const String fallbackBaseUrl = 'https://convee-education-977864306871.asia-south1.run.app/api/v1';
 
   static final Dio dio = Dio(
     BaseOptions(

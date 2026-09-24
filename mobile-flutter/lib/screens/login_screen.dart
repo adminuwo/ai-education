@@ -60,8 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on DioException catch (e) {
       String msg = LanguageService.tr('auth.errorAuthFailed', fallback: 'Authentication failed. Please check credentials.');
-      if (e.response?.data is Map && e.response?.data['error'] != null) {
-        msg = e.response!.data['error'].toString();
+      if (e.response?.data is Map) {
+        final data = e.response!.data as Map;
+        if (data['error'] != null) {
+          msg = data['error'].toString();
+        } else if (data['message'] != null) {
+          msg = data['message'].toString();
+        }
       } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
         msg = 'Cannot reach campus servers. Check network connection.';
       }
