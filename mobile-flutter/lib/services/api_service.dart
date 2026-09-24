@@ -93,6 +93,28 @@ class ApiService {
     if (data['refreshToken'] != null) {
       await prefs.setString('refreshToken', data['refreshToken'].toString());
     }
+    // Ensure org and role context are populated from /auth/me
+    if (data['org'] == null || data['org']['id'] == null) {
+      try {
+        final meRes = await dio.get('/auth/me');
+        if (meRes.data is Map) {
+          final meData = meRes.data as Map<String, dynamic>;
+          final memberships = meData['memberships'] as List<dynamic>?;
+          if (memberships != null && memberships.isNotEmpty) {
+            final cur = memberships.first as Map<String, dynamic>;
+            final org = cur['organization'] as Map<String, dynamic>?;
+            if (org != null) {
+              final orgMap = Map<String, dynamic>.from(org);
+              orgMap['role'] = cur['role'];
+              orgMap['directorId'] = cur['directorId'];
+              orgMap['userUniqueId'] = cur['userUniqueId'];
+              data['org'] = orgMap;
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
     if (data['org'] != null && data['org']['id'] != null) {
       await prefs.setString('currentOrgId', data['org']['id'].toString());
       dio.options.headers['x-org-id'] = data['org']['id'].toString();
