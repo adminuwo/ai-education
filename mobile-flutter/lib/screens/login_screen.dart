@@ -87,9 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ? LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty & Staff Sign In')
         : _portalMode == 'student'
             ? LanguageService.tr('auth.portalModeStudent', fallback: 'Student Portal Sign In')
-            : _portalMode == 'parent'
-                ? LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In')
-                : LanguageService.tr('auth.portalModeAccountant', fallback: 'Accountant & Finance Sign In');
+            : LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In');
 
     return Scaffold(
       backgroundColor: ConveeColors.background,
@@ -146,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Portal Switcher Tabs (4 Portals: Faculty, Student, Parent, Accountant)
+                // Portal Switcher Tabs (3 Portals: Faculty, Student, Parent)
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -156,10 +154,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Row(
                     children: [
-                      _buildPortalTab('faculty', LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty'), Icons.verified_user_outlined, ConveeColors.primary),
-                      _buildPortalTab('student', LanguageService.tr('auth.portalModeStudent', fallback: 'Student'), Icons.school_outlined, ConveeColors.emerald),
-                      _buildPortalTab('parent', LanguageService.tr('auth.portalModeParent', fallback: 'Parent'), Icons.family_restroom_outlined, ConveeColors.purple),
-                      _buildPortalTab('accountant', LanguageService.tr('auth.portalModeAccountant', fallback: 'Finance'), Icons.account_balance_wallet_outlined, const Color(0xFFF59E0B)),
+                      _buildPortalTab(
+                        'faculty',
+                        LanguageService.tr('auth.portalTabFaculty', fallback: 'Faculty'),
+                        Icons.verified_user_outlined,
+                        ConveeColors.primary,
+                      ),
+                      _buildPortalTab(
+                        'student',
+                        LanguageService.tr('auth.portalTabStudent', fallback: 'Student'),
+                        Icons.school_outlined,
+                        ConveeColors.emerald,
+                      ),
+                      _buildPortalTab(
+                        'parent',
+                        LanguageService.tr('auth.portalTabParent', fallback: 'Parent'),
+                        Icons.family_restroom_outlined,
+                        ConveeColors.purple,
+                      ),
                     ],
                   ),
                 ),
@@ -218,9 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? LanguageService.tr('auth.emailLabelStudent', fallback: 'Student ID or Email')
                             : _portalMode == 'parent'
                                 ? LanguageService.tr('auth.emailLabelParent', fallback: 'Registered Parent Email')
-                                : _portalMode == 'accountant'
-                                    ? LanguageService.tr('auth.emailLabelAccountant', fallback: 'Accountant Email')
-                                    : LanguageService.tr('auth.emailLabel', fallback: 'Email or Institutional ID'),
+                                : LanguageService.tr('auth.emailLabel', fallback: 'Email or Institutional ID'),
                         style: const TextStyle(color: ConveeColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 6),
@@ -233,9 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? LanguageService.tr('auth.emailPlaceholderStudent', fallback: 'e.g. STU-2026-1001')
                               : _portalMode == 'parent'
                                   ? LanguageService.tr('auth.emailPlaceholderParent', fallback: 'e.g. parent@example.com')
-                                  : _portalMode == 'accountant'
-                                      ? LanguageService.tr('auth.emailPlaceholderAccountant', fallback: 'e.g. accountant@demo.edu')
-                                      : LanguageService.tr('auth.emailPlaceholder', fallback: 'name@institution.edu'),
+                                  : LanguageService.tr('auth.emailPlaceholder', fallback: 'name@institution.edu'),
                           hintStyle: const TextStyle(color: ConveeColors.textMuted, fontSize: 14),
                           prefixIcon: const Icon(Icons.mail_outline, color: ConveeColors.textSecondary, size: 20),
                           filled: true,
@@ -349,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
           });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           decoration: BoxDecoration(
             color: isSelected ? color.withOpacity(0.15) : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
@@ -357,15 +365,20 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 16, color: isSelected ? color : ConveeColors.textMuted),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected ? color : ConveeColors.textMuted,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 13,
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isSelected ? color : ConveeColors.textMuted,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontSize: 12.5,
+                  ),
                 ),
               ),
             ],
