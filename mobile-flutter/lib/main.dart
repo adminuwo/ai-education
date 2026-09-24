@@ -24,7 +24,11 @@ class AiEducationApp extends StatelessWidget {
       valueListenable: LanguageService.currentLocale,
       builder: (context, locale, _) {
         return MaterialApp(
-          key: ValueKey(locale),
+          locale: Locale(locale),
+          supportedLocales: const [
+            Locale('en'),
+            Locale('hi'),
+          ],
           title: 'AI Education',
           debugShowCheckedModeBanner: false,
           theme: aiEducationDarkTheme,

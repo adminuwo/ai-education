@@ -88,13 +88,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final heading = _portalMode == 'faculty'
-        ? LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty & Staff Sign In')
-        : _portalMode == 'student'
-            ? LanguageService.tr('auth.portalModeStudent', fallback: 'Student Portal Sign In')
-            : LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In');
+    return ValueListenableBuilder<String>(
+      valueListenable: LanguageService.currentLocale,
+      builder: (context, locale, _) {
+        final heading = _portalMode == 'faculty'
+            ? LanguageService.tr('auth.portalModeFaculty', fallback: 'Faculty & Staff Sign In')
+            : _portalMode == 'student'
+                ? LanguageService.tr('auth.portalModeStudent', fallback: 'Student Portal Sign In')
+                : LanguageService.tr('auth.portalModeParent', fallback: 'Parent Portal Sign In');
 
-    return Scaffold(
+        return Scaffold(
       backgroundColor: ConveeColors.background,
       body: SafeArea(
         child: Center(
@@ -349,6 +352,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 

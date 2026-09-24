@@ -213,12 +213,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.dashboard_outlined, color: ConveeColors.primary, size: 22),
-            title: const Text('Dashboard', style: TextStyle(color: ConveeColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
+            title: Text(LanguageService.tr('nav.home', fallback: 'Dashboard'), style: const TextStyle(color: ConveeColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
             onTap: () => Navigator.pop(context),
           ),
           ListTile(
             leading: const Icon(Icons.fact_check_outlined, color: ConveeColors.emerald, size: 22),
-            title: Text((_isStudent || _isParent) ? 'My Attendance' : 'Class Attendance', style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
+            title: Text((_isStudent || _isParent) ? LanguageService.tr('home.myAttendance', fallback: 'My Attendance') : LanguageService.tr('home.logAttendance', fallback: 'Class Attendance'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
             subtitle: Text((_isStudent || _isParent) ? 'Personal History' : 'Rosters & Standing', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.menu_book_outlined, color: ConveeColors.amber, size: 22),
-            title: const Text('Homework & Rubrics', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            title: Text(LanguageService.tr('nav.homework', fallback: 'Homework & Rubrics'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
             subtitle: Text(_isStudent ? 'Submissions & Deadlines' : 'Grading & Assignments', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.chat_bubble_outline, color: ConveeColors.purple, size: 22),
-            title: const Text('Messages & Channels', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            title: Text(LanguageService.tr('nav.messages', fallback: 'Messages & Channels'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
             subtitle: const Text('Cohort Direct Messaging', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.videocam_outlined, color: ConveeColors.destructive, size: 22),
-            title: const Text('Live Meetings', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            title: Text(LanguageService.tr('home.liveMeetings', fallback: 'Live Meetings'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
             subtitle: const Text('Video Classes & Sessions', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
@@ -255,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_isStudent || _isParent)
             ListTile(
               leading: const Icon(Icons.family_restroom_outlined, color: ConveeColors.textSecondary, size: 22),
-              title: Text(_isParent ? 'Parent Portal' : 'Student Portal', style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
+              title: Text(_isParent ? LanguageService.tr('nav.parentPortal', fallback: 'Parent Portal') : LanguageService.tr('nav.studentPortal', fallback: 'Student Portal'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
               subtitle: const Text('Academic Ward Directory', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
               onTap: () {
                 Navigator.pop(context);
@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_isStaff)
             ListTile(
               leading: const Icon(Icons.task_alt_outlined, color: ConveeColors.primary, size: 22),
-              title: const Text('Campus Tasks & Operations', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+              title: Text(LanguageService.tr('home.activeTasks', fallback: 'Campus Tasks & Operations'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
               subtitle: const Text('Delegated Duties', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
               onTap: () {
                 Navigator.pop(context);
@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_hasAiLegal)
             ListTile(
               leading: const Icon(Icons.balance, color: ConveeColors.amber, size: 22),
-              title: const Text('Judicial & ADP Exam Hub', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+              title: Text(LanguageService.tr('home.judicialHub', fallback: 'Judicial & ADP Exam Hub'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
               subtitle: const Text('Bare Acts & PYQs', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
               onTap: () {
                 Navigator.pop(context);
@@ -295,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Divider(color: ConveeColors.border),
           ListTile(
             leading: const Icon(Icons.person_outline, color: ConveeColors.textSecondary, size: 22),
-            title: const Text('Account & Settings', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+            title: Text(LanguageService.tr('nav.profile', fallback: 'Account & Settings'), style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
             subtitle: const Text('Security, Password & 16KB Info', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
@@ -304,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.logout, color: ConveeColors.destructive, size: 22),
-            title: const Text('Sign Out', style: TextStyle(color: ConveeColors.destructive, fontSize: 14, fontWeight: FontWeight.w600)),
+            title: Text(LanguageService.tr('home.signOut', fallback: 'Sign Out'), style: const TextStyle(color: ConveeColors.destructive, fontSize: 14, fontWeight: FontWeight.w600)),
             onTap: () async {
               Navigator.pop(context);
               await ApiService.logout();
@@ -323,13 +323,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userName = _user?['fullName'] ?? _user?['email']?.toString().split('@').first ?? 'Faculty';
-    final orgName = _org?['name'] ?? 'Institution';
-    final role = _org?['role'] ?? _user?['systemRole'] ?? 'MEMBER';
+    return ValueListenableBuilder<String>(
+      valueListenable: LanguageService.currentLocale,
+      builder: (context, locale, _) {
+        final userName = _user?['fullName'] ?? _user?['email']?.toString().split('@').first ?? 'Faculty';
+        final orgName = _org?['name'] ?? 'Institution';
+        final role = _org?['role'] ?? _user?['systemRole'] ?? 'MEMBER';
 
-    return Scaffold(
-      backgroundColor: ConveeColors.background,
-      drawer: _buildDrawer(context, userName, role, orgName),
+        return Scaffold(
+          backgroundColor: ConveeColors.background,
+          drawer: _buildDrawer(context, userName, role, orgName),
       appBar: AppBar(
         title: Row(
           children: [
@@ -772,6 +775,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 

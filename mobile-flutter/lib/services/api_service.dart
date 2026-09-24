@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String baseUrl = 'https://education.uwo24.com/api/v1';
   static const String fallbackBaseUrl = 'https://convee-education-977864306871.asia-south1.run.app/api/v1';
+
+  static final ValueNotifier<bool> authState = ValueNotifier<bool>(false);
 
   static Map<String, dynamic>? currentUser;
   static Map<String, dynamic>? currentOrg;
@@ -34,6 +37,8 @@ class ApiService {
     final orgId = prefs.getString('currentOrgId');
     final userJson = prefs.getString('currentUser');
     final orgJson = prefs.getString('currentOrg');
+
+    authState.value = token != null && token.isNotEmpty;
 
     if (userJson != null) {
       try {
@@ -156,6 +161,8 @@ class ApiService {
       await prefs.setString('currentOrgId', data['org']['id'].toString());
       dio.options.headers['x-org-id'] = data['org']['id'].toString();
     }
+
+    authState.value = true;
 
     return data;
   }
@@ -718,5 +725,6 @@ class ApiService {
     currentOrg = null;
     dio.options.headers.remove('Authorization');
     dio.options.headers.remove('x-org-id');
+    authState.value = false;
   }
 }

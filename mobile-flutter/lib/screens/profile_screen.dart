@@ -255,10 +255,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final initials = fullName.split(' ').map((s) => s.isNotEmpty ? s[0] : '').take(2).join('').toUpperCase();
 
-    return Scaffold(
-      backgroundColor: ConveeColors.background,
-      appBar: AppBar(
-        title: const Text('Account & Security', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+    return ValueListenableBuilder<String>(
+      valueListenable: LanguageService.currentLocale,
+      builder: (context, locale, _) {
+        return Scaffold(
+          backgroundColor: ConveeColors.background,
+          appBar: AppBar(
+            title: Text(LanguageService.tr('nav.profile', fallback: 'Account & Security'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 8.0),
@@ -477,6 +480,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+        );
+      },
     );
   }
 
