@@ -19,11 +19,20 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
   bool _loading = true;
   Map<String, dynamic>? _feeStatusData;
   List<dynamic> _payslips = [];
+  late String _role;
+  bool _canViewCampusFees = false;
+  bool _isStudentOrParent = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    _isStudentOrParent = _role == 'STUDENT' || _role == 'PARENT';
+    _canViewCampusFees = ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'ACCOUNTANT', 'OWNER'].contains(_role) ||
+        (widget.userData?['systemRole']?.toString().toUpperCase() == 'SUPER_ADMIN');
+
+    final tabLength = _canViewCampusFees ? 2 : 1;
+    _tabController = TabController(length: tabLength, vsync: this);
     _loadFinanceData();
   }
 
@@ -37,7 +46,7 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
     setState(() => _loading = true);
     final orgId = widget.orgData?['id']?.toString() ?? '';
 
-    final feeRes = await ApiService.getFeeStatus(orgId);
+    final feeRes = _canViewCampusFees ? await ApiService.getFeeStatus(orgId) : null;
     final payslipRes = await ApiService.getMyPayslips();
 
     if (mounted) {
@@ -51,6 +60,68 @@ class _FinanceScreenState extends State<FinanceScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    if (_isStudentOrParent) {
+      return Scaffold(
+        backgroundColor: ConveeColors.background,
+        appBar: AppBar(
+          title: const Text('Campus Finance'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: ConveeColors.text),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_outline, size: 64, color: ConveeColors.emerald.withOpacity(0.8)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Staff Finance Portal',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: ConveeColors.text),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Institutional fee collection ledgers and payroll records are restricted to staff. For student fee payment receipts and history, please open the Parent & Student Portal.',
+                  style: const TextStyle(fontSize: 14, color: ConveeColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back, size: 18),
+                  label: const Text('Back to Dashboard'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ConveeColors.primary,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (!_canViewCampusFees) {
+      return Scaffold(
+        backgroundColor: ConveeColors.background,
+        appBar: AppBar(
+          title: const Text('My Payslips'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: ConveeColors.text),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: ConveeColors.primary))
+            : _buildPayslipsTab(),
+      );
+    }
+
     return Scaffold(
       backgroundColor: ConveeColors.background,
       appBar: AppBar(

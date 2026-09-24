@@ -505,6 +505,57 @@ class _LegalStudyHubScreenState extends State<LegalStudyHubScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    final hasAiLegal = widget.orgData?['hasAiLegal'] == true ||
+        (widget.orgData?['addons'] is List && (widget.orgData!['addons'] as List).contains('AI_LEGAL')) ||
+        (widget.orgData?['description']?.toString().contains('[ADDONS:') == true &&
+            widget.orgData?['description']?.toString().contains('AI_LEGAL') == true);
+
+    if (!hasAiLegal) {
+      return Scaffold(
+        backgroundColor: ConveeColors.background,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: ConveeColors.text),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text('Judicial & ADP Exam Hub', style: TextStyle(color: ConveeColors.text, fontSize: 18, fontWeight: FontWeight.bold)),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_outline, size: 64, color: ConveeColors.amber.withOpacity(0.8)),
+                const SizedBox(height: 16),
+                const Text(
+                  'AI-Legal Add-on Required',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: ConveeColors.text),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'The Judicial & ADP Exam Hub is an institutional add-on not active for ${widget.orgData?['name'] ?? 'your institution'}. Contact your institution administrator to activate AI-Legal.',
+                  style: const TextStyle(fontSize: 14, color: ConveeColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back, size: 18),
+                  label: const Text('Back to Dashboard'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ConveeColors.primary,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: ConveeColors.background,
       appBar: AppBar(

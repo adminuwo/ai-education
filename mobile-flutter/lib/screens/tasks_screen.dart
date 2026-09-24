@@ -29,6 +29,11 @@ class _TasksScreenState extends State<TasksScreen> {
     return ['ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER'].any((r) => role.contains(r));
   }
 
+  bool get _isStudentOrParent {
+    final role = (widget.orgData?['role'] ?? widget.userData?['role'] ?? widget.userData?['systemRole'] ?? '').toString().toUpperCase();
+    return role == 'STUDENT' || role == 'PARENT';
+  }
+
   String get _orgId => widget.orgData?['id']?.toString() ?? '';
 
   @override
@@ -447,6 +452,52 @@ class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isStudentOrParent) {
+      return Scaffold(
+        backgroundColor: ConveeColors.background,
+        appBar: AppBar(
+          title: const Text('Campus Tasks & Operations'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: ConveeColors.text),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_outline, size: 64, color: ConveeColors.primary.withOpacity(0.8)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Staff Operations Portal',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: ConveeColors.text),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Campus operational duties and staff tasks are restricted to faculty and staff. For your coursework and assignments, please visit Homework.',
+                  style: const TextStyle(fontSize: 14, color: ConveeColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back, size: 18),
+                  label: const Text('Back to Dashboard'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ConveeColors.primary,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final role = (widget.orgData?['role'] ?? 'Authority').toString().toUpperCase();
 
     return Scaffold(

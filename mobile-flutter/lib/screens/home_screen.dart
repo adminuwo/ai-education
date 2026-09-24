@@ -35,6 +35,29 @@ class _HomeScreenState extends State<HomeScreen> {
   int _pendingHomeworkCount = 0;
   bool _statsLoaded = false;
   bool _refreshing = false;
+  double _attendancePercentage = 0.0;
+
+  bool get _hasAiLegal {
+    if (_org == null) return false;
+    if (_org!['hasAiLegal'] == true) return true;
+    final addons = _org!['addons'];
+    if (addons is List && addons.contains('AI_LEGAL')) return true;
+    final desc = _org!['description']?.toString() ?? '';
+    return desc.contains('[ADDONS:') && desc.contains('AI_LEGAL');
+  }
+
+  String get _currentRole {
+    return (_org?['role'] ?? _user?['role'] ?? _user?['systemRole'] ?? 'STUDENT').toString().toUpperCase();
+  }
+
+  bool get _isStudent => _currentRole == 'STUDENT';
+  bool get _isParent => _currentRole == 'PARENT';
+  bool get _isTeacher => _currentRole == 'TEACHER';
+  bool get _isAccountant => _currentRole == 'ACCOUNTANT';
+  bool get _isLeadership => [
+    'ADMIN', 'DIRECTOR', 'PRINCIPAL', 'DEAN', 'HOD', 'OWNER', 'SUPER_ADMIN'
+  ].contains(_currentRole) || (_user?['systemRole']?.toString().toUpperCase() == 'SUPER_ADMIN');
+  bool get _isStaff => !_isStudent && !_isParent;
 
   @override
   void initState() {
@@ -79,12 +102,27 @@ class _HomeScreenState extends State<HomeScreen> {
           final activeTasks = tasksList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
           final pendingHw = homeworkList.where((t) => t is Map && t['status'] != 'COMPLETED').length;
 
+          double studentAttendance = 0.0;
+          if (_isStudent) {
+            final targetId = _user?['id']?.toString() ?? '';
+            if (targetId.isNotEmpty) {
+              try {
+                final report = await ApiService.getChildReport(targetId, orgId: orgId);
+                if (report != null && report['attendance'] != null) {
+                  final pct = report['attendance']['percentage'];
+                  if (pct != null) studentAttendance = (pct as num).toDouble();
+                }
+              } catch (_) {}
+            }
+          }
+
           setState(() {
             _briefing = results[0] as String?;
             _dashboardData = results[1] as Map<String, dynamic>?;
             _attendanceStats = results[2] as Map<String, dynamic>?;
             _activeTaskCount = activeTasks;
             _pendingHomeworkCount = pendingHw;
+            _attendancePercentage = studentAttendance;
             _statsLoaded = true;
           });
         }
@@ -183,8 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.fact_check_outlined, color: ConveeColors.emerald, size: 22),
-            title: const Text('Class Attendance', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Rosters & Standing', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            title: Text((_isStudent || _isParent) ? 'My Attendance' : 'Class Attendance', style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
+            subtitle: Text((_isStudent || _isParent) ? 'Personal History' : 'Rosters & Standing', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (_) => AttendanceScreen(orgData: _org, userData: _user)));
@@ -193,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: const Icon(Icons.menu_book_outlined, color: ConveeColors.amber, size: 22),
             title: const Text('Homework & Rubrics', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Grading & Assignments', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+            subtitle: Text(_isStudent ? 'Submissions & Deadlines' : 'Grading & Assignments', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (_) => HomeworkScreen(orgData: _org, userData: _user)));
@@ -217,42 +255,46 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (_) => MeetingsScreen(orgData: _org, userData: _user)));
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.family_restroom_outlined, color: ConveeColors.textSecondary, size: 22),
-            title: const Text('Parent & Student Portal', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Academic Ward Directory', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.account_balance_wallet_outlined, color: ConveeColors.emerald, size: 22),
-            title: const Text('Finance & Payslips', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Fee Ledgers & Salaries', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.task_alt_outlined, color: ConveeColors.primary, size: 22),
-            title: const Text('Campus Tasks & Operations', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Delegated Duties', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.balance, color: ConveeColors.amber, size: 22),
-            title: const Text('Judicial & ADP Exam Hub', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
-            subtitle: const Text('Bare Acts & PYQs', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)));
-            },
-          ),
+          if (_isStudent || _isParent)
+            ListTile(
+              leading: const Icon(Icons.family_restroom_outlined, color: ConveeColors.textSecondary, size: 22),
+              title: Text(_isParent ? 'Parent Portal' : 'Student Portal', style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
+              subtitle: const Text('Academic Ward Directory', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)));
+              },
+            ),
+          if (_isStaff)
+            ListTile(
+              leading: const Icon(Icons.account_balance_wallet_outlined, color: ConveeColors.emerald, size: 22),
+              title: Text(_isLeadership || _isAccountant ? 'Finance & Payslips' : 'My Payslips', style: const TextStyle(color: ConveeColors.text, fontSize: 14)),
+              subtitle: Text(_isLeadership || _isAccountant ? 'Fee Ledgers & Salaries' : 'Monthly Salary Slips', style: const TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)));
+              },
+            ),
+          if (_isStaff)
+            ListTile(
+              leading: const Icon(Icons.task_alt_outlined, color: ConveeColors.primary, size: 22),
+              title: const Text('Campus Tasks & Operations', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+              subtitle: const Text('Delegated Duties', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)));
+              },
+            ),
+          if (_hasAiLegal)
+            ListTile(
+              leading: const Icon(Icons.balance, color: ConveeColors.amber, size: 22),
+              title: const Text('Judicial & ADP Exam Hub', style: TextStyle(color: ConveeColors.text, fontSize: 14)),
+              subtitle: const Text('Bare Acts & PYQs', style: TextStyle(color: ConveeColors.textMuted, fontSize: 11)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)));
+              },
+            ),
           const Divider(color: ConveeColors.border),
           ListTile(
             leading: const Icon(Icons.person_outline, color: ConveeColors.textSecondary, size: 22),
@@ -459,81 +501,83 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Judicial & ADP Exam Hub High-Priority Action Banner
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user),
+              if (_hasAiLegal) ...[
+                // Judicial & ADP Exam Hub High-Priority Action Banner
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFF2E1C05),
+                          ConveeColors.card,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: ConveeColors.amber.withOpacity(0.4)),
                     ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF2E1C05),
-                        ConveeColors.card,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: ConveeColors.amber.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.gavel, color: ConveeColors.amber, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    LanguageService.tr('home.judicialHub', fallback: 'Judicial & ADP Exam Hub'),
+                                    style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                    decoration: BoxDecoration(
+                                      color: ConveeColors.amber,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'LEGAL',
+                                      style: TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'Bare Acts, 16+ State PYQs, AI Solver & Transition',
+                                style: TextStyle(color: ConveeColors.textSecondary, fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, color: ConveeColors.amber, size: 14),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: ConveeColors.amber.withOpacity(0.4)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: ConveeColors.amber.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(Icons.gavel, color: ConveeColors.amber, size: 22),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  LanguageService.tr('home.judicialHub', fallback: 'Judicial & ADP Exam Hub'),
-                                  style: const TextStyle(color: ConveeColors.text, fontWeight: FontWeight.bold, fontSize: 14),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: ConveeColors.amber,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: const Text(
-                                    'LEGAL',
-                                    style: TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'Bare Acts, 16+ State PYQs, AI Solver & Transition',
-                              style: TextStyle(color: ConveeColors.textSecondary, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, color: ConveeColors.amber, size: 14),
-                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
+              ],
 
               // Live Status KPI Cards (Attendance, Tasks, Homework)
               Text(
@@ -545,9 +589,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _buildStatCard(
                     label: LanguageService.tr('nav.attendance', fallback: 'Attendance'),
-                    value: _attendanceStats?['percentage'] != null
-                        ? '${_attendanceStats!['percentage']}%'
-                        : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : '--'),
+                    value: (_isStudent || _isParent)
+                        ? (_attendancePercentage > 0 ? '${_attendancePercentage.toStringAsFixed(0)}%' : (_attendanceStats?['percentage'] != null ? '${_attendanceStats!['percentage']}%' : '--'))
+                        : (_attendanceStats?['present'] != null ? '${_attendanceStats!['present']}' : (_attendanceStats?['percentage'] != null ? '${_attendanceStats!['percentage']}%' : '--')),
                     color: ConveeColors.emerald,
                     onTap: () {
                       Navigator.push(
@@ -557,18 +601,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   const SizedBox(width: 10),
-                  _buildStatCard(
-                    label: LanguageService.tr('home.campusTasks', fallback: 'Campus Tasks'),
-                    value: _statsLoaded ? '$_activeTaskCount' : '--',
-                    color: ConveeColors.primary,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 10),
+                  if (_isStaff) ...[
+                    _buildStatCard(
+                      label: LanguageService.tr('home.campusTasks', fallback: 'Campus Tasks'),
+                      value: _statsLoaded ? '$_activeTaskCount' : '--',
+                      color: ConveeColors.primary,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                  ],
                   _buildStatCard(
                     label: LanguageService.tr('nav.homework', fallback: 'Homework'),
                     value: _statsLoaded ? '$_pendingHomeworkCount' : '--',
@@ -580,6 +626,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
+                  if (!_isStaff) ...[
+                    const SizedBox(width: 10),
+                    _buildStatCard(
+                      label: LanguageService.tr('home.liveMeetings', fallback: 'Live Classes'),
+                      value: 'Active',
+                      color: ConveeColors.destructive,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => MeetingsScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 20),
@@ -599,21 +659,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.35,
                 children: [
-                  _buildModuleItem(
-                    LanguageService.tr('home.activeTasks', fallback: 'Campus Tasks'),
-                    'Operations & Duties',
-                    Icons.task_alt_outlined,
-                    ConveeColors.primary,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
-                      );
-                    },
-                  ),
+                  if (_isStaff)
+                    _buildModuleItem(
+                      LanguageService.tr('home.activeTasks', fallback: 'Campus Tasks'),
+                      'Operations & Duties',
+                      Icons.task_alt_outlined,
+                      ConveeColors.primary,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => TasksScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
                   _buildModuleItem(
                     LanguageService.tr('nav.homework', fallback: 'Homework'),
-                    'Assignments & Rubrics',
+                    _isStudent ? 'Submissions & Deadlines' : 'Assignments & Rubrics',
                     Icons.menu_book_outlined,
                     ConveeColors.amber,
                     onTap: () {
@@ -625,7 +686,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   _buildModuleItem(
                     LanguageService.tr('home.logAttendance', fallback: 'Daily Attendance'),
-                    'Roster & Records',
+                    (_isStudent || _isParent) ? 'My Standing & History' : 'Roster & Records',
                     Icons.fact_check_outlined,
                     ConveeColors.emerald,
                     onTap: () {
@@ -659,42 +720,45 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-                  _buildModuleItem(
-                    LanguageService.tr('nav.portal', fallback: 'Campus Portal'),
-                    'Parent & Student',
-                    Icons.family_restroom_outlined,
-                    ConveeColors.textSecondary,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)),
-                      );
-                    },
-                  ),
-                  _buildModuleItem(
-                    'Campus Finance',
-                    'Fees & Staff Payslips',
-                    Icons.account_balance_wallet_outlined,
-                    ConveeColors.emerald,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)),
-                      );
-                    },
-                  ),
-                  _buildModuleItem(
-                    LanguageService.tr('home.judicialHub', fallback: 'Judicial Hub'),
-                    'Bare Acts & PYQs',
-                    Icons.balance,
-                    ConveeColors.amber,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)),
-                      );
-                    },
-                  ),
+                  if (_isStudent || _isParent)
+                    _buildModuleItem(
+                      LanguageService.tr('nav.portal', fallback: 'Campus Portal'),
+                      _isParent ? 'Child Performance' : 'Student Academic Ward',
+                      Icons.family_restroom_outlined,
+                      ConveeColors.textSecondary,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ParentStudentPortalScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
+                  if (_isStaff)
+                    _buildModuleItem(
+                      _isLeadership || _isAccountant ? 'Campus Finance' : 'My Payslips',
+                      _isLeadership || _isAccountant ? 'Fees & Staff Payslips' : 'Monthly Salary Slips',
+                      Icons.account_balance_wallet_outlined,
+                      ConveeColors.emerald,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => FinanceScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
+                  if (_hasAiLegal)
+                    _buildModuleItem(
+                      LanguageService.tr('home.judicialHub', fallback: 'Judicial Hub'),
+                      'Bare Acts & PYQs',
+                      Icons.balance,
+                      ConveeColors.amber,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => LegalStudyHubScreen(orgData: _org, userData: _user)),
+                        );
+                      },
+                    ),
                 ],
               ),
             ],
